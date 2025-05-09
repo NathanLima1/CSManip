@@ -1,0 +1,7 @@
+/home/nathan/Desktop/climseries/src/climseries/target_clean.txt
+/home/nathan/Desktop/climseries/src/climseries/neighborA_clean.txt
+/home/nathan/Desktop/climseries/src/climseries/neighborB_clean.txt
+/home/nathan/Desktop/climseries/src/climseries/neighborC_clean.txt
+/home/nathan/Desktop/climseries/src/climseries/common_data.csv
+/home/nathan/Desktop/climseries/src/climseries/buff.txt
+/home/nathan/Desktop/climseries/src/climseries/Coordinates.txt
