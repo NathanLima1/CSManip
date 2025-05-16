@@ -14,12 +14,7 @@ import matplotlib.dates as mdates
 import datetime as dt
 import os
 import numpy as np
-
-fundo = '#4F4F4F' #? Cor de fundo da tela
-fun_b = '#3CB371' #? Cor de fundo dos botoes
-fun_ap = '#9C444C'
-fun_alt = '#C99418'
-fun_meta_le = '#191970'
+from styles import colors
 
 class Framework(Frame):
     def get_info(self, directory):  # Function that opens the folder with .csv files and returns important data
@@ -63,7 +58,7 @@ class Framework(Frame):
         self.all_city_names.sort()
 
         self.target_city = StringVar()
-        Label(self, text='Target city:', font='Arial 11 bold', bg=fundo, fg='white').place(x=20, y=65)
+        Label(self, text='Target city:', font='Arial 11 bold', bg=colors.fundo, fg='white').place(x=20, y=65)
         self.target_combo = ttk.Combobox(
             self,
             values=self.all_city_names,
@@ -75,7 +70,7 @@ class Framework(Frame):
         ).place(x=20, y=85)
 
         self.neighbor_a = StringVar()
-        Label(self, text='Neighbor A:', font='Arial 11 bold', bg=fundo, fg='white').place(x=220, y=65)
+        Label(self, text='Neighbor A:', font='Arial 11 bold', bg=colors.fundo, fg='white').place(x=220, y=65)
         self.combo_a = ttk.Combobox(
             self,
             values=self.all_city_names,
@@ -87,7 +82,7 @@ class Framework(Frame):
         ).place(x=224, y=85)
 
         self.neighbor_b = StringVar()
-        Label(self, text='Neighbor B:', font='Arial 11 bold', bg=fundo, fg='white').place(x=20, y=115)
+        Label(self, text='Neighbor B:', font='Arial 11 bold', bg=colors.fundo, fg='white').place(x=20, y=115)
         self.combo_b = ttk.Combobox(
             self,
             values=self.all_city_names,
@@ -99,7 +94,7 @@ class Framework(Frame):
         ).place(x=20, y=135)
 
         self.neighbor_c = StringVar()
-        Label(self, text='Neighbor C:', font='Arial 11 bold', bg=fundo, fg='white').place(x=220, y=115)
+        Label(self, text='Neighbor C:', font='Arial 11 bold', bg=colors.fundo, fg='white').place(x=220, y=115)
         self.combo_c = ttk.Combobox(
             self,
             values=self.all_city_names,
@@ -115,7 +110,7 @@ class Framework(Frame):
             text='Confirmar Grupo',
             font='Arial 12 bold',
             fg='white',
-            bg=fun_b,
+            bg=colors.fun_b,
             width=38,
             command=self.process_selection
         ).place(x=20, y=170)
@@ -405,19 +400,19 @@ class Framework(Frame):
         teste = DataProcessing()
         self.var_ini = StringVar()
         self.anos = teste.get_year_range(self.type_data.get())
-        Label(self, text='Início:', font='Arial 12 bold', fg='white', bg=fundo).place(x=20, y=290)
+        Label(self, text='Início:', font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=20, y=290)
         self.com_ini = ttk.Combobox(self, values=self.anos, textvariable=self.var_ini, font='Arial 12', justify=CENTER, state='readonly', width=12).place(x=20, y=310)
 
         self.var_fim = StringVar()
-        Label(self, text='Final:', font='Arial 12 bold', fg='white', bg=fundo).place(x=165, y=290)
+        Label(self, text='Final:', font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=165, y=290)
         self.com_fim = ttk.Combobox(self, values=self.anos, textvariable=self.var_fim, font='Arial 12', justify=CENTER, state='readonly', width=12).place(x=165, y=310)
         
-        Button(self, text='Def. Range', font='Arial 11 bold', fg='white', bg=fun_b, width=10, command=self.range_graphs).place(x=310, y=305)
+        Button(self, text='Def. Range', font='Arial 11 bold', fg='white', bg=colors.fun_b, width=10, command=self.range_graphs).place(x=310, y=305)
 
     def triangulation(self):
         met = self.metodo.get()
 
-        canvas = Canvas(self, height=200, width=200, bg=fundo, border=0).place(x=450, y=200)
+        canvas = Canvas(self, height=200, width=200, bg=colors.fundo, border=0).place(x=450, y=200)
       
         trian = Triangulation()
 
@@ -729,70 +724,70 @@ class Framework(Frame):
         window.mainloop()
 
     def __init__(self, *args, **kwargs):
-        Frame.__init__(self, master=None, bg=fundo) #Configurando a janela da ferramenta
+        Frame.__init__(self, master=None, bg=colors.fundo) #Configurando a janela da ferramenta
         self.master.title("IC_FAPEMGIG - V1.0") #Colocando o titulo na aba da ferramenta
         self.master.geometry('800x800') #Definindo o tamanho inicial da tela (podendo expandir)
 
-        Button(self, text='Selecionar Banco de Dados', font='Arial 12 bold', fg='white', bg=fun_ap, width=38, command=self.list_cities).place(x=20, y=20) #Botão para os usuários selecionar a pasta que tem todos os arquivos.csv
+        Button(self, text='Selecionar Banco de Dados', font='Arial 12 bold', fg='white', bg=colors.fun_ap, width=38, command=self.list_cities).place(x=20, y=20) #Botão para os usuários selecionar a pasta que tem todos os arquivos.csv
         self.pack(fill='both', expand=True)
 
-        Label(self, text='Target city:', font='Arial 11 bold', bg=fundo, fg='white', state=DISABLED).place(x=20, y=65)
+        Label(self, text='Target city:', font='Arial 11 bold', bg=colors.fundo, fg='white', state=DISABLED).place(x=20, y=65)
         self.comb_target = ttk.Combobox(self, width=20, font='Arial 11', justify=CENTER, state=DISABLED).place(x=20, y=85)
-        Label(self, text='Neighbor A:', font='Arial 11 bold', bg=fundo, fg='white', state=DISABLED).place(x=220, y=65)
+        Label(self, text='Neighbor A:', font='Arial 11 bold', bg=colors.fundo, fg='white', state=DISABLED).place(x=220, y=65)
         self.comb_va = ttk.Combobox(self, width=20, font='Arial 11', justify=CENTER, state=DISABLED).place(x=224, y=85)
-        Label(self, text='Neighbor B:', font='Arial 11 bold', bg=fundo, fg='white', state=DISABLED).place(x=20, y=115)
+        Label(self, text='Neighbor B:', font='Arial 11 bold', bg=colors.fundo, fg='white', state=DISABLED).place(x=20, y=115)
         self.comb_vb = ttk.Combobox(self, width=20, font='Arial 11', justify=CENTER, state=DISABLED).place(x=20, y=135)
-        Label(self, text='Neighbor C:', font='Arial 11 bold', bg=fundo, fg='white', state=DISABLED).place(x=220, y=115)
+        Label(self, text='Neighbor C:', font='Arial 11 bold', bg=colors.fundo, fg='white', state=DISABLED).place(x=220, y=115)
         self.comb_vc = ttk.Combobox(self, width=20, font='Arial 11', justify=CENTER, state=DISABLED).place(x=224, y=135)
 
-        Button(self, text='Confirmar Grupo', font='Arial 12 bold', fg='white', bg=fun_b, width=38, command=self.process_selection, state=DISABLED).place(x=20, y=170)
+        Button(self, text='Confirmar Grupo', font='Arial 12 bold', fg='white', bg=colors.fun_b, width=38, command=self.process_selection, state=DISABLED).place(x=20, y=170)
 
 
-        Label(self, text='Visualizar Dados', font='Arial 14 bold', fg='white', bg=fundo).place(x=140, y=210)
-        Label(self, text='Dado:', font='Arial 12 bold', fg='white', bg=fundo).place(x=20, y=240)
+        Label(self, text='Visualizar Dados', font='Arial 14 bold', fg='white', bg=colors.fundo).place(x=140, y=210)
+        Label(self, text='Dado:', font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=20, y=240)
         self.type_data = StringVar()
         data_list = ['Target city', 'Neighbor A', 'Neighbor B', 'Neighbor C', 'Dados comum']
         self.comb_type_data = ttk.Combobox(self, values=data_list, textvariable=self.type_data, width=12, font='Arial 12', justify=CENTER, state='readonly').place(x=20, y=260)
         
-        Label(self, text='Parâmetro:', font='Arial 12 bold', fg='white', bg=fundo).place(x=165, y=240)
+        Label(self, text='Parâmetro:', font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=165, y=240)
         self.parameter = StringVar()
         para_list = ['Precipitação', 'Temperatura máxima', 'Temperatura mínima']
         self.comb_parameter = ttk.Combobox(self, values=para_list, textvariable=self.parameter, width=12, font='Arial 12', justify=CENTER, state='readonly').place(x=165, y=260)
-        Button(self, text='Selecionar', font='Arial 11 bold', fg='white', bg=fun_b, width=10, command=self.common_graphs).place(x=310, y=255)
+        Button(self, text='Selecionar', font='Arial 11 bold', fg='white', bg=colors.fun_b, width=10, command=self.common_graphs).place(x=310, y=255)
 
        
-        Label(self, text='Início:', font='Arial 12 bold', fg='white', bg=fundo, state=DISABLED).place(x=20, y=290)
+        Label(self, text='Início:', font='Arial 12 bold', fg='white', bg=colors.fundo, state=DISABLED).place(x=20, y=290)
         self.com_ini = ttk.Combobox(self, font='Arial 12', justify=CENTER, state=DISABLED, width=12).place(x=20, y=310)
-        Label(self, text='Final:', font='Arial 12 bold', fg='white', bg=fundo, state=DISABLED).place(x=165, y=290)
+        Label(self, text='Final:', font='Arial 12 bold', fg='white', bg=colors.fundo, state=DISABLED).place(x=165, y=290)
         self.com_fim = ttk.Combobox(self, font='Arial 12', justify=CENTER, state=DISABLED, width=12).place(x=165, y=310)
         
-        Button(self, text='Def. Range', font='Arial 11 bold', fg='white', bg=fun_b, width=10, command=self.range_graphs, state=DISABLED).place(x=310, y=305)
+        Button(self, text='Def. Range', font='Arial 11 bold', fg='white', bg=colors.fun_b, width=10, command=self.range_graphs, state=DISABLED).place(x=310, y=305)
 
 
-        Label(self, text='Dado', font='Arial 11 bold', fg='white', bg=fundo).place(x=20, y=340)    
+        Label(self, text='Dado', font='Arial 11 bold', fg='white', bg=colors.fundo).place(x=20, y=340)    
         self.data_hist = StringVar()
         datahist_list = ['Target city', 'Neighbor A', 'Neighbor B', 'Neighbor C']  
         ttk.Combobox(self, values=datahist_list, textvariable=self.data_hist, width=18, font='Arial 12', justify=CENTER, state='readonly').place(x=20, y=360)
-        Label(self, text='Parâmetro', font='Arial 11 bold', fg='white', bg=fundo).place(x=20, y=390)    
+        Label(self, text='Parâmetro', font='Arial 11 bold', fg='white', bg=colors.fundo).place(x=20, y=390)    
         self.paramt_hist = StringVar()
         ttk.Combobox(self, values=para_list, textvariable=self.paramt_hist, width=18, font='Arial 12', justify=CENTER, state='readonly').place(x=20, y=410)
-        Button(self, text='Histograma, últimos 10y', font='Arial 11 bold', fg='white', bg=fun_meta_le, width=20, command=self.histograma).place(x=220, y=355) 
+        Button(self, text='Histograma, últimos 10y', font='Arial 11 bold', fg='white', bg=colors.fun_meta_le, width=20, command=self.histograma).place(x=220, y=355) 
         
-        Button(self, text='Boxplot, últimos 10y', font='Arial 11 bold', fg='white', bg=fun_meta_le, width=20, command=self.boxplot_grafico).place(x=220, y=405) 
+        Button(self, text='Boxplot, últimos 10y', font='Arial 11 bold', fg='white', bg=colors.fun_meta_le, width=20, command=self.boxplot_grafico).place(x=220, y=405) 
 
-        Label(self, text='Técnicas', font='Arial 14 bold', fg='white', bg=fundo).place(x=170, y=460)
-        Button(self, text='Machine Learning', font='Arial 11 bold', fg='white', bg=fun_ap, width=42, command=self.open_machine).place(x=20, y=495)
+        Label(self, text='Técnicas', font='Arial 14 bold', fg='white', bg=colors.fundo).place(x=170, y=460)
+        Button(self, text='Machine Learning', font='Arial 11 bold', fg='white', bg=colors.fun_ap, width=42, command=self.open_machine).place(x=20, y=495)
 
-        Label(self, text='Method', font='Arial 11 bold', fg='white', bg=fundo).place(x=20, y=530)    
+        Label(self, text='Method', font='Arial 11 bold', fg='white', bg=colors.fundo).place(x=20, y=530)    
         self.metodo = StringVar()
         metodo_list = ['Arithmetic Averange', 'Inverse Distance Weighted', 'Regional Weight', 'Optimized Normal Ratio']  
         self.comb_metodo = ttk.Combobox(self, values=metodo_list, textvariable=self.metodo, width=18, font='Arial 12', justify=CENTER, state='readonly').place(x=20, y=550)
-        self.teste = Label(self, text='Parâmetro', font='Arial 11 bold', fg='white', bg=fundo).place(x=20, y=580)    
+        self.teste = Label(self, text='Parâmetro', font='Arial 11 bold', fg='white', bg=colors.fundo).place(x=20, y=580)    
         self.paramt_tri = StringVar()
         self.comb_para_tro = ttk.Combobox(self, values=para_list, textvariable=self.paramt_tri, width=18, font='Arial 12', justify=CENTER, state='readonly').place(x=20, y=600)
-        Button(self, text='Triangulação', font='Arial 11 bold', fg='white', bg=fun_alt, width=20, height=4, command=self.triangulation).place(x=220, y=540) 
+        Button(self, text='Triangulação', font='Arial 11 bold', fg='white', bg=colors.fun_alt, width=20, height=4, command=self.triangulation).place(x=220, y=540) 
         
-        Button(self, text='Mostrar Localização', font='Arial 11 bold', fg='white', bg=fun_alt, width=42, command=self.show_map).place(x=20, y=640) 
+        Button(self, text='Mostrar Localização', font='Arial 11 bold', fg='white', bg=colors.fun_alt, width=42, command=self.show_map).place(x=20, y=640) 
 
-        Button(self, text='Meta Learning', font='Arial 11 bold', fg='white', bg=fun_b, width=42, command=self.open_meta).place(x=20, y=680)
+        Button(self, text='Meta Learning', font='Arial 11 bold', fg='white', bg=colors.fun_b, width=42, command=self.open_meta).place(x=20, y=680)
        

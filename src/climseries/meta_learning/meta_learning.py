@@ -12,12 +12,8 @@ from meta_learning.view import View
 from meta_learning.gen_param import generate_param
 from meta_learning.customized_meta_l import customized_meta_learning
 from meta_learning.combine_meta_l import combine_meta_learning
+from styles import colors
 
-fundo = '#4F4F4F' #? Cor de fundo da tela
-fun_b = '#3CB371' #? Cor de fundo dos botoes
-fun_ap = '#9C444C'
-fun_alt = '#C99418'
-fun_meta_le = '#191970'
 
 class MetaLearning:
     def prepare_input(self, indicator, sliding_window):

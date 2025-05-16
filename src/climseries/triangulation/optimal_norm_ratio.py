@@ -7,7 +7,6 @@ def onr(self, focus):
         """
         treatment = DataProcessing()
         data = treatment.load_data_file('Dados comum')
-
         days, coef_a, coef_b, coef_c = self.generate_correlation_coefficients(focus)
 
         if focus == 1:
@@ -92,7 +91,7 @@ def onr(self, focus):
         self.onr_alv_y = []
         self.meta_matrix_onr = []
 
-        for index in range(len(data)):
+        for index, _ in enumerate(data):
             self.onr_x.append(index)
             self.onr_alv_y.append(float(data[index][target_index - 3]))
             self.onr_y.append(result[index])

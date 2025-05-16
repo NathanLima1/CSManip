@@ -5,12 +5,7 @@ from tkinter import Label, LabelFrame, Toplevel, StringVar, IntVar, Entry, Butto
 from tksheet import Sheet
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
-
-fundo = '#4F4F4F' #? Cor de fundo da tela
-fun_b = '#3CB371' #? Cor de fundo dos botoes
-fun_ap = '#9C444C'
-fun_alt = '#C99418'
-fun_meta_le = '#191970'
+from styles import colors
 
 class TestsGenerator(Toplevel):
     # antiga MetaLearning
@@ -19,31 +14,31 @@ class TestsGenerator(Toplevel):
         self.title('Meta Learning')
         self.geometry("800x800")
 
-        self.configure(background=fundo)
+        self.configure(background=colors.fundo)
 
-        Label(self, text='META-LEARNING', font='Arial 14 bold', fg='white', bg=fundo).place(x=240, y=20)
+        Label(self, text='META-LEARNING', font='Arial 14 bold', fg='white', bg=colors.fundo).place(x=240, y=20)
 
-        LabelFrame(self, text='TESTE PERSONALIZADO:', width=600, height=450, font='Arial 12 bold', fg='white', bg=fundo).place(x=20, y=60)
+        LabelFrame(self, text='TESTE PERSONALIZADO:', width=600, height=450, font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=20, y=60)
 
-        Label(self, text='Base-Learning (Level 0):', font='Arial 12 bold', fg='white', bg=fundo).place(x=40, y=90)
+        Label(self, text='Base-Learning (Level 0):', font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=40, y=90)
         self.ml_lv0_p = StringVar()
         self.ml_lv0_p.set('Decision Trees')
         lista_ml0 =  ['Nenhum','Decision Trees', 'Neural network', 'Nearest Neighbors', 'Support Vector', 'Gaussian Process']
         ttk.Combobox(self, values=lista_ml0, textvariable=self.ml_lv0_p, width=30, font='Arial 11', justify=CENTER, state='readonly').place(x=40, y=120)
 
-        Label(self, text='Triangulation (Level 0):', font='Arial 12 bold', fg='white', bg=fundo).place(x=40, y=190)
+        Label(self, text='Triangulation (Level 0):', font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=40, y=190)
         self.ml_tr0_p = StringVar()
         self.ml_tr0_p.set('Arithmetic Average')
         lista_tr0 =  ['Nenhum', 'Arithmetic Average', 'Inverse Distance Weighted', 'Regional Weight', 'Optimized Normal Ratio']
         ttk.Combobox(self, values=lista_tr0, textvariable=self.ml_tr0_p, width=30, font='Arial 11', justify=CENTER, state='readonly').place(x=40, y=220)
 
-        Label(self, text='Meta-Learning (Level 1):', font='Arial 12 bold', fg='white', bg=fundo).place(x=340, y=145)
+        Label(self, text='Meta-Learning (Level 1):', font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=340, y=145)
         self.ml_lv1 = StringVar()
         self.ml_lv1.set('Decision Trees')
         lista_ml1 =  ['Decision Trees', 'Neural network', 'Nearest Neighbors', 'Support Vector', 'Gaussian Process']
         ttk.Combobox(self, values=lista_ml1, textvariable=self.ml_lv1, width=30, font='Arial 11', justify=CENTER, state='readonly').place(x=340, y=175)
 
-        Label(self, text='Indicador climático:', font='Arial 12 bold', fg='white', bg=fundo).place(x=40, y=270)
+        Label(self, text='Indicador climático:', font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=40, y=270)
         self.ind_meta_perso = StringVar()
         self.ind_meta_perso.set('Temperatura máxima')
         lista_ind_meta_p = ['Precipitação', 'Temperatura máxima', 'Temperatura mínima']
@@ -51,40 +46,40 @@ class TestsGenerator(Toplevel):
 
         self.num_teste_mtp = IntVar()
         self.num_teste_mtp.set(1)
-        Label(self, text="Número de testes (int):", font='Arial 12 bold', fg='white', bg=fundo).place(x=340, y=270)
+        Label(self, text="Número de testes (int):", font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=340, y=270)
         self.ent_num_teste = Entry(self, textvariable=self.num_teste_mtp, width=29, font='Arial 12', justify=CENTER).place(x=340, y=300)
 
-        Label(self, text='Deseja usar alguma ML pré-parametrizada?', font='Arial 12 bold', fg='white', bg=fundo).place(x=40, y=340)
+        Label(self, text='Deseja usar alguma ML pré-parametrizada?', font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=40, y=340)
         self.pre_para_lv0 = IntVar()
         self.pre_para_lv1 = IntVar()
-        Checkbutton(self, text='Level 0', variable=self.pre_para_lv0, bg=fundo, font='Arial 12 bold', activebackground=fundo).place(x=40, y=360)
-        Checkbutton(self, text='Level 1', variable=self.pre_para_lv1, bg=fundo, font='Arial 12 bold', activebackground=fundo).place(x=180, y=360)
+        Checkbutton(self, text='Level 0', variable=self.pre_para_lv0, bg=colors.fundo, font='Arial 12 bold', activebackground=colors.fundo).place(x=40, y=360)
+        Checkbutton(self, text='Level 1', variable=self.pre_para_lv1, bg=colors.fundo, font='Arial 12 bold', activebackground=colors.fundo).place(x=180, y=360)
         
-        Label(self, text='Deseja utilizar a janela deslizante?', font='Arial 12 bold', fg='White', bg=fundo).place(x=40, y=400)
+        Label(self, text='Deseja utilizar a janela deslizante?', font='Arial 12 bold', fg='White', bg=colors.fundo).place(x=40, y=400)
         self.type_input = StringVar()
         self.type_input.set('Sim')
         lista_type_input = ['Sim', 'Não']
         ttk.Combobox(self, values=lista_type_input, textvariable=self.type_input, width=30, font='Arial 11', justify=CENTER, state='readonly').place(x=40, y=430)
         
-        Button(self, text='Gerar Preview', font='Arial 11 bold', bg=fun_meta_le, fg='white', width=62, command=self.generate_custom_test).place(x=40, y=470)
+        Button(self, text='Gerar Preview', font='Arial 11 bold', bg=colors.meta_le, fg='white', width=62, command=self.generate_custom_test).place(x=40, y=470)
 
         '''Teste global'''
-        LabelFrame(self, text='TESTE GLOBAL:', width=600, height=210, font='Arial 12 bold', fg='white', bg=fundo).place(x=20, y=520)
+        LabelFrame(self, text='TESTE GLOBAL:', width=600, height=210, font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=20, y=520)
         
-        Label(self, text='Quais MLs você deseja utilizar?', font='Arial 12 bold', fg='white', bg=fundo).place(x=40, y=550)
+        Label(self, text='Quais MLs você deseja utilizar?', font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=40, y=550)
 
         self.pre_nn_comb = IntVar()
         self.pre_dt_comb = IntVar()
         self.pre_nneig_comb = IntVar()
         self.pre_sv_comb = IntVar()
         self.pre_gp_comb = IntVar()
-        Checkbutton(self, text='NN', variable=self.pre_nn_comb, bg=fundo, font='Arial 12 bold', activebackground=fundo).place(x=40, y=580)
-        Checkbutton(self, text='DT', variable=self.pre_dt_comb, bg=fundo, font='Arial 12 bold', activebackground=fundo).place(x=140, y=580)
-        Checkbutton(self, text='NNeig.', variable=self.pre_nneig_comb, bg=fundo, font='Arial 12 bold', activebackground=fundo).place(x=240, y=580)
-        Checkbutton(self, text='SV', variable=self.pre_sv_comb, bg=fundo, font='Arial 12 bold', activebackground=fundo).place(x=340, y=580)
-        Checkbutton(self, text='GP', variable=self.pre_gp_comb, bg=fundo, font='Arial 12 bold', activebackground=fundo).place(x=440, y=580)
+        Checkbutton(self, text='NN', variable=self.pre_nn_comb, bg=colors.fundo, font='Arial 12 bold', activebackground=colors.fundo).place(x=40, y=580)
+        Checkbutton(self, text='DT', variable=self.pre_dt_comb, bg=colors.fundo, font='Arial 12 bold', activebackground=colors.fundo).place(x=140, y=580)
+        Checkbutton(self, text='NNeig.', variable=self.pre_nneig_comb, bg=colors.fundo, font='Arial 12 bold', activebackground=colors.fundo).place(x=240, y=580)
+        Checkbutton(self, text='SV', variable=self.pre_sv_comb, bg=colors.fundo, font='Arial 12 bold', activebackground=colors.fundo).place(x=340, y=580)
+        Checkbutton(self, text='GP', variable=self.pre_gp_comb, bg=colors.fundo, font='Arial 12 bold', activebackground=colors.fundo).place(x=440, y=580)
         
-        Label(self, text='Indicador climático:', font='Arial 12 bold', fg='white', bg=fundo).place(x=40, y=620)
+        Label(self, text='Indicador climático:', font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=40, y=620)
         self.ind_meta_comb = StringVar()
         self.ind_meta_comb.set('Temperatura máxima')
         lista_ind_meta_p = ['Precipitação', 'Temperatura máxima', 'Temperatura mínima']
@@ -92,16 +87,16 @@ class TestsGenerator(Toplevel):
 
         self.num_teste_mtc = IntVar()
         self.num_teste_mtc.set(1)
-        Label(self, text="Número de testes (int):", font='Arial 12 bold', fg='white', bg=fundo).place(x=340, y=620)
+        Label(self, text="Número de testes (int):", font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=340, y=620)
         self.ent_num_teste = Entry(self, textvariable=self.num_teste_mtc, width=29, font='Arial 12', justify=CENTER).place(x=340, y=650)
         
-        Button(self, text='Gerar Preview TG', font='Arial 11 bold', bg=fun_meta_le, fg='white', width=62, command=self.gerar_teste_global).place(x=40, y=690)
+        Button(self, text='Gerar Preview TG', font='Arial 11 bold', bg=colors.meta_le, fg='white', width=62, command=self.gerar_teste_global).place(x=40, y=690)
 
         #Aviso
-        LabelFrame(self, text='ATENÇÃO:', width=600, height=120, font='Arial 12 bold', fg='white', bg=fundo).place(x=20, y=740)
-        Label(self, text='Dependendo da combinação feita no "Teste Personalizado" ou no "TESTE ', font='Arial 12 bold', fg='#FF8C00', bg=fundo).place(x=40, y=770)
-        Label(self, text='GLOBAL", pode demorar alguns minutos, devido ao processamento.', font='Arial 12 bold', fg='#FF8C00', bg=fundo).place(x=40, y=790)
-        Label(self, text='Fique à vontade para utilizar seu computador para fazer outras coisas.', font='Arial 12 bold', fg='#FF8C00', bg=fundo).place(x=40, y=820)
+        LabelFrame(self, text='ATENÇÃO:', width=600, height=120, font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=20, y=740)
+        Label(self, text='Dependendo da combinação feita no "Teste Personalizado" ou no "TESTE ', font='Arial 12 bold', fg='#FF8C00', bg=colors.fundo).place(x=40, y=770)
+        Label(self, text='GLOBAL", pode demorar alguns minutos, devido ao processamento.', font='Arial 12 bold', fg='#FF8C00', bg=colors.fundo).place(x=40, y=790)
+        Label(self, text='Fique à vontade para utilizar seu computador para fazer outras coisas.', font='Arial 12 bold', fg='#FF8C00', bg=colors.fundo).place(x=40, y=820)
 
     def generate_custom_test(self):
         """
@@ -133,7 +128,7 @@ class TestsGenerator(Toplevel):
 
         # Create result preview frame
         LabelFrame(self, text='RESULTS PREVIEW:', width=1250, height=950,
-                font='Arial 12 bold', fg='white', bg=fundo).place(x=640, y=60)
+                font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=640, y=60)
 
         # Display error metrics
         errors = [
@@ -150,7 +145,7 @@ class TestsGenerator(Toplevel):
                 text += f"   ||   Triangulation: {round(val2, 4)}"
             if val3 is not None:
                 text += f"   ||   Meta Learning: {round(val3, 4)}"
-            Label(self, text=text, font='Arial 12 bold', fg='white', bg=fundo).place(x=660, y=y_positions[idx])
+            Label(self, text=text, font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=660, y=y_positions[idx])
 
         # Create figure for plotting results
         figure = Figure(figsize=(12.3, 7.5), dpi=100)
@@ -196,12 +191,12 @@ class TestsGenerator(Toplevel):
 
         LabelFrame(
             self, text='RESULTS:', width=1260, height=950,
-            font='Arial 12 bold', fg='white', bg=fundo
+            font='Arial 12 bold', fg='white', bg=colors.fundo
         ).place(x=640, y=60)
 
         Label(
             self, text='Generated Models:', font='Arial 12 bold',
-            fg='white', bg=fundo
+            fg='white', bg=colors.fundo
         ).place(x=660, y=90)
 
         all_data = []
@@ -231,7 +226,7 @@ class TestsGenerator(Toplevel):
 
         Label(
             self, text='Model Ranking:', font='Arial 12 bold',
-            fg='white', bg=fundo
+            fg='white', bg=colors.fundo
         ).place(x=1580, y=90)
 
         ranking_data = []
