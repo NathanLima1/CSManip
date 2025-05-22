@@ -4,6 +4,8 @@ from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from styles import colors
 from utils.indicator import get_indicator_code
+from utils.ml_param import get_parameters_ml
+from utils.insert_canvas import insert_canvas_toolbar
 
 class View:
     def data_preview(self, pts, media_ea, media_er, maior_ea, exat_maior, pre_maior, menor_ea, exat_menor, pre_menor, eixo_y_exato, eixo_y_predict, eixo_x):
@@ -32,13 +34,7 @@ class View:
         plot_r.set_xlabel("Comparações")
 
         canvas = FigureCanvasTkAgg(figura, master=self)
-        canvas.draw()
-        canvas.get_tk_widget().pack()
-        canvas.get_tk_widget().place(x=680, y=240)
-
-        toolbar = NavigationToolbar2Tk(canvas, self)
-        toolbar.place(x=1150, y=10)
-        toolbar.update()
+        insert_canvas_toolbar(canvas, self)
 
     def generate_preview_dt(self):
         prev = Training()
@@ -132,23 +128,21 @@ class View:
       
     def generate_preview_Kn(self):
         prev = Training()
-        salvar_m = self.save_model.get()
+        parameters = get_parameters_ml(self)
 
-        cidade = self.get_end(self.data_s.get())
-
-        n_tes = int(self.num_teste.get())
-        divisao = int(self.por_trei.get())
-        n_neig = self.n_neighbors_v.get()
-        algor = self.algorithm_v.get()
-        leaf_s = self.leaf_size_v.get()
-        pv = self.p_v.get()
-        n_job = self.n_jobs_v.get()
-
-        if n_job.isdigit() == True:
-            n_job = int(n_job)
+        cidade = parameters["cidade"]
+        salvar_m = parameters["save_model"]
+        n_tes = parameters["num_testes"]
+        divisao = parameters["porcentagem_treinamento"]
+        n_neig = parameters["n_neighbors"]
+        algor = parameters["algorithm"]
+        leaf_s = parameters["leaf_size"]
+        pv = parameters["p_v"]
+        n_job = parameters["n_jobs"]
             
         indicator = self.ind_s.get()
         indicator = get_indicator_code(indicator)
 
-        pts, media_ea, media_er, maior_ea, exat_maior, pre_maior, menor_ea, exat_menor, pre_menor, eixo_y_exato, eixo_y_predict, eixo_x = prev.KNeighbors(cidade, indicator, divisao, n_tes, n_neig, algor, leaf_s, pv, n_job, salvar_m)
+        pts, media_ea, media_er, maior_ea, exat_maior, pre_maior, menor_ea, exat_menor, pre_menor, eixo_y_exato, eixo_y_predict, eixo_x = \
+            prev.KNeighbors(cidade, indicator, divisao, n_tes, n_neig, algor, leaf_s, pv, n_job, salvar_m)
         self.data_prev(pts, media_ea, media_er, maior_ea, exat_maior, pre_maior, menor_ea, exat_menor, pre_menor, eixo_y_exato, eixo_y_predict, eixo_x)

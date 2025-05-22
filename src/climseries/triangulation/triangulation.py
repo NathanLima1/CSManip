@@ -10,6 +10,7 @@ from triangulation.ratio_weightened import rw
 from triangulation.optimal_norm_ratio import onr
 from triangulation.inverse_dist_weightened import idw
 from triangulation.optimized_idw import  oidw
+from utils import choose_data
 
 class Triangulation:
     def __init__(self):
@@ -77,18 +78,7 @@ class Triangulation:
         self.avg_y = []
         self.avg_target_y = []
 
-        if focus == 1:
-            index = 6
-            a = 3
-            data = data_process.normalize_data(data_process.load_data_file("Dados comum"))
-        elif focus == 2:
-            index = 7
-            a = 4
-            data = data_process.load_data_file("Dados comum")
-        elif focus == 3:
-            index = 8
-            a = 5
-            data = data_process.load_data_file("Dados comum")
+        index, a, data = choose_data(focus)
 
         cont = 1
         self.meta_matrix_avg = []
