@@ -30,7 +30,6 @@ def onr(self, focus):
                         math.pow(coef_b[correlation_counter], 2 * ((days[correlation_counter] - 2) / (1 - coef_b[correlation_counter]))) * float(data[i][target_index + 3]) +
                         math.pow(coef_c[correlation_counter], 2 * ((days[correlation_counter] - 2) / (1 - coef_c[correlation_counter]))) * float(data[i][target_index + 6])
                     )
-
                     denominator = (
                         math.pow(coef_a[correlation_counter], 2 * ((days[correlation_counter] - 2) / (1 - coef_a[correlation_counter]))) +
                         math.pow(coef_b[correlation_counter], 2 * ((days[correlation_counter] - 2) / (1 - coef_b[correlation_counter]))) +
@@ -46,7 +45,6 @@ def onr(self, focus):
                         math.pow(coef_b[correlation_counter], 2 * ((days[correlation_counter] - 2) / (1 - coef_b[correlation_counter]))) * float(data[i][target_index + 3]) +
                         math.pow(coef_c[correlation_counter], 2 * ((days[correlation_counter] - 2) / (1 - coef_c[correlation_counter]))) * float(data[i][target_index + 6])
                     )
-
                     denominator = (
                         math.pow(coef_a[correlation_counter], 2 * ((days[correlation_counter] - 2) / (1 - coef_a[correlation_counter]))) +
                         math.pow(coef_b[correlation_counter], 2 * ((days[correlation_counter] - 2) / (1 - coef_b[correlation_counter]))) +
@@ -62,7 +60,6 @@ def onr(self, focus):
                     math.pow(coef_b[last], 2 * ((days[last] - 2) / (1 - coef_b[last]))) * float(data[i][target_index + 3]) +
                     math.pow(coef_c[last], 2 * ((days[last] - 2) / (1 - coef_c[last]))) * float(data[i][target_index + 6])
                 )
-
                 denominator = (
                     math.pow(coef_a[last], 2 * ((days[last] - 2) / (1 - coef_a[last]))) +
                     math.pow(coef_b[last], 2 * ((days[last] - 2) / (1 - coef_b[last]))) +
@@ -78,7 +75,6 @@ def onr(self, focus):
                     math.pow(coef_b[last], 2 * ((days[last] - 2) / (1 - coef_b[last]))) * float(data[i][target_index + 3]) +
                     math.pow(coef_c[last], 2 * ((days[last] - 2) / (1 - coef_c[last]))) * float(data[i][target_index + 6])
                 )
-
                 denominator = (
                     math.pow(coef_a[last], 2 * ((days[last] - 2) / (1 - coef_a[last]))) +
                     math.pow(coef_b[last], 2 * ((days[last] - 2) / (1 - coef_b[last]))) +

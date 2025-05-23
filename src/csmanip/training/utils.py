@@ -1,6 +1,6 @@
 import numpy as np
 
-def calculate_erors(all_exact, all_predicted, total_absolute_error, total_relative_error, n_tests):
+def calculate_errors(all_exact, all_predicted, total_absolute_error, total_relative_error, n_tests):
     score = round((((total_relative_error / n_tests) * 100) - 100) * -1, 2)
 
     if all_exact:

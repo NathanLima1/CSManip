@@ -2,7 +2,7 @@ import time
 from typing import Tuple, List
 import numpy as np
 from sklearn.neural_network import MLPRegressor
-from utils import calculate_erors
+from training.utils import calculate_errors
 
 def neural_network(
     self, city: str, indicator_code: int, split_ratio: float, n_tests: int,
@@ -61,7 +61,7 @@ def neural_network(
             x_axis.extend(range(counter, counter + len(val_y)))
             counter += len(val_y)
 
-    statistics = calculate_erors(all_exact, all_predicted, total_absolute_error, total_relative_error, n_tests)
+    statistics = calculate_errors(all_exact, all_predicted, total_absolute_error, total_relative_error, n_tests)
 
     score = statistics["score"]
     max_error = statistics["max_error"]

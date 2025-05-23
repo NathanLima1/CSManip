@@ -3,7 +3,7 @@ import pickle
 from sklearn.tree import DecisionTreeRegressor
 from typing import Tuple, List
 import numpy as np
-from utils import calculate_erors
+from training.utils import calculate_errors
 
 def decision_tree(
     self, city: str, indicator_code: int, split_ratio: float, criterion: str, splitter: str,
@@ -54,7 +54,7 @@ def decision_tree(
             all_exact.extend(val_y)
             all_predicted.extend(predictions)
 
-    statistics = calculate_erors(all_exact, all_predicted, total_absolute_error, total_relative_error, n_tests)
+    statistics = calculate_errors(all_exact, all_predicted, total_absolute_error, total_relative_error, n_tests)
 
     score = statistics["score"]
     max_error = statistics["max_error"]

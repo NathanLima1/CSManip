@@ -1,5 +1,3 @@
-from data_processing.data_processing import DataProcessing
-from training.training import Training
 from haversine import haversine, Unit
 import folium
 from folium.map import Popup
@@ -10,7 +8,9 @@ from triangulation.ratio_weightened import rw
 from triangulation.optimal_norm_ratio import onr
 from triangulation.inverse_dist_weightened import idw
 from triangulation.optimized_idw import  oidw
-from utils import choose_data
+from triangulation.utils import choose_data
+from data_processing.data_processing import DataProcessing
+from training.training import Training
 
 class Triangulation:
     def __init__(self):
