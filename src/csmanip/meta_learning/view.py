@@ -1,11 +1,11 @@
-from training.training import Training
 from tkinter import Canvas, Label, LabelFrame, StringVar, IntVar, BooleanVar, Entry, Scale, Checkbutton, Button, HORIZONTAL, CENTER
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
-from styles import colors
-from utils.indicator import get_indicator_code
-from utils.ml_param import get_parameters_ml
-from utils.insert_canvas import insert_canvas_toolbar
+from ..training.training import Training
+from ..styles import colors
+from ..utils.indicator import get_indicator_code
+from ..utils.ml_param import get_parameters_ml
+from ..utils.insert_canvas import insert_canvas_toolbar
 
 class View:
     def data_preview(self, pts, media_ea, media_er, maior_ea, exat_maior, pre_maior, menor_ea, exat_menor, pre_menor, eixo_y_exato, eixo_y_predict, eixo_x):

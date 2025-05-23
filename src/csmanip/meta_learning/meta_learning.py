@@ -1,6 +1,3 @@
-from data_processing.data_processing import DataProcessing
-from training.training import Training
-from triangulation.triangulation import Triangulation
 from math import floor
 import pyscreenshot
 import os
@@ -8,11 +5,14 @@ from sklearn import tree
 from sklearn.neural_network import MLPRegressor
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn.svm import SVR
-from meta_learning.view import View
-from meta_learning.gen_param import generate_param
-from meta_learning.customized_meta_l import customized_meta_learning
-from meta_learning.combine_meta_l import combine_meta_learning
-from styles import colors
+from ..data_processing.data_processing import DataProcessing
+from ..training.training import Training
+from ..triangulation.triangulation import Triangulation
+from .view import View
+from .gen_param import generate_param
+from .customized_meta_l import customized_meta_learning
+from .combine_meta_l import combine_meta_learning
+from ..styles import colors
 
 
 class MetaLearning:

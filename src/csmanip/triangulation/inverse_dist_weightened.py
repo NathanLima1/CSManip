@@ -1,5 +1,5 @@
-from data_processing.data_processing import DataProcessing
-from triangulation.utils import choose_data
+from ..data_processing.data_processing import DataProcessing
+from .utils import choose_data
 
 def idw(self, focus):
     """

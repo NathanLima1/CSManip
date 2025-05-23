@@ -1,4 +1,4 @@
-from machine_learning.utils import *
+from .utils import *
 
 def generate_param(self):
     w = Canvas(self, width=615, height=900, background=fundo, border=0)

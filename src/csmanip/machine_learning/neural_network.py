@@ -1,5 +1,5 @@
-from machine_learning.utils import *
-from machine_learning.gui_helpers import NNParameterFrame
+from .utils import *
+from .gui_helpers import NNParameterFrame
 
 def generate_param(self):
     self.param_frame = NNParameterFrame(self, fundo)

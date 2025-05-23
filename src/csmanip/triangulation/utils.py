@@ -1,4 +1,4 @@
-from data_processing.data_processing import DataProcessing
+from ..data_processing.data_processing import DataProcessing
 
 def choose_data(focus):
     data_process = DataProcessing()

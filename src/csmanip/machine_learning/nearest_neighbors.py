@@ -1,5 +1,5 @@
-from machine_learning.utils import *
-from machine_learning.gui_helpers import NNeighParameterFrame
+from .utils import *
+from .gui_helpers import NNeighParameterFrame
 
 def generate_param(self):
     Canvas(self, width=615, height=900, background=fundo, border=0).place(x=10, y=95)

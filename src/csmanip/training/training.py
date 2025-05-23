@@ -1,9 +1,9 @@
-from training.neural_network_tr import neural_network
-from training.k_neighbors_tr import KNeighbors
-from training.support_vector_tr import support_vector_regression
-from training.decision_tree_tr import decision_tree
+from .neural_network_tr import neural_network
+from .k_neighbors_tr import KNeighbors
+from .support_vector_tr import support_vector_regression
+from .decision_tree_tr import decision_tree
 from math import floor
-from data_processing.data_processing import DataProcessing
+from ..data_processing.data_processing import DataProcessing
 
 class Training:
     def decision_tree(

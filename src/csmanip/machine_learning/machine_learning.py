@@ -6,10 +6,10 @@ parameter selection, data preview, and result visualization.
 """
 
 from tkinter import Toplevel
-from machine_learning.view import View
-from machine_learning.utils import *
-from machine_learning.gui_helpers import *
-from data_processing.data_processing import DataProcessing
+from .view import View
+from .utils import *
+from .gui_helpers import *
+from ..data_processing.data_processing import DataProcessing
 
 class MachineLearning(Toplevel):
     def __init__(self, master=None):

@@ -3,7 +3,7 @@ import pickle
 from sklearn.tree import DecisionTreeRegressor
 from typing import Tuple, List
 import numpy as np
-from training.utils import calculate_errors
+from .utils import calculate_errors
 
 def decision_tree(
     self, city: str, indicator_code: int, split_ratio: float, criterion: str, splitter: str,

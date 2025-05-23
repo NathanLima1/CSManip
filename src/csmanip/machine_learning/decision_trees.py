@@ -1,5 +1,5 @@
-from machine_learning.utils import *
-from machine_learning.gui_helpers import DTParameterFrame
+from .utils import *
+from .gui_helpers import DTParameterFrame
 
 def generate_param(self):
     Canvas(self, width=615, height=900, background=fundo, border=0).place(x=10, y=95)

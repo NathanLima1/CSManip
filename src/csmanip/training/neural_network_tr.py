@@ -2,7 +2,7 @@ import time
 from typing import Tuple, List
 import numpy as np
 from sklearn.neural_network import MLPRegressor
-from training.utils import calculate_errors
+from .utils import calculate_errors
 
 def neural_network(
     self, city: str, indicator_code: int, split_ratio: float, n_tests: int,

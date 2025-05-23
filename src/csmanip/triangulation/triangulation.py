@@ -4,13 +4,13 @@ from folium.map import Popup
 import webbrowser
 import math
 from scipy import stats
-from triangulation.ratio_weightened import rw
-from triangulation.optimal_norm_ratio import onr
-from triangulation.inverse_dist_weightened import idw
-from triangulation.optimized_idw import  oidw
-from triangulation.utils import choose_data
-from data_processing.data_processing import DataProcessing
-from training.training import Training
+from .ratio_weightened import rw
+from .optimal_norm_ratio import onr
+from .inverse_dist_weightened import idw
+from .optimized_idw import  oidw
+from .utils import choose_data
+from ..data_processing.data_processing import DataProcessing
+from ..training.training import Training
 
 class Triangulation:
     def __init__(self):

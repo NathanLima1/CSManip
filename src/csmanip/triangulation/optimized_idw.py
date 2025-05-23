@@ -1,5 +1,5 @@
 import math
-from data_processing.data_processing import DataProcessing
+from ..data_processing.data_processing import DataProcessing
 
 def oidw(self, focus):
     """

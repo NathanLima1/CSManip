@@ -276,13 +276,13 @@ class DataProcessing:
         arq = open('end.txt') 
         a = arq.readlines()
         arq.close()
-        if option == 'Cidade alvo':
+        if option == 'Target city':
             di = a[0].replace("\n", '')
-        elif option == 'Vizinha A':
+        elif option == 'Neighbor A':
             di = a[1].replace("\n", '')
-        elif option == 'Vizinha B':
+        elif option == 'Neighbor B':
             di = a[2].replace("\n", '')
-        elif option == 'Vizinha C':
+        elif option == 'Neighbor C':
             di = a[3].replace("\n", '')
         elif option == 'Dados comum':
             di = a[4].replace("\n", '')

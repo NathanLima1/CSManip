@@ -1,11 +1,11 @@
-from meta_learning.meta_learning import MetaLearning
 import tkinter as tk
 from tkinter import ttk
 from tkinter import Label, LabelFrame, Toplevel, StringVar, IntVar, Entry, Button, Checkbutton, CENTER
 from tksheet import Sheet
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
-from styles import colors
+from ..meta_learning.meta_learning import MetaLearning
+from ..styles import colors
 
 class TestsGenerator(Toplevel):
     # antiga MetaLearning
@@ -61,7 +61,7 @@ class TestsGenerator(Toplevel):
         lista_type_input = ['Sim', 'Não']
         ttk.Combobox(self, values=lista_type_input, textvariable=self.type_input, width=30, font='Arial 11', justify=CENTER, state='readonly').place(x=40, y=430)
         
-        Button(self, text='Gerar Preview', font='Arial 11 bold', bg=colors.meta_le, fg='white', width=62, command=self.generate_custom_test).place(x=40, y=470)
+        Button(self, text='Gerar Preview', font='Arial 11 bold', bg=colors.fun_meta_le, fg='white', width=62, command=self.generate_custom_test).place(x=40, y=470)
 
         '''Teste global'''
         LabelFrame(self, text='TESTE GLOBAL:', width=600, height=210, font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=20, y=520)
@@ -90,7 +90,7 @@ class TestsGenerator(Toplevel):
         Label(self, text="Número de testes (int):", font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=340, y=620)
         self.ent_num_teste = Entry(self, textvariable=self.num_teste_mtc, width=29, font='Arial 12', justify=CENTER).place(x=340, y=650)
         
-        Button(self, text='Gerar Preview TG', font='Arial 11 bold', bg=colors.meta_le, fg='white', width=62, command=self.gerar_teste_global).place(x=40, y=690)
+        Button(self, text='Gerar Preview TG', font='Arial 11 bold', bg=colors.fun_meta_le, fg='white', width=62, command=self.gerar_teste_global).place(x=40, y=690)
 
         #Aviso
         LabelFrame(self, text='ATENÇÃO:', width=600, height=120, font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=20, y=740)

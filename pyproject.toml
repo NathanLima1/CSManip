@@ -1,5 +1,5 @@
 [project]
-name = "climseries"
+name = "csmanip"
 version = "0.1.0"
 description = "A library for triangulation, machine learning, meta learning and trends of climatic series"
 authors = [

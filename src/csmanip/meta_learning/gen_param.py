@@ -1,6 +1,6 @@
 from tkinter import Canvas, Label, LabelFrame, StringVar, IntVar, BooleanVar, Entry, Scale, Checkbutton, Button, HORIZONTAL, CENTER
 import tkinter as ttk
-from styles import colors
+from ..styles import colors
 
 def generate_param(self):
     opcao = self.ml_selected.get()

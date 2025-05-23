@@ -1,18 +1,18 @@
 import os
 import pyscreenshot
-from training.training import Training
+from ..training.training import Training
 from tkinter import Label, LabelFrame
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
-from machine_learning import decision_trees
-from machine_learning import nearest_neighbors
-from machine_learning import neural_network
-from machine_learning import gaussian_process
-from machine_learning import support_vector
-from styles import colors
-from utils.indicator import get_indicator_code
-from utils.ml_param import get_parameters_ml
-from utils.insert_canvas import insert_canvas_toolbar 
+from . import decision_trees
+from . import support_vector
+from . import neural_network
+from . import gaussian_process
+from . import nearest_neighbors
+from ..styles import colors
+from ..utils.indicator import get_indicator_code
+from ..utils.ml_param import get_parameters_ml
+from ..utils.insert_canvas import insert_canvas_toolbar 
 
 class View():
     def save_parameter(self):

@@ -1,8 +1,3 @@
-from data_processing.data_processing import DataProcessing
-from triangulation.triangulation import Triangulation
-from machine_learning.machine_learning import MachineLearning
-from meta_learning.meta_learning import MetaLearning
-from meta_learning.tests_generator import TestsGenerator
 from tkinter import Frame
 from tkinter import ttk
 from tkinter import Canvas, Label, StringVar, Button, CENTER, DISABLED
@@ -14,7 +9,12 @@ import matplotlib.dates as mdates
 import datetime as dt
 import os
 import numpy as np
-from styles import colors
+from .styles import colors
+from .data_processing.data_processing import DataProcessing
+from .triangulation.triangulation import Triangulation
+from .machine_learning.machine_learning import MachineLearning
+from .meta_learning.meta_learning import MetaLearning
+from .meta_learning.tests_generator import TestsGenerator
 
 class Framework(Frame):
     def get_info(self, directory):  # Function that opens the folder with .csv files and returns important data
@@ -196,7 +196,7 @@ class Framework(Frame):
         x_axis = []
         if self.type_data.get() == 'Dados comum':
             y_axis_1, y_axis_2, y_axis_3, y_axis_4 = [], [], [], []
-            common_count, target_count, va_count, vb_count, vc_count = data_processor.get_qtd()
+            common_count, target_count, va_count, vb_count, vc_count = data_processor.get_quantities()
             bar_y_values = [common_count, target_count, va_count, vb_count, vc_count]
             bar_x_labels = ['Common', 'Target', 'Total vA', 'Total vB', 'Total vC']
         else:
@@ -299,7 +299,7 @@ class Framework(Frame):
             eixo_y2 = list()
             eixo_y3 = list()
             eixo_y4 = list()
-            util, tar,t_va, t_vb, t_vc = my_data.get_qtd()
+            util, tar,t_va, t_vb, t_vc = my_data.get_quantities()
             eixo_y_bar = [util, tar,t_va, t_vb, t_vc]
             eixo_x_bar = ['Comum', 'target','Total vA', 'Total vB', 'Total vC']
         else:

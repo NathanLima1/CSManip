@@ -3,6 +3,7 @@ from sklearn.neural_network import MLPRegressor
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn.svm import SVR
 from math import floor
+import os
 
 def combine_meta_learning(self, target, pre1, pre2, n_test, window):
         machine_learning_models = ['None', 'Decision Trees', 'Neural network', 'Nearest Neighbors', 'Support Vector']

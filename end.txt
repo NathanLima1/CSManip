@@ -1,0 +1,7 @@
+/home/nathan/Desktop/CSManip/target_clean.txt
+/home/nathan/Desktop/CSManip/neighborA_clean.txt
+/home/nathan/Desktop/CSManip/neighborB_clean.txt
+/home/nathan/Desktop/CSManip/neighborC_clean.txt
+/home/nathan/Desktop/CSManip/common_data.csv
+/home/nathan/Desktop/CSManip/buff.txt
+/home/nathan/Desktop/CSManip/Coordinates.txt
