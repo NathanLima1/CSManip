@@ -24,8 +24,8 @@ def neural_network(
     """
     start_time = time.time()
 
-    indicators = {3: 'Precipitação', 4: 'Temperatura máxima'}
-    indicator = indicators.get(indicator_code, 'Temperatura mínima')
+    indicators = {3: "Precipitation", 4: 'Maximum temperature'}
+    indicator = indicators.get(indicator_code, 'Minimum temperature')
 
     train_X, train_y, val_X, val_y = self.prepara_matriz3(city, split_ratio, indicator_code)
 

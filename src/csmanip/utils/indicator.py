@@ -1,7 +1,7 @@
 INDICATOR_MAP = {
-    'Precipitação': 3,
-    'Temperatura máxima': 4,
-    'Temperatura mínima': 5
+    "Precipitation": 3,
+    'Maximum temperature': 4,
+    'Minimum temperature': 5
 }
 
 def get_indicator_code(indicator_name: str) -> int:

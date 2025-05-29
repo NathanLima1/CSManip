@@ -13,9 +13,9 @@ def combine_meta_learning(self, target, pre1, pre2, n_test, window):
         all_models = []
         ranked_models = []
 
-        if target == 'Precipitação':
+        if target == "Precipitation":
             indicator = 1
-        elif target == 'Temperatura máxima':
+        elif target == 'Maximum temperature':
             indicator = 2
         else:
             indicator = 3

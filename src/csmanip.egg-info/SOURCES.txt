@@ -2,6 +2,7 @@ README.md
 pyproject.toml
 src/csmanip/__init__.py
 src/csmanip/framework.py
+src/csmanip/headless.py
 src/csmanip/main.py
 src/csmanip.egg-info/PKG-INFO
 src/csmanip.egg-info/SOURCES.txt

@@ -4,6 +4,7 @@ from .triangulation.triangulation import Triangulation
 from .machine_learning.machine_learning import MachineLearning
 from .meta_learning.meta_learning import MetaLearning
 from .framework import Framework
+from .headless import Headless
 
 
-__all__ = ["DataProcessing", "Training", "Triangulation", "MachineLearning", "MetaLearning", "Framework"]
+__all__ = ["DataProcessing", "Training", "Triangulation", "MachineLearning", "MetaLearning", "Framework", "Headless"]

@@ -25,7 +25,7 @@ class MetaLearning:
             focus_column = 5
 
         data_processor = DataProcessing()
-        raw_data = data_processor.get_file('Dados comum')
+        raw_data = data_processor.get_file('Common data')
 
         data_matrix = []
         for row in raw_data:  # Build a matrix with year, month, day and focus value

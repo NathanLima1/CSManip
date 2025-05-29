@@ -32,7 +32,7 @@ def rw(self, focus):
             monthly_matrix.append(temp)
 
         treatment = DataProcessing()
-        data = treatment.load_data_file('Dados comum')
+        data = treatment.load_data_file('Common data')
 
         current_index = 0
         sum_values = 0

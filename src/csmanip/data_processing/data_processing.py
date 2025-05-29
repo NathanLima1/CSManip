@@ -284,7 +284,7 @@ class DataProcessing:
             di = a[2].replace("\n", '')
         elif option == 'Neighbor C':
             di = a[3].replace("\n", '')
-        elif option == 'Dados comum':
+        elif option == 'Common data':
             di = a[4].replace("\n", '')
             
         
@@ -299,7 +299,7 @@ class DataProcessing:
             i = i.replace("'",'')
             i = i.replace(" ",'')
             
-            if option == 'Dados comum':
+            if option == 'Common data':
                 i = i.split(';')
                 del i[len(i)-1]
                 
@@ -323,7 +323,7 @@ class DataProcessing:
             'Neighbor A': 1,
             'Neighbor B': 2,
             'Neighbor C': 3,
-            'Dados comum': 4
+            'Common data': 4
         }
 
         index = options.get(option)
@@ -332,7 +332,7 @@ class DataProcessing:
 
         selected_path = paths[index]
 
-        if option == 'Dados comum':
+        if option == 'Common data':
             is_common_data = True
 
         years = []

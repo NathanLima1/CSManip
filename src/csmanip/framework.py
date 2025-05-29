@@ -173,14 +173,14 @@ class Framework(Frame):
 
     def get_col(self):
         print("Entrou Principal get_col")
-        if self.parameter.get() == "Precipitação":
-            y_name = "Precipitação (mm)"
+        if self.parameter.get() == "Precipitation":
+            y_name = "Precipitation (mm)"
             col = 3
-        elif self.parameter.get() == "Temperatura máxima":
+        elif self.parameter.get() == "Maximum temperature":
             col = 4
-            y_name = "Temperatura (°C)"
-        elif self.parameter.get() == "Temperatura mínima":
-            y_name = "Temperatura (°C)"
+            y_name = "Temperature (°C)"
+        elif self.parameter.get() == "Minimum temperature":
+            y_name = "Temperature (°C)"
             col = 5
         return y_name, col
 
@@ -194,7 +194,7 @@ class Framework(Frame):
         y_label, col_index = self.get_col()
 
         x_axis = []
-        if self.type_data.get() == 'Dados comum':
+        if self.type_data.get() == 'Common data':
             y_axis_1, y_axis_2, y_axis_3, y_axis_4 = [], [], [], []
             common_count, target_count, va_count, vb_count, vc_count = data_processor.get_quantities()
             bar_y_values = [common_count, target_count, va_count, vb_count, vc_count]
@@ -213,7 +213,7 @@ class Framework(Frame):
             except ValueError:
                 continue
 
-            if self.type_data.get() == 'Dados comum':
+            if self.type_data.get() == 'Common data':
                 try:
                     y_axis_1.append(float(row[col_index].replace(',', '.')))
                     y_axis_2.append(float(row[col_index + 3].replace(',', '.')))
@@ -232,7 +232,7 @@ class Framework(Frame):
         fig = Figure(figsize=(14.5, 9.5), dpi=100)
         fig.subplots_adjust(left=0.05, bottom=0.08, right=0.98, top=0.93)
 
-        if self.type_data.get() == 'Dados comum':
+        if self.type_data.get() == 'Common data':
             plot1 = fig.add_subplot(321)
             plot2 = fig.add_subplot(322)
             plot3 = fig.add_subplot(323)
@@ -289,12 +289,12 @@ class Framework(Frame):
         if ano_final < ano_inicio:
             msg.showerror(title='Invalid', message='O range inserido é inválido')
             return
-        if self.parameter.get() == 'Dados comum':
+        if self.parameter.get() == 'Common data':
             self.grafico_dc(ano_inicio,ano_final)
             return
         
         eixo_x = list()
-        if self.type_data.get() == 'Dados comum':
+        if self.type_data.get() == 'Common data':
             eixo_y1 = list()
             eixo_y2 = list()
             eixo_y3 = list()
@@ -318,7 +318,7 @@ class Framework(Frame):
                 text_data = mes + '/' + dia + '/' + ano
                 eixo_x.append(dt.datetime.strptime(text_data,"%m/%d/%Y").date())
 
-                if self.type_data.get() == 'Dados comum':
+                if self.type_data.get() == 'Common data':
                     eixo_y1.append(float(i[col]))
                     eixo_y2.append(float(i[col+3]))
                     eixo_y3.append(float(i[col+6]))
@@ -330,7 +330,7 @@ class Framework(Frame):
         fig = Figure(figsize=(14.5,9.5), dpi=100)
         fig.subplots_adjust(left=0.05, bottom=0.08, right=0.98, top=0.93)
 
-        if self.type_data.get() == 'Dados comum':
+        if self.type_data.get() == 'Common data':
             plot1 = fig.add_subplot(321)
             plot2 = fig.add_subplot(322)
             plot3 = fig.add_subplot(323)
@@ -338,9 +338,9 @@ class Framework(Frame):
             plot5 = fig.add_subplot(325)
             plot6 = fig.add_subplot(326)
             plot1.plot(eixo_x, eixo_y1, label="target")
-            plot2.plot(eixo_x, eixo_y2, label="Viz A", color="red")
-            plot3.plot(eixo_x, eixo_y3, label="Viz B", color='green')
-            plot4.plot(eixo_x, eixo_y4, label="Viz C", color='orange')
+            plot2.plot(eixo_x, eixo_y2, label="Neighbor_a", color="red")
+            plot3.plot(eixo_x, eixo_y3, label="Neighbor_b", color='green')
+            plot4.plot(eixo_x, eixo_y4, label="Neighbor_c", color='orange')
             plot5.scatter(eixo_x, eixo_y1, s=2, alpha=1, color='blue')
             plot5.scatter(eixo_x, eixo_y2, s=2, alpha=0.6, color='red')
             plot5.scatter(eixo_x, eixo_y3, s=2, alpha=0.6, color='green')
@@ -417,15 +417,15 @@ class Framework(Frame):
         trian = Triangulation()
 
         ind = self.paramt_tri.get()
-        if ind == 'Precipitação':
+        if ind == "Precipitation":
             focus = 1
-            y_label = "Precipitação (mm)"
-        elif ind == 'Temperatura máxima':
+            y_label = "Precipitation (mm)"
+        elif ind == 'Maximum temperature':
             focus = 2
-            y_label = "Temperatura(°C)"
+            y_label = "Temperature(°C)"
         else:
             focus = 3
-            y_label = "Temperatura(°C)"
+            y_label = "Temperature(°C)"
 
 
         metodo_list = ['Arithmetic Averange', 'Inverse Distance Weighted', 'Regional Weight', 'Optimized Normal Ratio']  
@@ -517,11 +517,11 @@ class Framework(Frame):
     def histograma(self):
         t = DataProcessing()
         data = t.load_data_file(self.data_hist.get())
-        if self.paramt_hist.get() == "Precipitação":
+        if self.paramt_hist.get() == "Precipitation":
             col = 3
-        elif self.paramt_hist.get() == "Temperatura máxima":
+        elif self.paramt_hist.get() == "Maximum temperature":
             col = 4
-        elif self.paramt_hist.get() == "Temperatura mínima":
+        elif self.paramt_hist.get() == "Minimum temperature":
             col = 5
 
         mat = self.prepara_mat(data, col)
@@ -648,11 +648,11 @@ class Framework(Frame):
     def boxplot_grafico(self):
         t = DataProcessing()
         data = t.load_data_file(self.data_hist.get())
-        if self.paramt_hist.get() == "Precipitação":
+        if self.paramt_hist.get() == "Precipitation":
             col = 3
-        elif self.paramt_hist.get() == "Temperatura máxima":
+        elif self.paramt_hist.get() == "Maximum temperature":
             col = 4
-        elif self.paramt_hist.get() == "Temperatura mínima":
+        elif self.paramt_hist.get() == "Minimum temperature":
             col = 5
 
         mat = self.prepara_mat(data, col)
@@ -700,7 +700,7 @@ class Framework(Frame):
         fig.subplots_adjust(left=0.05, bottom=0.08, right=0.98, top=0.93)
      
         plot1 = fig.add_subplot(1,1,1)
-        plot1.set_title("Boxplot para Temperatura máxima [10 Anos]")
+        plot1.set_title("Boxplot para Maximum temperature [10 Anos]")
         plot1.boxplot(boxplot)
         plot1.set_xlabel('Ano')
         plot1.set_ylabel(self.data_hist.get())
@@ -746,12 +746,12 @@ class Framework(Frame):
         Label(self, text='Visualizar Dados', font='Arial 14 bold', fg='white', bg=colors.fundo).place(x=140, y=210)
         Label(self, text='Dado:', font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=20, y=240)
         self.type_data = StringVar()
-        data_list = ['Target city', 'Neighbor A', 'Neighbor B', 'Neighbor C', 'Dados comum']
+        data_list = ['Target city', 'Neighbor A', 'Neighbor B', 'Neighbor C', 'Common data']
         self.comb_type_data = ttk.Combobox(self, values=data_list, textvariable=self.type_data, width=12, font='Arial 12', justify=CENTER, state='readonly').place(x=20, y=260)
         
         Label(self, text='Parâmetro:', font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=165, y=240)
         self.parameter = StringVar()
-        para_list = ['Precipitação', 'Temperatura máxima', 'Temperatura mínima']
+        para_list = ["Precipitation", 'Maximum temperature', 'Minimum temperature']
         self.comb_parameter = ttk.Combobox(self, values=para_list, textvariable=self.parameter, width=12, font='Arial 12', justify=CENTER, state='readonly').place(x=165, y=260)
         Button(self, text='Selecionar', font='Arial 11 bold', fg='white', bg=colors.fun_b, width=10, command=self.common_graphs).place(x=310, y=255)
 

@@ -40,8 +40,8 @@ class TestsGenerator(Toplevel):
 
         Label(self, text='Indicador climático:', font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=40, y=270)
         self.ind_meta_perso = StringVar()
-        self.ind_meta_perso.set('Temperatura máxima')
-        lista_ind_meta_p = ['Precipitação', 'Temperatura máxima', 'Temperatura mínima']
+        self.ind_meta_perso.set('Maximum temperature')
+        lista_ind_meta_p = ["Precipitation", 'Maximum temperature', 'Minimum temperature']
         ttk.Combobox(self, values=lista_ind_meta_p, textvariable=self.ind_meta_perso, width=30, font='Arial 11', justify=CENTER, state='readonly').place(x=40, y=300)
 
         self.num_teste_mtp = IntVar()
@@ -81,8 +81,8 @@ class TestsGenerator(Toplevel):
         
         Label(self, text='Indicador climático:', font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=40, y=620)
         self.ind_meta_comb = StringVar()
-        self.ind_meta_comb.set('Temperatura máxima')
-        lista_ind_meta_p = ['Precipitação', 'Temperatura máxima', 'Temperatura mínima']
+        self.ind_meta_comb.set('Maximum temperature')
+        lista_ind_meta_p = ["Precipitation", 'Maximum temperature', 'Minimum temperature']
         ttk.Combobox(self, values=lista_ind_meta_p, textvariable=self.ind_meta_comb, width=30, font='Arial 11', justify=CENTER, state='readonly').place(x=40, y=650)
 
         self.num_teste_mtc = IntVar()
@@ -113,11 +113,11 @@ class TestsGenerator(Toplevel):
         input_window = self.type_input.get()
 
         # Determine focus based on indicator type
-        if indicator == 'Precipitação':
+        if indicator == "Precipitation":
             focus = 1
-        elif indicator == 'Temperatura máxima':
+        elif indicator == 'Maximum temperature':
             focus = 2
-        elif indicator == 'Temperatura mínima':
+        elif indicator == 'Minimum temperature':
             focus = 3
 
         # Perform meta-learning

@@ -30,7 +30,7 @@ def oidw(self, focus):
         index_start = 8
 
     treatment = DataProcessing()
-    raw_data = treatment.load_data_file('Dados comum')
+    raw_data = treatment.load_data_file('Common data')
 
     oidw_results = []
     weighted_sum = 0

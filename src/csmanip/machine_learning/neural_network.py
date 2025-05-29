@@ -10,8 +10,8 @@ def generate_param(self):
     self.combo_c = ttk.Combobox(self, values=lista_dt, textvariable=self.data_s, width=25, font='Arial 12', justify=CENTER, state='readonly').place(x=50, y=775)
 
     self.ind_s = StringVar()
-    self.ind_s.set('Temperatura máxima')
-    lista_ind = ['Precipitação', 'Temperatura máxima', 'Temperatura mínima']
+    self.ind_s.set('Maximum temperature')
+    lista_ind = ["Precipitation", 'Maximum temperature', 'Minimum temperature']
     Label(self, text='Indicador:', font='Arial 12 bold', fg='white', bg=fundo).place(x=340, y=750)
     ttk.Combobox(self, values=lista_ind, textvariable=self.ind_s, width=25, font='Arial 12', justify=CENTER, state='readonly').place(x=340, y=775)
 

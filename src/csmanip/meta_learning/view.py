@@ -30,7 +30,7 @@ class View:
         plot_r.plot(eixo_x, eixo_y_predict, label='Predict', color='red')
         plot_r.legend()
         plot_r.grid(True)
-        plot_r.set_ylabel("Temperatura(°C)")
+        plot_r.set_ylabel("Temperature(°C)")
         plot_r.set_xlabel("Comparações")
 
         canvas = FigureCanvasTkAgg(figura, master=self)

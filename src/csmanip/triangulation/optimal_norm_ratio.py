@@ -6,7 +6,7 @@ def onr(self, focus):
         Optimal normalizate ratio?
         """
         treatment = DataProcessing()
-        data = treatment.load_data_file('Dados comum')
+        data = treatment.load_data_file('Common data')
         days, coef_a, coef_b, coef_c = self.generate_correlation_coefficients(focus)
 
         if focus == 1:

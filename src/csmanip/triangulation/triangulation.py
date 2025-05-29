@@ -145,44 +145,44 @@ class Triangulation:
 
         if cidade == 'target':
             if foco == 1:
-                index = 3 #precipitação na target
-                data = treatment.normalize_data(treatment.load_data_file('Dados comum'))
+                index = 3 #Precipitation na target
+                data = treatment.normalize_data(treatment.load_data_file('Common data'))
             elif foco == 2:
-                index = 4 #Temperatura maxima na target
-                data = treatment.load_data_file('Dados comum')
+                index = 4 #Temperature maximum na target
+                data = treatment.load_data_file('Common data')
             elif foco == 3:
-                index = 5 #Temperatura minima na target
-                data = treatment.load_data_file('Dados comum')
+                index = 5 #Minimum temperature na target
+                data = treatment.load_data_file('Common data')
         elif cidade == 'VizA':
             if foco == 1:
                 index = 6 
-                data = treatment.normalize_data(treatment.load_data_file('Dados comum'))
+                data = treatment.normalize_data(treatment.load_data_file('Common data'))
             elif foco == 2:
                 index = 7
-                data = treatment.load_data_file('Dados comum')
+                data = treatment.load_data_file('Common data')
             elif foco == 3:
                 index = 8
-                data = treatment.load_data_file('Dados comum')
+                data = treatment.load_data_file('Common data')
         elif cidade == 'vizB':
             if foco == 1:
                 index = 9
-                data = treatment.normalize_data(treatment.load_data_file('Dados comum'))
+                data = treatment.normalize_data(treatment.load_data_file('Common data'))
             elif foco == 2:
                 index = 10
-                data = treatment.load_data_file('Dados comum')
+                data = treatment.load_data_file('Common data')
             elif foco == 3:
                 index = 11
-                data = treatment.load_data_file('Dados comum')
+                data = treatment.load_data_file('Common data')
         else:
             if foco == 1:
                 index = 12
-                data = treatment.normalize_data(treatment.load_data_file('Dados comum'))
+                data = treatment.normalize_data(treatment.load_data_file('Common data'))
             elif foco == 2:
                 index = 13
-                data = treatment.load_data_file('Dados comum')
+                data = treatment.load_data_file('Common data')
             elif foco == 3:
                 index = 14
-                data = treatment.load_data_file('Dados comum')
+                data = treatment.load_data_file('Common data')
 
         #encontar o index da ultima data de cada mes
         for i in range(len(data)):
@@ -215,13 +215,13 @@ class Triangulation:
 
         if focus == 1:
             index = 3  # Precipitation at target station
-            data = normalization.normalize(treatment.load_data_file('Dados comum'))
+            data = normalization.normalize(treatment.load_data_file('Common data'))
         elif focus == 2:
             index = 4  # Maximum temperature at target station
-            data = treatment.load_data_file('Dados comum')
+            data = treatment.load_data_file('Common data')
         elif focus == 3:
             index = 5  # Minimum temperature at target station
-            data = treatment.load_data_file('Dados comum')
+            data = treatment.load_data_file('Common data')
 
         coef_target_A = []
         coef_target_B = []
