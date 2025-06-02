@@ -10,4 +10,7 @@ files = ["src/csmanip/data/BeloHorizonte.csv", "src/csmanip/data/Ibirite.csv", "
 #clim.boxplot("Target city", "Precipitation")
 #clim.histograma("Target city", "Precipitation")
 
-clim.triangulation("Arithmetic Average", "Maximum Temperature")
+#clim.triangulation("Arithmetic Average", "Maximum Temperature")
+
+mainwindow = csmanip.Framework()
+mainwindow.mainloop()

@@ -1,7 +1,7 @@
 from .neural_network_tr import neural_network
 from .k_neighbors_tr import KNeighbors
 from .support_vector_tr import support_vector_regression
-from .decision_tree_tr import decision_tree
+from .decision_tree_tr import decision_tree_tr
 from math import floor
 from ..data_processing.data_processing import DataProcessing
 
@@ -12,7 +12,7 @@ class Training:
         n_tests: int, min_samples_split: int, min_weight_fraction_leaf: float,
         min_impurity_decrease: float, ccp_alpha: float, save_model: bool
         ):
-        return decision_tree(
+        return decision_tree_tr(
             self, city, indicator_code, split_ratio, criterion, splitter,
             max_depth, min_samples_leaf, max_features, max_leaf_nodes,
             n_tests, min_samples_split, min_weight_fraction_leaf,
@@ -24,7 +24,7 @@ class Training:
         learning_rate_init: float, power_t: float, max_iter: int, shuffle: bool,
         tol: float, verbose: bool, warm_start: bool, momentum: float,
         nesterovs_momentum: bool, early_stopping: bool, validation_fraction: float,
-        beta_1: float, beta_2: float, n_iter_no_change: int, max_fun: int
+        beta_1: float, beta_2: float, n_iter_no_change: int, max_fun: int, save_model: bool
         ):
         return neural_network(
             self, city, indicator_code, split_ratio, n_tests,
@@ -32,7 +32,7 @@ class Training:
             learning_rate_init, power_t, max_iter, shuffle,
             tol, verbose, warm_start, momentum,
             nesterovs_momentum, early_stopping, validation_fraction,
-            beta_1, beta_2, n_iter_no_change, max_fun)
+            beta_1, beta_2, n_iter_no_change, max_fun, save_model)
     
     def KNeighbors(self, city, indicator_index, split_ratio, n_tests, n_neighbors,
          algorithm, leaf_size, p_value, n_jobs, save_model):
@@ -124,7 +124,7 @@ class Training:
         focus_column = self._get_focus_column(city, indicator)
 
         t = DataProcessing()
-        data = t.get_data('Common Data')
+        data = t.load_data_file('Common data')
 
         for row in data:
             entry = [int(row[0]), int(row[1]), int(row[2]), float(row[focus_column])]

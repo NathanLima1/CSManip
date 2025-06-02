@@ -1,5 +1,6 @@
 import pickle
 from sklearn.neighbors import KNeighborsRegressor
+import os
 
 
 def KNeighbors(self, city, indicator_index, split_ratio, n_tests, n_neighbors, algorithm, leaf_size, p_value, n_jobs, save_model):
@@ -40,7 +41,7 @@ def KNeighbors(self, city, indicator_index, split_ratio, n_tests, n_neighbors, a
         - Lowest absolute error and its real and predicted values.
         - Lists for exact Y values, predicted Y values, and X axis points.
     """
-    X_train, y_train, X_val, y_val = self.prepara_matriz3(city, split_ratio, indicator_index)
+    X_train, y_train, X_val, y_val = self.prepare_matrix_by_city(city, split_ratio, indicator_index)
     total_relative_error = 0
     total_absolute_error = 0
 
@@ -117,7 +118,8 @@ def KNeighbors(self, city, indicator_index, split_ratio, n_tests, n_neighbors, a
     mean_relative_error = total_relative_error / n_tests
 
     if save_model == 1:
-        pickle.dump(model, open(r'E:\IC\Interface_Grafica\Dados_verificacao\modelo_kn.sav', 'wb'))
+        with open(os.path.join(os.getcwd(), 'modelo_rn.sav'), 'wb') as f:
+                pickle.dump(model, f)
 
     return (
         score,

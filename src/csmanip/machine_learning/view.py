@@ -61,15 +61,17 @@ class View():
         split_percentage = int(master.por_trei.get())
         criterion = master.param_frame.criterion_v.get()
         splitter = master.param_frame.splitter_v.get()
-        max_depth = int(master.maxd_v.get())
-        min_samples_split = master.int_float(master.minsam_s_v.get())
-        min_samples_leaf = master.int_float(master.minsam_l_v.get())
-        min_weight_fraction_leaf = float(master.minweifra_l_v.get())
-        max_features = master.valid_maxf(master.maxfeat_v.get())
-        max_leaf_nodes = int(master.maxleaf_n.get())
+        max_depth = int(master.param_frame.maxd_v.get())
+        min_samples_split = master.int_float(master.param_frame.minsam_s_v.get())
+        min_samples_leaf = master.int_float(master.param_frame.minsam_l_v.get())
+        min_weight_fraction_leaf = float(master.param_frame.minweifra_l_v.get())
+        max_features = master.valid_maxf(master.param_frame.maxfeat_v.get())
+        max_leaf_nodes = int(master.param_frame.maxleaf_n.get())
+
+        print("Max features ", max_features)
         
-        min_impurity_decrease = float(master.minimp_dec.get())
-        ccp_alpha = float(master.ccp_alp_v.get())
+        min_impurity_decrease = float(master.param_frame.minimp_dec.get())
+        ccp_alpha = float(master.param_frame.ccp_alp_v.get())
         n_tests = int(master.num_teste.get())
 
         indicator = get_indicator_code(indicator)
@@ -79,7 +81,7 @@ class View():
             min_samples_leaf, max_features, max_leaf_nodes, n_tests, min_samples_split,
             min_weight_fraction_leaf, min_impurity_decrease, ccp_alpha, save_model_flag
         )
-        master.data_prev(
+        master.data_preview(
             score, mean_abs_error, mean_rel_error, max_abs_error, exact_max, pred_max,
             min_abs_error, exact_min, pred_min, y_exact, y_pred, x_axis
         )
@@ -96,26 +98,26 @@ class View():
 
         split_percentage = int(master.por_trei.get())
 
-        activation = master.activation_v.get()
-        solver = master.solver_v.get()
-        alpha = float(master.alpha_v.get())
-        batch_size = master.batch_size_v.get()
-        learning_rate = master.learning_rate_v.get()
-        learning_rate_init = float(master.learning_rate_init_v.get())
-        power_t = float(master.power_t_v.get())
-        max_iter = int(master.max_iter_v.get())
-        shuffle = master.shuffle_v.get()
-        tol = float(master.tol_v.get())
-        verbose = master.verbose_v.get()
-        warm_start = master.warm_start_v.get()
-        momentum = float(master.momentum_v.get())
-        nesterovs_momentum = master.nesterovs_momentum_v.get()
-        early_stopping = master.early_stopping_v.get()
-        validation_fraction = float(master.validation_fraction_v.get())
-        beta_1 = float(master.beta_1_v.get())
-        beta_2 = float(master.beta_2_v.get())
-        n_iter_no_change = int(master.n_iter_no_change_v.get())
-        max_fun = int(master.max_fun_v.get())
+        activation = master.param_frame.activation_v.get()
+        solver = master.param_frame.solver_v.get()
+        alpha = float(master.param_frame.alpha_v.get())
+        batch_size = master.param_frame.batch_size_v.get()
+        learning_rate = master.param_frame.learning_rate_v.get()
+        learning_rate_init = float(master.param_frame.learning_rate_init_v.get())
+        power_t = float(master.param_frame.power_t_v.get())
+        max_iter = int(master.param_frame.max_iter_v.get())
+        shuffle = master.param_frame.shuffle_v.get()
+        tol = float(master.param_frame.tol_v.get())
+        verbose = master.param_frame.verbose_v.get()
+        warm_start = master.param_frame.warm_start_v.get()
+        momentum = float(master.param_frame.momentum_v.get())
+        nesterovs_momentum = master.param_frame.nesterovs_momentum_v.get()
+        early_stopping = master.param_frame.early_stopping_v.get()
+        validation_fraction = float(master.param_frame.validation_fraction_v.get())
+        beta_1 = float(master.param_frame.beta_1_v.get())
+        beta_2 = float(master.param_frame.beta_2_v.get())
+        n_iter_no_change = int(master.param_frame.n_iter_no_change_v.get())
+        max_fun = int(master.param_frame.max_fun_v.get())
         n_tests = int(master.num_teste.get())
 
         score, mean_abs_error, mean_rel_error, max_abs_error, exact_max, pred_max, min_abs_error, exact_min, pred_min, y_exact, y_pred, x_axis = prev.neural_network(
@@ -125,7 +127,7 @@ class View():
             beta_1, beta_2, n_iter_no_change, max_fun, save_model_flag
         )
 
-        master.data_prev(
+        master.data_preview(
             score, mean_abs_error, mean_rel_error, max_abs_error, exact_max, pred_max,
             min_abs_error, exact_min, pred_min, y_exact, y_pred, x_axis
         )
@@ -158,7 +160,7 @@ class View():
             tol, c_param, epsilon, shrinking, cache_size, verbose, max_iter, save_model_flag
         )
 
-        master.data_prev(
+        master.data_preview(
             score, mean_abs_error, mean_rel_error, max_abs_error, exact_max, pred_max,
             min_abs_error, exact_min, pred_min, y_exact, y_pred, x_axis
         )
@@ -170,11 +172,11 @@ class View():
         city = master.get_end(master.data_s.get())
         n_tests = int(master.num_teste.get())
         split_percentage = int(master.por_trei.get())
-        n_neighbors = master.n_neighbors_v.get()
-        algorithm = master.algorithm_v.get()
-        leaf_size = master.leaf_size_v.get()
-        p_value = master.p_v.get()
-        n_jobs = master.n_jobs_v.get()
+        n_neighbors = master.param_frame.n_neighbors_v.get()
+        algorithm = master.param_frame.algorithm_v.get()
+        leaf_size = master.param_frame.leaf_size_v.get()
+        p_value = master.param_frame.p_v.get()
+        n_jobs = master.param_frame.n_jobs_v.get()
 
         if n_jobs.isdigit() == True:
             n_jobs = int(n_jobs)
@@ -186,7 +188,7 @@ class View():
             city, indicator, split_percentage, n_tests, n_neighbors, algorithm, leaf_size, p_value, n_jobs, save_model_flag
         )
 
-        master.data_prev(
+        master.data_preview(
             score, mean_abs_error, mean_rel_error, max_abs_error, exact_max, pred_max,
             min_abs_error, exact_min, pred_min, y_exact, y_pred, x_axis
         )
@@ -209,7 +211,7 @@ class View():
         indicator = get_indicator_code(indicator)
 
         pts, media_ea, media_er, maior_ea, exat_maior, pre_maior, menor_ea, exat_menor, pre_menor, eixo_y_exato, eixo_y_predict, eixo_x = prev.KNeighbors(cidade, indicador, divisao, n_tes, n_neig, algor, leaf_s, pv, n_job, salvar_m)
-        master.data_prev(pts, media_ea, media_er, maior_ea, exat_maior, pre_maior, menor_ea, exat_menor, pre_menor, eixo_y_exato, eixo_y_predict, eixo_x)
+        master.data_preview(pts, media_ea, media_er, maior_ea, exat_maior, pre_maior, menor_ea, exat_menor, pre_menor, eixo_y_exato, eixo_y_predict, eixo_x)
 
     def generate_param(self, master):
         opcao = master.ml_selected.get()

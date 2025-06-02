@@ -1,5 +1,6 @@
 import pickle
 from sklearn.svm import SVR
+import os
 
 def support_vector_regression(self, city, indicator_code, division, num_tests, kernel, degree, gamma, coef0, tol, C, epsilon, shrinking, cache_size, verbose, max_iter, save_model):
     """
@@ -26,7 +27,7 @@ def support_vector_regression(self, city, indicator_code, division, num_tests, k
     Returns:
         tuple: A tuple containing evaluation metrics and prediction data.
     """
-    train_features, train_targets, val_features, val_targets = self.prepara_matriz3(city, division, indicator_code)
+    train_features, train_targets, val_features, val_targets = self.prepare_matrix_by_city(city, division, indicator_code)
     total_relative_error = 0
     total_absolute_error = 0
 
@@ -98,7 +99,8 @@ def support_vector_regression(self, city, indicator_code, division, num_tests, k
     mean_relative_error = total_relative_error / num_tests
 
     if save_model:
-        pickle.dump(model, open(r'E:\IC\Interface_Grafica\Dados_verificacao\modelo_svr.sav', 'wb'))
+        with open(os.path.join(os.getcwd(), 'modelo_rn.sav'), 'wb') as f:
+                pickle.dump(model, f)
 
     return (
         score,

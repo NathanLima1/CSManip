@@ -1,6 +1,8 @@
 import time
 from typing import Tuple, List
 import numpy as np
+import os
+import pickle
 from sklearn.neural_network import MLPRegressor
 from .utils import calculate_errors
 
@@ -10,7 +12,7 @@ def neural_network(
     learning_rate_init: float, power_t: float, max_iter: int, shuffle: bool,
     tol: float, verbose: bool, warm_start: bool, momentum: float,
     nesterovs_momentum: bool, early_stopping: bool, validation_fraction: float,
-    beta_1: float, beta_2: float, n_iter_no_change: int, max_fun: int
+    beta_1: float, beta_2: float, n_iter_no_change: int, max_fun: int, save_model: bool
 ) -> Tuple[float, float, float, float, float, float, float, float, float, List[float], List[float], List[int]]:
     """
     Trains and evaluates an MLPRegressor multiple times and returns error statistics.
@@ -27,7 +29,7 @@ def neural_network(
     indicators = {3: "Precipitation", 4: 'Maximum temperature'}
     indicator = indicators.get(indicator_code, 'Minimum temperature')
 
-    train_X, train_y, val_X, val_y = self.prepara_matriz3(city, split_ratio, indicator_code)
+    train_X, train_y, val_X, val_y = self.prepare_matrix_by_city(city, split_ratio, indicator_code)
 
     all_exact = []
     all_predicted = []
@@ -72,6 +74,10 @@ def neural_network(
     predicted_min = statistics["predicted_min"]
     avg_absolute_error = statistics["avg_absolute_error"]
     avg_relative_error = statistics["avg_relative_error"]
+
+    if save_model:
+        with open(os.path.join(os.getcwd(), 'modelo_rn.sav'), 'wb') as f:
+                pickle.dump(model, f)
 
     return (
         score, avg_absolute_error, avg_relative_error,

@@ -39,9 +39,11 @@ src/csmanip/training/utils.py
 src/csmanip/trends/__init__.py
 src/csmanip/trends/climdex.py
 src/csmanip/trends/group_data.py
+src/csmanip/trends/identify_trends.py
 src/csmanip/trends/make_data_base.py
-src/csmanip/trends/script_to_identify_plot_warming.py
-src/csmanip/trends/script_to_identify_trends.py
+src/csmanip/trends/plot_warming_stripes.py
+src/csmanip/trends/processing.py
+src/csmanip/trends/trends.py
 src/csmanip/triangulation/__init__.py
 src/csmanip/triangulation/inverse_dist_weightened.py
 src/csmanip/triangulation/optimal_norm_ratio.py

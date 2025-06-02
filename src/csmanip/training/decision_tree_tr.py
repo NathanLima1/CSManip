@@ -2,10 +2,11 @@ import time
 import pickle
 from sklearn.tree import DecisionTreeRegressor
 from typing import Tuple, List
+import os
 import numpy as np
 from .utils import calculate_errors
 
-def decision_tree(
+def decision_tree_tr(
     self, city: str, indicator_code: int, split_ratio: float, criterion: str, splitter: str,
     max_depth: int, min_samples_leaf: int, max_features, max_leaf_nodes: int,
     n_tests: int, min_samples_split: int, min_weight_fraction_leaf: float,
@@ -26,7 +27,7 @@ def decision_tree(
     indicators = {3: 'Precipitation', 4: 'Maximum Temperature'}
     indicator = indicators.get(indicator_code, 'Minimum Temperature')
 
-    train_X, train_y, val_X, val_y = self.prepare_matrix3(city, split_ratio, indicator_code)
+    train_X, train_y, val_X, val_y = self.prepare_matrix_by_city(city, split_ratio, indicator_code)
 
     all_exact = []
     all_predicted = []
@@ -67,7 +68,8 @@ def decision_tree(
     avg_relative_error = statistics["avg_relative_error"]
     
     if save_model:
-        pickle.dump(model, open(r'E:\IC\Interface_Grafica\Dados_verificacao\modelo_ad.sav', 'wb'))
+        with open(os.path.join(os.getcwd(), 'modelo_rn.sav'), 'wb') as f:
+                pickle.dump(model, f)
 
     x_axis = list(range(1, len(all_exact) + 1))
 
