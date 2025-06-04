@@ -25,7 +25,7 @@ class MetaLearning:
             focus_column = 5
 
         data_processor = DataProcessing()
-        raw_data = data_processor.get_file('Common data')
+        raw_data = data_processor.load_data_file('Common data')
 
         data_matrix = []
         for row in raw_data:  # Build a matrix with year, month, day and focus value
@@ -41,9 +41,9 @@ class MetaLearning:
         normalized_data = normalizer.normalize(data_matrix)  # Normalize each column and each row
 
         if sliding_window == 'Sim':
-            input_matrix, target_matrix = self.sliding_window_matrix(normalized_data)  # Prepare data using sliding window format
+            input_matrix, target_matrix = self.sliding_window(normalized_data)  # Prepare data using sliding window format
         else:
-            input_matrix, target_matrix = self.standard_input(normalized_data)
+            input_matrix, target_matrix = self.common_input(normalized_data)
 
         model1_inputs, model1_targets = [], []
         model2_inputs, model2_targets = [], []  # For level-0 learning to make predictions, which will be used by the meta-learner
@@ -181,22 +181,22 @@ class MetaLearning:
             triang.idw(focus)
             matriz_triang = nor.normalize(triang.get_idw()[5])
             x,y,alv_y, erro_abs, erro_rel, mat_ext = triang.get_idw()
-            erro_abs, erro_rel = self.calcula_erro_tri(alv_y, y)
+            erro_abs, erro_rel = self.calculate_error_tri(alv_y, y)
         elif metodo == 'Arithmetic Average':
             triang.avg(focus)
-            matriz_triang = nor.normalizar(triang.get_aa()[5])
+            matriz_triang = nor.normalize(triang.get_avg()[5])
             x,y,alv_y, erro_abs, erro_rel, mat_ext = triang.get_avg()
-            erro_abs, erro_rel = self.calcula_erro_tri(alv_y, y)
+            erro_abs, erro_rel = self.calculate_error_tri(alv_y, y)
         elif metodo == 'Regional Weight':
             triang.rw(focus)
-            matriz_triang = nor.normalizar(triang.get_rw()[5])
+            matriz_triang = nor.normalize(triang.get_rw()[5])
             x,y,alv_y, erro_abs, erro_rel, mat_ext = triang.get_rw()
-            erro_abs, erro_rel = self.calcula_erro_tri(alv_y, y)
+            erro_abs, erro_rel = self.calculate_error_tri(alv_y, y)
         elif metodo == 'Optimized Normal Ratio':
             triang.onr(focus)
-            matriz_triang = nor.normalizar(triang.get_onr()[5])
+            matriz_triang = nor.normalize(triang.get_onr()[5])
             x,y,alv_y, erro_abs, erro_rel, mat_ext = triang.get_onr()
-            erro_abs, erro_rel = self.calcula_erro_tri(alv_y, y)
+            erro_abs, erro_rel = self.calculate_error_tri(alv_y, y)
 
         tamanho = len(matriz_triang)
         t1 = floor(tamanho * 0.4)

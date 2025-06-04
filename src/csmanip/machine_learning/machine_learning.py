@@ -14,6 +14,14 @@ from ..data_processing.data_processing import DataProcessing
 class MachineLearning(Toplevel):
     def __init__(self, master=None):
         Toplevel.__init__(self, master=master)
+        self.data_s = StringVar()
+        self.data_s.set('Target city')
+        self.list_dt = ['Target city', 'Neighbor A', 'Neighbor B', 'Neighbor C']
+            
+        self.ind_s = StringVar()
+        self.ind_s.set('Maximum temperature')
+        self.list_ind = ["Precipitation", 'Maximum temperature', 'Minimum temperature']
+            
         self.title('Aprendizado de máquina')
         self.geometry('800x800')
         self.configure(background=fundo)
@@ -32,7 +40,7 @@ class MachineLearning(Toplevel):
         combo = ttk.Combobox(self, values=lista_ml, textvariable=self.ml_selected,
                               width=28, font='Arial 12', justify=CENTER, state='readonly')
         combo.place(x=20, y=60)
-        Button(self, text='Escolher Machine Learning', font='Arial 11 bold',
+        Button(self, text='Choose Machine Learning', font='Arial 11 bold',
                 fg='white', bg=fun_ap, width=30, command=self.generate_param).place(x=340, y=59)
 
     def int_float(self, value):
@@ -93,91 +101,73 @@ class MachineLearning(Toplevel):
             Canvas(self, width=615, height=900, background=fundo, border=0).place(x=10, y=95)
             self.param_frame = DTParameterFrame(self, fundo, fun_alt)
             
-            self.data_s = StringVar()
-            self.data_s.set('Cidade alvo')
-            lista_dt = ['Cidade alvo', 'Vizinha A', 'Vizinha B', 'Vizinha C']
-            Label(self, text="Dados para treinamento:", font='Arial 12 bold', fg='white', bg=fundo).place(x=50, y=520)
-            self.combo_c = ttk.Combobox(self, values=lista_dt, textvariable=self.data_s, width=25, font='Arial 12', justify=CENTER, state='readonly').place(x=50, y=545)
+            Label(self, text="Training data:", font='Arial 12 bold', fg='white', bg=fundo).place(x=50, y=520)
+            self.combo_c = ttk.Combobox(self, values=self.list_dt, textvariable=self.data_s, width=25, font='Arial 12', justify=CENTER, state='readonly').place(x=50, y=545)
 
-            self.ind_s = StringVar()
-            self.ind_s.set('Maximum temperature')
-            lista_ind = ["Precipitation", 'Maximum temperature', 'Minimum temperature']
             Label(self, text='Indicador:', font='Arial 12 bold', fg='white', bg=fundo).place(x=340, y=520)
-            ttk.Combobox(self, values=lista_ind, textvariable=self.ind_s, width=25, font='Arial 12', justify=CENTER, state='readonly').place(x=340, y=545)
+            ttk.Combobox(self, values=self.list_ind, textvariable=self.ind_s, width=25, font='Arial 12', justify=CENTER, state='readonly').place(x=340, y=545)
 
             self.por_trei = IntVar()
             self.por_trei.set(70)
-            Label(self, text="Porção para treinamento:", font='Arial 12 bold', fg='white', bg=fundo).place(x=50, y=580)
+            Label(self, text="Training portion:", font='Arial 12 bold', fg='white', bg=fundo).place(x=50, y=580)
             Scale(self, variable=self.por_trei, orient=HORIZONTAL, length=240).place(x=50, y=605)
         
             self.num_teste = IntVar()
             self.num_teste.set(5)
-            Label(self, text="Número de testes (int):", font='Arial 12 bold', fg='white', bg=fundo).place(x=340, y=580)
+            Label(self, text="Number of tests (int):", font='Arial 12 bold', fg='white', bg=fundo).place(x=340, y=580)
             self.ent_num_teste = Entry(self, textvariable=self.num_teste, width=27, font='Arial 12', justify=CENTER).place(x=340, y=605)
            
             Button(self, text='Preview', font='Arial 11 bold', fg='white', bg=fun_b, width=25, command=self.generate_preview_dt).place(x=50, y=685)
             #Button(self, text='Salvar Paramt.', font='Arial 11 bold', fg='white', bg=fun_b, width=25, command=self.salvar_paramt).place(x=340, y=685)
             self.save_model = IntVar()
-            Checkbutton(self, text='Salvar modelo', variable=self.save_model, bg=fundo, font='Arial 12 bold', activebackground=fundo).place(x=340, y=685)
+            Checkbutton(self, text='Save model', variable=self.save_model, bg=fundo, font='Arial 12 bold', activebackground=fundo).place(x=340, y=685)
         elif opcao == 'Neural network':
             Canvas(self, width=615, height=900, background=fundo, border=0).place(x=10, y=95)
             self.param_frame = NNParameterFrame(self, fundo)
-            self.data_s = StringVar()
-            self.data_s.set('Cidade alvo')
-            lista_dt = ['Cidade alvo', 'Vizinha A', 'Vizinha B', 'Vizinha C']
-            Label(self, text="Dados para treinamento:", font='Arial 12 bold', fg='white', bg=fundo).place(x=50, y=750)
-            self.combo_c = ttk.Combobox(self, values=lista_dt, textvariable=self.data_s, width=25, font='Arial 12', justify=CENTER, state='readonly').place(x=50, y=775)
+            Label(self, text="Training data:", font='Arial 12 bold', fg='white', bg=fundo).place(x=50, y=750)
+            self.combo_c = ttk.Combobox(self, values=self.list_dt, textvariable=self.data_s, width=25, font='Arial 12', justify=CENTER, state='readonly').place(x=50, y=775)
 
-            self.ind_s = StringVar()
-            self.ind_s.set('Maximum temperature')
-            lista_ind = ["Precipitation", 'Maximum temperature', 'Minimum temperature']
-            Label(self, text='Indicador:', font='Arial 12 bold', fg='white', bg=fundo).place(x=340, y=750)
-            ttk.Combobox(self, values=lista_ind, textvariable=self.ind_s, width=25, font='Arial 12', justify=CENTER, state='readonly').place(x=340, y=775)
+            Label(self, text='Indicator:', font='Arial 12 bold', fg='white', bg=fundo).place(x=340, y=750)
+            ttk.Combobox(self, values=self.list_ind, textvariable=self.ind_s, width=25, font='Arial 12', justify=CENTER, state='readonly').place(x=340, y=775)
 
             self.por_trei = IntVar()
             self.por_trei.set(70)
-            Label(self, text="Porção para treinamento:", font='Arial 12 bold', fg='white', bg=fundo).place(x=50, y=810)
+            Label(self, text="Training portion:", font='Arial 12 bold', fg='white', bg=fundo).place(x=50, y=810)
             Scale(self, variable=self.por_trei, orient=HORIZONTAL, length=240).place(x=50, y=835)
         
             self.num_teste = IntVar()
             self.num_teste.set(5)
-            Label(self, text="Número de testes (int):", font='Arial 12 bold', fg='white', bg=fundo).place(x=340, y=810)
+            Label(self, text="Number of tests (int):", font='Arial 12 bold', fg='white', bg=fundo).place(x=340, y=810)
             self.ent_num_teste = Entry(self, textvariable=self.num_teste, width=27, font='Arial 12', justify=CENTER).place(x=340, y=835)
 
             Button(self, text='Preview', font='Arial 11 bold', fg='white', bg=fun_b, width=25, command=self.generate_preview_nn).place(x=50, y=915)
             self.save_model = IntVar()
-            Checkbutton(self, text='Salvar modelo', variable=self.save_model, bg=fundo, font='Arial 12 bold', activebackground=fundo).place(x=340, y=915)
+            Checkbutton(self, text='Save model', variable=self.save_model, bg=fundo, font='Arial 12 bold', activebackground=fundo).place(x=340, y=915)
         elif opcao == 'Nearest Neighbors':
            Canvas(self, width=615, height=900, background=fundo, border=0).place(x=10, y=95)
            self.param_frame = NNeighParameterFrame(self, fundo)
 
-           self.lbf_para_nn = LabelFrame(self, text='Parâmetros', width=600, height=205, font='Arial 12 bold', fg='white', bg=fundo).place(x=20, y=100) 
+           self.lbf_para_nn = LabelFrame(self, text='Parameters', width=600, height=205, font='Arial 12 bold', fg='white', bg=fundo).place(x=20, y=100) 
 
-           self.data_s = StringVar()
-           self.data_s.set('Cidade alvo')
-           lista_dt = ['Cidade alvo', 'Vizinha A', 'Vizinha B', 'Vizinha C']
-           Label(self, text="Dados para treinamento:", font='Arial 12 bold', fg='white', bg=fundo).place(x=50, y=340)
-           self.combo_c = ttk.Combobox(self, values=lista_dt, textvariable=self.data_s, width=25, font='Arial 12', justify=CENTER, state='readonly').place(x=50, y=365)
+           Label(self, text="Training data:", font='Arial 12 bold', fg='white', bg=fundo).place(x=50, y=340)
+           self.combo_c = ttk.Combobox(self, values=self.list_dt, textvariable=self.data_s, width=25, font='Arial 12', justify=CENTER, state='readonly').place(x=50, y=365)
 
-           self.ind_s = StringVar()
-           self.ind_s.set('Maximum temperature')
-           lista_ind = ["Precipitation", 'Maximum temperature', 'Minimum temperature']
-           Label(self, text='Indicador:', font='Arial 12 bold', fg='white', bg=fundo).place(x=340, y=340)
-           ttk.Combobox(self, values=lista_ind, textvariable=self.ind_s, width=25, font='Arial 12', justify=CENTER, state='readonly').place(x=340, y=365)
+           Label(self, text='Indicator:', font='Arial 12 bold', fg='white', bg=fundo).place(x=340, y=340)
+           ttk.Combobox(self, values=self.list_ind, textvariable=self.ind_s, width=25, font='Arial 12', justify=CENTER, state='readonly').place(x=340, y=365)
 
            self.por_trei = IntVar()
            self.por_trei.set(70)
-           Label(self, text="Porção para treinamento:", font='Arial 12 bold', fg='white', bg=fundo).place(x=50, y=400)
+           Label(self, text="Training portion:", font='Arial 12 bold', fg='white', bg=fundo).place(x=50, y=400)
            Scale(self, variable=self.por_trei, orient=HORIZONTAL, length=240).place(x=50, y=425)
 
            self.num_teste = IntVar()
            self.num_teste.set(5)
-           Label(self, text="Número de testes (int):", font='Arial 12 bold', fg='white', bg=fundo).place(x=340, y=400)
+           Label(self, text="Number of tests (int):", font='Arial 12 bold', fg='white', bg=fundo).place(x=340, y=400)
            self.ent_num_teste = Entry(self, textvariable=self.num_teste, width=27, font='Arial 12', justify=CENTER).place(x=340, y=425)
 
            Button(self, text='Preview', font='Arial 11 bold', fg='white', bg=fun_b, width=25, command=self.generate_preview_kn).place(x=50, y=505)
            self.save_model = IntVar()
-           Checkbutton(self, text='Salvar modelo', variable=self.save_model, bg=fundo, font='Arial 12 bold', activebackground=fundo).place(x=340, y=505) 
+           Checkbutton(self, text='Save model', variable=self.save_model, bg=fundo, font='Arial 12 bold', activebackground=fundo).place(x=340, y=505) 
         elif opcao == 'Support Vector':
             w = Canvas(self, width=615, height=900, background=fundo, border=0)
             w.place(x=10, y=95)
@@ -239,60 +229,48 @@ class MachineLearning(Toplevel):
             Label(self, text='Max_iter (int):', font='Arial 12 bold', fg='white', bg=fundo).place(x=50, y=420)
             Entry(self, textvariable=self.maxiter_v, font='Arial 12', width=27, justify=CENTER).place(x=50, y=445)
 
-            self.lbf_dt_nn = LabelFrame(self, text='Dados', width=600, height=170, font='Arial 12 bold', fg ='white', bg=fundo).place(x=20, y=500)
+            self.lbf_dt_nn = LabelFrame(self, text='Data', width=600, height=170, font='Arial 12 bold', fg ='white', bg=fundo).place(x=20, y=500)
 
-            self.data_s = StringVar()
-            self.data_s.set('Cidade alvo')
-            lista_dt = ['Cidade alvo', 'Vizinha A', 'Vizinha B', 'Vizinha C']
-            Label(self, text="Dados para treinamento:", font='Arial 12 bold', fg='white', bg=fundo).place(x=50, y=520)
-            self.combo_c = ttk.Combobox(self, values=lista_dt, textvariable=self.data_s, width=25, font='Arial 12', justify=CENTER, state='readonly').place(x=50, y=545)
+            Label(self, text="Training data:", font='Arial 12 bold', fg='white', bg=fundo).place(x=50, y=520)
+            self.combo_c = ttk.Combobox(self, values=self.list_dt, textvariable=self.data_s, width=25, font='Arial 12', justify=CENTER, state='readonly').place(x=50, y=545)
 
-            self.ind_s = StringVar()
-            self.ind_s.set('Maximum temperature')
-            lista_ind = ["Precipitation", 'Maximum temperature', 'Minimum temperature']
-            Label(self, text='Indicador:', font='Arial 12 bold', fg='white', bg=fundo).place(x=340, y=520)
-            ttk.Combobox(self, values=lista_ind, textvariable=self.ind_s, width=25, font='Arial 12', justify=CENTER, state='readonly').place(x=340, y=545)
+            Label(self, text='Indicator:', font='Arial 12 bold', fg='white', bg=fundo).place(x=340, y=520)
+            ttk.Combobox(self, values=self.list_ind, textvariable=self.ind_s, width=25, font='Arial 12', justify=CENTER, state='readonly').place(x=340, y=545)
 
             self.por_trei = IntVar()
             self.por_trei.set(70)
-            Label(self, text="Porção para treinamento:", font='Arial 12 bold', fg='white', bg=fundo).place(x=50, y=580)
+            Label(self, text="Training portion:", font='Arial 12 bold', fg='white', bg=fundo).place(x=50, y=580)
             Scale(self, variable=self.por_trei, orient=HORIZONTAL, length=240).place(x=50, y=605)
         
             self.num_teste = IntVar()
             self.num_teste.set(5)
-            Label(self, text="Número de testes (int):", font='Arial 12 bold', fg='white', bg=fundo).place(x=340, y=580)
+            Label(self, text="Number of tests (int):", font='Arial 12 bold', fg='white', bg=fundo).place(x=340, y=580)
             self.ent_num_teste = Entry(self, textvariable=self.num_teste, width=27, font='Arial 12', justify=CENTER).place(x=340, y=605)
 
             Button(self, text='Preview', font='Arial 11 bold', fg='white', bg=fun_b, width=25, command=self.generate_preview_svm).place(x=50, y=680)
             self.save_model = IntVar()
-            Checkbutton(self, text='Salvar modelo', variable=self.save_model, bg=fundo, font='Arial 12 bold', activebackground=fundo).place(x=340, y=680)
+            Checkbutton(self, text='Save model', variable=self.save_model, bg=fundo, font='Arial 12 bold', activebackground=fundo).place(x=340, y=680)
         elif opcao == 'Gaussian Process':
             w = Canvas(self, width=615, height=900, background=fundo, border=0)
             w.place(x=10, y=95)
             self.param_frame = GPParameterFrame(self, fundo)
             
-            self.data_s = StringVar()
-            self.data_s.set('Cidade alvo')
-            lista_dt = ['Cidade alvo', 'Vizinha A', 'Vizinha B', 'Vizinha C']
-            Label(self, text="Dados para treinamento:", font='Arial 12 bold', fg='white', bg=fundo).place(x=50, y=340)
-            self.combo_c = ttk.Combobox(self, values=lista_dt, textvariable=self.data_s, width=25, font='Arial 12', justify=CENTER, state='readonly').place(x=50, y=365)
+            Label(self, text="Training data:", font='Arial 12 bold', fg='white', bg=fundo).place(x=50, y=340)
+            self.combo_c = ttk.Combobox(self, values=self.list_dt, textvariable=self.data_s, width=25, font='Arial 12', justify=CENTER, state='readonly').place(x=50, y=365)
 
-            self.ind_s = StringVar()
-            self.ind_s.set('Maximum temperature')
-            lista_ind = ["Precipitation", 'Maximum temperature', 'Minimum temperature']
-            Label(self, text='Indicador:', font='Arial 12 bold', fg='white', bg=fundo).place(x=340, y=340)
-            ttk.Combobox(self, values=lista_ind, textvariable=self.ind_s, width=25, font='Arial 12', justify=CENTER, state='readonly').place(x=340, y=365)
+            Label(self, text='Indicator:', font='Arial 12 bold', fg='white', bg=fundo).place(x=340, y=340)
+            ttk.Combobox(self, values=self.list_ind, textvariable=self.ind_s, width=25, font='Arial 12', justify=CENTER, state='readonly').place(x=340, y=365)
 
             self.por_trei = IntVar()
             self.por_trei.set(70)
-            Label(self, text="Porção para treinamento:", font='Arial 12 bold', fg='white', bg=fundo).place(x=50, y=400)
+            Label(self, text="Training portion:", font='Arial 12 bold', fg='white', bg=fundo).place(x=50, y=400)
             Scale(self, variable=self.por_trei, orient=HORIZONTAL, length=240).place(x=50, y=425)
         
             self.num_teste = IntVar()
             self.num_teste.set(5)
-            Label(self, text="Número de testes (int):", font='Arial 12 bold', fg='white', bg=fundo).place(x=340, y=400)
+            Label(self, text="Number of tests (int):", font='Arial 12 bold', fg='white', bg=fundo).place(x=340, y=400)
             self.ent_num_teste = Entry(self, textvariable=self.num_teste, width=27, font='Arial 12', justify=CENTER).place(x=340, y=425)
 
             Button(self, text='Preview', font='Arial 11 bold', fg='white', bg=fun_b, width=25, command=self.generate_preview_svm).place(x=50, y=505)
             self.save_model = IntVar()
-            Checkbutton(self, text='Salvar modelo', variable=self.save_model, bg=fundo, font='Arial 12 bold', activebackground=fundo).place(x=340, y=505)
+            Checkbutton(self, text='Save model', variable=self.save_model, bg=fundo, font='Arial 12 bold', activebackground=fundo).place(x=340, y=505)

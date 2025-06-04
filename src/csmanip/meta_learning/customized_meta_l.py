@@ -2,6 +2,7 @@ from sklearn import tree
 from sklearn.neural_network import MLPRegressor
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn.svm import SVR
+from math import floor
 
 def customized_meta_learning(self, indicator, base_l, triangulation_method, meta_l, pre1, pre2, n_test, sliding_window):
         m1_40_t, m1_40_r, m2_40_t, m2_40_r, m3_20_t, m3_20_r = self.prepare_input(indicator, sliding_window)

@@ -16,6 +16,7 @@ src/csmanip/machine_learning/decision_trees.py
 src/csmanip/machine_learning/gaussian_process.py
 src/csmanip/machine_learning/gui_helpers.py
 src/csmanip/machine_learning/machine_learning.py
+src/csmanip/machine_learning/ml.py
 src/csmanip/machine_learning/nearest_neighbors.py
 src/csmanip/machine_learning/neural_network.py
 src/csmanip/machine_learning/support_vector.py
