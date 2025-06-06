@@ -22,11 +22,11 @@ class MachineLearning(Toplevel):
         self.ind_s.set('Maximum temperature')
         self.list_ind = ["Precipitation", 'Maximum temperature', 'Minimum temperature']
             
-        self.title('Aprendizado de máquina')
+        self.title('Machine learning')
         self.geometry('800x800')
         self.configure(background=fundo)
 
-        Label(self, text='APRENDIZADO DE MÁQUINA', font='Arial 14 bold',
+        Label(self, text='MACHINE LEARNING', font='Arial 14 bold',
                fg='white', bg=fundo).place(x=200, y=20)
 
         self.ml_selected = StringVar()

@@ -193,26 +193,6 @@ class View():
             min_abs_error, exact_min, pred_min, y_exact, y_pred, x_axis
         )
 
-    def generate_preview_Kn(self, master):
-        prev = Training()
-        parameters = get_parameters_ml(master)
-
-        cidade = parameters["cidade"]
-        salvar_m = parameters["save_model"]
-        n_tes = parameters["num_testes"]
-        divisao = parameters["porcentagem_treinamento"]
-        n_neig = parameters["n_neighbors"]
-        algor = parameters["algorithm"]
-        leaf_s = parameters["leaf_size"]
-        pv = parameters["p_v"]
-        n_job = parameters["n_jobs"]
-            
-        indicador = master.ind_s.get()
-        indicator = get_indicator_code(indicator)
-
-        pts, media_ea, media_er, maior_ea, exat_maior, pre_maior, menor_ea, exat_menor, pre_menor, eixo_y_exato, eixo_y_predict, eixo_x = prev.KNeighbors(cidade, indicador, divisao, n_tes, n_neig, algor, leaf_s, pv, n_job, salvar_m)
-        master.data_preview(pts, media_ea, media_er, maior_ea, exat_maior, pre_maior, menor_ea, exat_menor, pre_menor, eixo_y_exato, eixo_y_predict, eixo_x)
-
     def generate_param(self, master):
         opcao = master.ml_selected.get()
         if opcao == 'Decision Trees':

@@ -12,5 +12,3 @@ files = ["src/csmanip/data/BeloHorizonte.csv", "src/csmanip/data/Ibirite.csv", "
 
 #clim.triangulation("Arithmetic Average", "Maximum Temperature")
 
-mainwindow = csmanip.Framework()
-mainwindow.mainloop()
