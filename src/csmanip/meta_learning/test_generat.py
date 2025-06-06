@@ -34,12 +34,6 @@ class TestsGenerator:
     def generate_custom_test(self, base_model='Decision Trees', triangulation='Arithmetic Average',
                              meta_model='Decision Trees', indicator='Maximum temperature',
                              num_tests=1, input_window='Yes'):
-        base_model = self.ml_lv0_p
-        triangulation = self.ml_tr0_p
-        meta_model = self.ml_lv1
-        indicator = self.ind_meta_perso
-        num_tests = int(self.num_teste_mtp)
-        input_window = self.type_input
 
         if indicator == "Precipitation":
             focus = 1

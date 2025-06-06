@@ -90,7 +90,7 @@ class TestsGenerator(Toplevel):
         Label(self, text="Número de testes (int):", font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=340, y=620)
         self.ent_num_teste = Entry(self, textvariable=self.num_teste_mtc, width=29, font='Arial 12', justify=CENTER).place(x=340, y=650)
         
-        Button(self, text='Gerar Preview TG', font='Arial 11 bold', bg=colors.fun_meta_le, fg='white', width=62, command=self.gerar_global_test).place(x=40, y=690)
+        Button(self, text='Gerar Preview TG', font='Arial 11 bold', bg=colors.fun_meta_le, fg='white', width=62, command=self.generate_global_test).place(x=40, y=690)
 
         #Aviso
         LabelFrame(self, text='ATENÇÃO:', width=600, height=120, font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=20, y=740)
