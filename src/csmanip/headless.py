@@ -16,7 +16,7 @@ from .triangulation.triangulation import Triangulation
 from .machine_learning.machine_learning import MachineLearning
 from .machine_learning.ml import Ml
 from .meta_learning.meta_learning import MetaLearning
-from .meta_learning.tests_generator import TestsGenerator
+from .meta_learning.test_generat import TestsGenerator
 
 class Headless():
     def __init__(self):
@@ -519,6 +519,14 @@ class Headless():
         ml.gaussian_process(alpha_gp, n_restarts_op, normalize_y_gp, copy_X_train,
                             rand_state_gp, por_trei, num_teste, save_model)
 
-    def open_meta(self):
-        window = TestsGenerator()
-        window.mainloop()
+    def generate_custom_test(self, base_model='Decision Trees', triangulation='Arithmetic Average',
+                             meta_model='Decision Trees', indicator='Maximum temperature',
+                             num_tests=1, input_window='Yes'):
+        meta = TestsGenerator()
+        meta.generate_custom_test(base_model, triangulation, meta_model,
+                                  indicator, num_tests, input_window)
+        
+    def generate_global_test(self, indicator='Maximum temperature', 
+                             num_tests=1, window_type='Yes', print_results=True):
+        meta = TestsGenerator()
+        meta.generate_global_test(indicator, num_tests, window_type, print_results)

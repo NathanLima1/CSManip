@@ -20,7 +20,7 @@ def combine_meta_learning(self, target, pre1, pre2, n_test, window):
         else:
             indicator = 3
 
-        m1_40_t, m1_40_r, m2_40_t, m2_40_r, m3_20_t, m3_20_r = self.prepara_input(indicator, window)
+        m1_40_t, m1_40_r, m2_40_t, m2_40_r, m3_20_t, m3_20_r = self.prepare_input(indicator, window)
 
         log_file = open('meta_comb.txt', 'w')
         csv_results = open('meta_res.csv', 'w')

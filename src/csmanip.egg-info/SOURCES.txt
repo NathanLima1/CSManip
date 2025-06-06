@@ -29,6 +29,8 @@ src/csmanip/meta_learning/combine_meta_l.py
 src/csmanip/meta_learning/customized_meta_l.py
 src/csmanip/meta_learning/gen_param.py
 src/csmanip/meta_learning/meta_learning.py
+src/csmanip/meta_learning/meta_view.py
+src/csmanip/meta_learning/test_generat.py
 src/csmanip/meta_learning/tests_generator.py
 src/csmanip/meta_learning/view.py
 src/csmanip/styles/colors.py
