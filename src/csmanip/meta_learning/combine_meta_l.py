@@ -4,6 +4,13 @@ from sklearn.neighbors import KNeighborsRegressor
 from sklearn.svm import SVR
 from math import floor
 import os
+import sys
+import time
+
+def animated_loading(step):
+    dots = ['.', '..', '...']
+    sys.stdout.write("\rLoading"+dots[step%len(dots)])
+    sys.stdout.flush()
 
 def combine_meta_learning(self, target, pre1, pre2, n_test, window):
         machine_learning_models = ['None', 'Decision Trees', 'Neural network', 'Nearest Neighbors', 'Support Vector']
@@ -65,7 +72,8 @@ def combine_meta_learning(self, target, pre1, pre2, n_test, window):
 
                         os.system('cls' if os.name == 'nt' else 'clear')  # Clear terminal
                         print(f"{final_matrix[0]} ---")
-                        print("Loading...")
+                        animated_loading(model_counter)
+                        time.sleep(0.1)
 
                         if pre2 == 0:
                             if meta_models[k] == 'Decision Trees':

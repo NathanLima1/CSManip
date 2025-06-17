@@ -207,12 +207,18 @@ class Framework(Frame):
         elif self.parameter.get() == "Minimum temperature":
             y_name = "Temperature (°C)"
             col = 5
+        else:
+            msg.showwarning(title="Parameter Missing!", message="You must select a parameter!")
         return y_name, col
 
     def common_graphs(self):
         print("Entrou Principal common_graphs")
         data_processor = DataProcessing()
-        analyzed_data = data_processor.load_data_file(self.type_data.get())
+        type_data = self.type_data.get()
+        if type_data == '':
+            msg.showwarning(title="City Missing!", message="You must select a city!")
+
+        analyzed_data = data_processor.load_data_file(type_data)
 
         self.generate_range()
 
@@ -448,14 +454,16 @@ class Framework(Frame):
         elif ind == 'Maximum temperature':
             focus = 2
             y_label = "Temperature(°C)"
-        else:
+        elif ind == "Minimum temperature":
             focus = 3
             y_label = "Temperature(°C)"
+        else:
+            msg.showwarning(title="Parameter Missing!", message="You must select a parameter!")
 
 
-        metodo_list = ['Arithmetic Averange', 'Inverse Distance Weighted', 'Regional Weight', 'Optimized Normal Ratio']  
+        metodo_list = ['Arithmetic Average', 'Inverse Distance Weighted', 'Regional Weight', 'Optimized Normal Ratio']  
 
-        if met == 'Arithmetic Averange':
+        if met == 'Arithmetic Average':
             trian.avg(focus)
             eixo_x, eixo_y_tri, eixo_y_exato, media_ea, media_er, lixo = trian.get_avg()
         elif met == 'Inverse Distance Weighted':
@@ -464,9 +472,11 @@ class Framework(Frame):
         elif met == 'Regional Weight':
             trian.rw(focus)
             eixo_x, eixo_y_tri, eixo_y_exato, media_ea, media_er, lixo = trian.get_rw()
-        else:
+        elif met == "Optimized Normal Ratio":
             trian.onr(focus)
             eixo_x, eixo_y_tri, eixo_y_exato, media_ea, media_er, lixo = trian.get_onr()
+        else:
+            msg.showwarning(title="Triangulation method Missing!", message="You must select a method of triangulation!")
 
         
 
@@ -541,13 +551,19 @@ class Framework(Frame):
 
     def histograma(self):
         t = DataProcessing()
-        data = t.load_data_file(self.data_hist.get())
+        data_hist = self.data_hist.get()
+        if data_hist == '':
+            msg.showwarning(title="City Missing!", message="You must select a city!")
+
+        data = t.load_data_file(data_hist)
         if self.paramt_hist.get() == "Precipitation":
             col = 3
         elif self.paramt_hist.get() == "Maximum temperature":
             col = 4
         elif self.paramt_hist.get() == "Minimum temperature":
             col = 5
+        else:
+            msg.showwarning(title="Parameter Missing!", message="You must select a parameter!")
 
         mat = self.prepara_mat(data, col)
         
@@ -670,15 +686,21 @@ class Framework(Frame):
         toolbar.place(x=1150, y=10)
         toolbar.update()
 
-    def boxplot_grafico(self):
+    def boxplot_graph(self):
         t = DataProcessing()
-        data = t.load_data_file(self.data_hist.get())
+        data_hist = self.data_hist.get()
+        if data_hist == '':
+            msg.showwarning(title="City Missing!", message="You must select a city!")
+
+        data = t.load_data_file(data_hist)
         if self.paramt_hist.get() == "Precipitation":
             col = 3
         elif self.paramt_hist.get() == "Maximum temperature":
             col = 4
         elif self.paramt_hist.get() == "Minimum temperature":
             col = 5
+        else:
+            msg.showwarning(title="Parameter Missing!", message="You must select a parameter!")
 
         mat = self.prepara_mat(data, col)
         
@@ -765,20 +787,20 @@ class Framework(Frame):
         Label(self, text='Neighbor C:', font='Arial 11 bold', bg=colors.fundo, fg='white', state=DISABLED).place(x=220, y=115)
         self.comb_vc = ttk.Combobox(self, width=20, font='Arial 11', justify=CENTER, state=DISABLED).place(x=224, y=135)
 
-        Button(self, text='Confirmar Grupo', font='Arial 12 bold', fg='white', bg=colors.fun_b, width=38, command=self.process_selection, state=DISABLED).place(x=20, y=170)
+        Button(self, text='Confirm Group', font='Arial 12 bold', fg='white', bg=colors.fun_b, width=38, command=self.process_selection, state=DISABLED).place(x=20, y=170)
 
 
-        Label(self, text='Visualizar Dados', font='Arial 14 bold', fg='white', bg=colors.fundo).place(x=140, y=210)
-        Label(self, text='Dado:', font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=20, y=240)
+        Label(self, text='View Data', font='Arial 14 bold', fg='white', bg=colors.fundo).place(x=140, y=210)
+        Label(self, text='Data:', font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=20, y=240)
         self.type_data = StringVar()
         data_list = ['Target city', 'Neighbor A', 'Neighbor B', 'Neighbor C', 'Common data']
         self.comb_type_data = ttk.Combobox(self, values=data_list, textvariable=self.type_data, width=12, font='Arial 12', justify=CENTER, state='readonly').place(x=20, y=260)
         
-        Label(self, text='Parâmetro:', font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=165, y=240)
+        Label(self, text='Parameter:', font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=165, y=240)
         self.parameter = StringVar()
         para_list = ["Precipitation", 'Maximum temperature', 'Minimum temperature']
         self.comb_parameter = ttk.Combobox(self, values=para_list, textvariable=self.parameter, width=12, font='Arial 12', justify=CENTER, state='readonly').place(x=165, y=260)
-        Button(self, text='Selecionar', font='Arial 11 bold', fg='white', bg=colors.fun_b, width=10, command=self.common_graphs).place(x=310, y=255)
+        Button(self, text='Select', font='Arial 11 bold', fg='white', bg=colors.fun_b, width=10, command=self.common_graphs).place(x=310, y=255)
 
        
         Label(self, text='Start:', font='Arial 12 bold', fg='white', bg=colors.fundo, state=DISABLED).place(x=20, y=290)
@@ -798,7 +820,7 @@ class Framework(Frame):
         ttk.Combobox(self, values=para_list, textvariable=self.paramt_hist, width=18, font='Arial 12', justify=CENTER, state='readonly').place(x=20, y=410)
         Button(self, text='Histograma, last 10y', font='Arial 11 bold', fg='white', bg=colors.fun_meta_le, width=20, command=self.histograma).place(x=220, y=355) 
         
-        Button(self, text='Boxplot, last 10y', font='Arial 11 bold', fg='white', bg=colors.fun_meta_le, width=20, command=self.boxplot_grafico).place(x=220, y=405) 
+        Button(self, text='Boxplot, last 10y', font='Arial 11 bold', fg='white', bg=colors.fun_meta_le, width=20, command=self.boxplot_graph).place(x=220, y=405) 
 
         Label(self, text='Techniques', font='Arial 14 bold', fg='white', bg=colors.fundo).place(x=170, y=460)
         Button(self, text='Machine Learning', font='Arial 11 bold', fg='white', bg=colors.fun_ap, width=42, command=self.open_machine).place(x=20, y=495)

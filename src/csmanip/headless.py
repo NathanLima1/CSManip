@@ -10,6 +10,9 @@ import matplotlib.dates as mdates
 import datetime as dt
 import os
 import numpy as np
+import threading
+import time
+import sys
 from .styles import colors
 from .data_processing.data_processing import DataProcessing
 from .triangulation.triangulation import Triangulation
@@ -56,6 +59,16 @@ class Headless():
         self.neighbor_a = self.all_city_names[1]
         self.neighbor_b = self.all_city_names[2]
         self.neighbor_c = self.all_city_names[3]
+
+    def loading_animation(self, stop_event):
+        dots = ['.', '..', '...', '.']
+        step = 0
+        while not stop_event.is_set():
+            sys.stdout.write('\rLoading' + dots[step % len(dots)])
+            sys.stdout.flush()
+            step += 1
+            time.sleep(0.5)
+        sys.stdout.write('\rDone!            \n')
 
     def process_selection(self):
         if (
@@ -107,7 +120,17 @@ class Headless():
             data_processor.download_path = os.getcwd()
 
             self.save_location = os.getcwd()
+
+            # thread para mostrar que está carregando
+            stop_event = threading.Event()
+            loading_thread = threading.Thread(target=self.loading_animation, args=(stop_event,))
+            loading_thread.start()
+
             data_processor.get_processed_data()
+
+            # thread é juntada novamente
+            stop_event.set()
+            loading_thread.join()
 
             print("Sucess! Files selected with sucess!")
         except:
