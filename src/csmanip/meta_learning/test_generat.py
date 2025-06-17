@@ -18,8 +18,6 @@ class TestsGenerator:
         # sliding window
         self.type_input = 'Yes'
 
-        # button
-        self.generate_custom_test()
         self.pre_nn_comb = False
         self.pre_dt_comb = False
         self.pre_nneig_comb = False
@@ -28,8 +26,7 @@ class TestsGenerator:
 
         self.ind_meta_comb = 'Maximum temperature'
         self.num_teste_mtc = 1
-        # button
-        self.generate_global_test()
+        
 
     def generate_custom_test(self, base_model='Decision Trees', triangulation='Arithmetic Average',
                              meta_model='Decision Trees', indicator='Maximum temperature',
@@ -99,7 +96,7 @@ class TestsGenerator:
             print("\t".join(headers))
             for model in all_models:
                 row = [
-                    model[0],  # Model name
+                    f"{model[0]}",  # Model name
                     model[1],  # Base learning
                     model[2],  # Triangulation
                     model[3],  # Meta learning

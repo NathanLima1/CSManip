@@ -9,6 +9,7 @@ import matplotlib.dates as mdates
 import datetime as dt
 import os
 import numpy as np
+import threading
 from .styles import colors
 from .data_processing.data_processing import DataProcessing
 from .triangulation.triangulation import Triangulation
@@ -105,15 +106,39 @@ class Framework(Frame):
             state='readonly'
         ).place(x=224, y=135)
 
-        Button(
+        self.confirm_group = Button(
             self,
-            text='Confirmar Grupo',
+            text='Confirm Group',
             font='Arial 12 bold',
             fg='white',
             bg=colors.fun_b,
             width=38,
-            command=self.process_selection
-        ).place(x=20, y=170)
+            command=self.on_click
+        )
+        self.confirm_group.place(x=20, y=170)
+
+    def on_click(self):
+        self.confirm_group.config(command=None)  # Remove o comando temporariamente
+        self.confirm_group.config(fg='white')    # Força a cor branca
+        self.loading = True
+        self.loading_step = 0
+        self.animate_loading()
+        threading.Thread(target=self.run_process).start()
+
+    def animate_loading(self):
+        if self.loading:
+            dots = '.' * (self.loading_step % 4)
+            self.confirm_group.config(text=f"Loading{dots}")
+            self.loading_step += 1
+            self.after(500, self.animate_loading)
+
+    def run_process(self):
+        self.process_selection()
+        self.after(0, self.reset_button)
+
+    def reset_button(self):
+        self.loading = False
+        self.confirm_group.config(text="Confirm Group", command=self.on_click)
 
     def process_selection(self):
         # antiga tratar
@@ -124,7 +149,7 @@ class Framework(Frame):
             or self.neighbor_b.get() == ''
             or self.neighbor_c.get() == ''
         ):
-            msg.showerror(title='Dados Incompletos', message="Alguma(s) cidade(s) não foi(foram) selecionada(s)")
+            msg.showerror(title='Incomplet Data', message="Some city(ies) were not selected")
             return
 
         self.city_history = [
@@ -169,7 +194,7 @@ class Framework(Frame):
         self.save_location = os.getcwd()
         data_processor.get_processed_data()
 
-        msg.showinfo(title="Sucesso!", message="Arquivos Selecionados com sucesso!")
+        msg.showinfo(title="Success!", message="Files selected with success!")
 
     def get_col(self):
         print("Entrou Principal get_col")
@@ -287,7 +312,7 @@ class Framework(Frame):
         ano_inicio = int(self.var_ini.get())
         ano_final = int(self.var_fim.get())
         if ano_final < ano_inicio:
-            msg.showerror(title='Invalid', message='O range inserido é inválido')
+            msg.showerror(title='Invalid', message='The entered range is invalid')
             return
         if self.parameter.get() == 'Common data':
             self.grafico_dc(ano_inicio,ano_final)
@@ -301,7 +326,7 @@ class Framework(Frame):
             eixo_y4 = list()
             util, tar,t_va, t_vb, t_vc = my_data.get_quantities()
             eixo_y_bar = [util, tar,t_va, t_vb, t_vc]
-            eixo_x_bar = ['Comum', 'target','Total vA', 'Total vB', 'Total vC']
+            eixo_x_bar = ['Common', 'target','Total vA', 'Total vB', 'Total vC']
         else:
             eixo_y = list()
 
@@ -370,7 +395,7 @@ class Framework(Frame):
             plot3.set_ylabel(nome_y)
             plot4.set_ylabel(nome_y)
             plot5.set_ylabel(nome_y)
-            plot6.set_ylabel('Qtd. de dados')
+            plot6.set_ylabel('Data quantity')
             
         else:
             plot1 = fig.add_subplot(111)
@@ -400,11 +425,11 @@ class Framework(Frame):
         teste = DataProcessing()
         self.var_ini = StringVar()
         self.anos = teste.get_year_range(self.type_data.get())
-        Label(self, text='Início:', font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=20, y=290)
+        Label(self, text='Start:', font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=20, y=290)
         self.com_ini = ttk.Combobox(self, values=self.anos, textvariable=self.var_ini, font='Arial 12', justify=CENTER, state='readonly', width=12).place(x=20, y=310)
 
         self.var_fim = StringVar()
-        Label(self, text='Final:', font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=165, y=290)
+        Label(self, text='End:', font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=165, y=290)
         self.com_fim = ttk.Combobox(self, values=self.anos, textvariable=self.var_fim, font='Arial 12', justify=CENTER, state='readonly', width=12).place(x=165, y=310)
         
         Button(self, text='Def. Range', font='Arial 11 bold', fg='white', bg=colors.fun_b, width=10, command=self.range_graphs).place(x=310, y=305)
@@ -449,16 +474,16 @@ class Framework(Frame):
        
         media_ea = round(media_ea, 4)
         media_er = round(media_er, 4)
-        texto = 'Média Erro absoluto: '+ str(media_ea) + ' | Média Erro relativo: '+ str(media_er)
+        texto = 'Mean Absolute Error: '+ str(media_ea) + ' | Mean Relative Error: '+ str(media_er)
         figura = Figure(figsize=(14.5,9.5), dpi=100)
         figura.subplots_adjust(left=0.05, bottom=0.08, right=0.98, top=0.93)
         plot_r = figura.add_subplot(111)
-        plot_r.plot(eixo_x, eixo_y_exato,label='Exato', color='green')
+        plot_r.plot(eixo_x, eixo_y_exato,label='Exact', color='green')
         plot_r.plot(eixo_x, eixo_y_tri, label='IDW', color='red')
         plot_r.legend()
         plot_r.grid(True)
         plot_r.set_ylabel(y_label)
-        plot_r.set_xlabel("Comparações")
+        plot_r.set_xlabel("Comparisons")
         plot_r.set_title(texto)
         
 
@@ -700,9 +725,9 @@ class Framework(Frame):
         fig.subplots_adjust(left=0.05, bottom=0.08, right=0.98, top=0.93)
      
         plot1 = fig.add_subplot(1,1,1)
-        plot1.set_title("Boxplot para Maximum temperature [10 Anos]")
+        plot1.set_title("Boxplot for Maximum temperature [10 Years]")
         plot1.boxplot(boxplot)
-        plot1.set_xlabel('Ano')
+        plot1.set_xlabel('Year')
         plot1.set_ylabel(self.data_hist.get())
         
 
@@ -728,7 +753,7 @@ class Framework(Frame):
         self.master.title("IC_FAPEMGIG - V1.0") #Colocando o titulo na aba da ferramenta
         self.master.geometry('800x800') #Definindo o tamanho inicial da tela (podendo expandir)
 
-        Button(self, text='Selecionar Banco de Dados', font='Arial 12 bold', fg='white', bg=colors.fun_ap, width=38, command=self.list_cities).place(x=20, y=20) #Botão para os usuários selecionar a pasta que tem todos os arquivos.csv
+        Button(self, text='Select Data Base', font='Arial 12 bold', fg='white', bg=colors.fun_ap, width=38, command=self.list_cities).place(x=20, y=20) #Botão para os usuários selecionar a pasta que tem todos os arquivos.csv
         self.pack(fill='both', expand=True)
 
         Label(self, text='Target city:', font='Arial 11 bold', bg=colors.fundo, fg='white', state=DISABLED).place(x=20, y=65)
@@ -756,38 +781,38 @@ class Framework(Frame):
         Button(self, text='Selecionar', font='Arial 11 bold', fg='white', bg=colors.fun_b, width=10, command=self.common_graphs).place(x=310, y=255)
 
        
-        Label(self, text='Início:', font='Arial 12 bold', fg='white', bg=colors.fundo, state=DISABLED).place(x=20, y=290)
+        Label(self, text='Start:', font='Arial 12 bold', fg='white', bg=colors.fundo, state=DISABLED).place(x=20, y=290)
         self.com_ini = ttk.Combobox(self, font='Arial 12', justify=CENTER, state=DISABLED, width=12).place(x=20, y=310)
-        Label(self, text='Final:', font='Arial 12 bold', fg='white', bg=colors.fundo, state=DISABLED).place(x=165, y=290)
+        Label(self, text='End:', font='Arial 12 bold', fg='white', bg=colors.fundo, state=DISABLED).place(x=165, y=290)
         self.com_fim = ttk.Combobox(self, font='Arial 12', justify=CENTER, state=DISABLED, width=12).place(x=165, y=310)
         
         Button(self, text='Def. Range', font='Arial 11 bold', fg='white', bg=colors.fun_b, width=10, command=self.range_graphs, state=DISABLED).place(x=310, y=305)
 
 
-        Label(self, text='Dado', font='Arial 11 bold', fg='white', bg=colors.fundo).place(x=20, y=340)    
+        Label(self, text='Data', font='Arial 11 bold', fg='white', bg=colors.fundo).place(x=20, y=340)    
         self.data_hist = StringVar()
         datahist_list = ['Target city', 'Neighbor A', 'Neighbor B', 'Neighbor C']  
         ttk.Combobox(self, values=datahist_list, textvariable=self.data_hist, width=18, font='Arial 12', justify=CENTER, state='readonly').place(x=20, y=360)
-        Label(self, text='Parâmetro', font='Arial 11 bold', fg='white', bg=colors.fundo).place(x=20, y=390)    
+        Label(self, text='Parameter', font='Arial 11 bold', fg='white', bg=colors.fundo).place(x=20, y=390)    
         self.paramt_hist = StringVar()
         ttk.Combobox(self, values=para_list, textvariable=self.paramt_hist, width=18, font='Arial 12', justify=CENTER, state='readonly').place(x=20, y=410)
-        Button(self, text='Histograma, últimos 10y', font='Arial 11 bold', fg='white', bg=colors.fun_meta_le, width=20, command=self.histograma).place(x=220, y=355) 
+        Button(self, text='Histograma, last 10y', font='Arial 11 bold', fg='white', bg=colors.fun_meta_le, width=20, command=self.histograma).place(x=220, y=355) 
         
-        Button(self, text='Boxplot, últimos 10y', font='Arial 11 bold', fg='white', bg=colors.fun_meta_le, width=20, command=self.boxplot_grafico).place(x=220, y=405) 
+        Button(self, text='Boxplot, last 10y', font='Arial 11 bold', fg='white', bg=colors.fun_meta_le, width=20, command=self.boxplot_grafico).place(x=220, y=405) 
 
-        Label(self, text='Técnicas', font='Arial 14 bold', fg='white', bg=colors.fundo).place(x=170, y=460)
+        Label(self, text='Techniques', font='Arial 14 bold', fg='white', bg=colors.fundo).place(x=170, y=460)
         Button(self, text='Machine Learning', font='Arial 11 bold', fg='white', bg=colors.fun_ap, width=42, command=self.open_machine).place(x=20, y=495)
 
         Label(self, text='Method', font='Arial 11 bold', fg='white', bg=colors.fundo).place(x=20, y=530)    
         self.metodo = StringVar()
-        metodo_list = ['Arithmetic Averange', 'Inverse Distance Weighted', 'Regional Weight', 'Optimized Normal Ratio']  
+        metodo_list = ['Arithmetic Average', 'Inverse Distance Weighted', 'Regional Weight', 'Optimized Normal Ratio']  
         self.comb_metodo = ttk.Combobox(self, values=metodo_list, textvariable=self.metodo, width=18, font='Arial 12', justify=CENTER, state='readonly').place(x=20, y=550)
-        self.teste = Label(self, text='Parâmetro', font='Arial 11 bold', fg='white', bg=colors.fundo).place(x=20, y=580)    
+        self.teste = Label(self, text='Parameter', font='Arial 11 bold', fg='white', bg=colors.fundo).place(x=20, y=580)    
         self.paramt_tri = StringVar()
         self.comb_para_tro = ttk.Combobox(self, values=para_list, textvariable=self.paramt_tri, width=18, font='Arial 12', justify=CENTER, state='readonly').place(x=20, y=600)
-        Button(self, text='Triangulação', font='Arial 11 bold', fg='white', bg=colors.fun_alt, width=20, height=4, command=self.triangulation).place(x=220, y=540) 
+        Button(self, text='Triangulation', font='Arial 11 bold', fg='white', bg=colors.fun_alt, width=20, height=4, command=self.triangulation).place(x=220, y=540) 
         
-        Button(self, text='Mostrar Localização', font='Arial 11 bold', fg='white', bg=colors.fun_alt, width=42, command=self.show_map).place(x=20, y=640) 
+        Button(self, text='Show localization', font='Arial 11 bold', fg='white', bg=colors.fun_alt, width=42, command=self.show_map).place(x=20, y=640) 
 
         Button(self, text='Meta Learning', font='Arial 11 bold', fg='white', bg=colors.fun_b, width=42, command=self.open_meta).place(x=20, y=680)
        

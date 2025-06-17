@@ -165,6 +165,36 @@ class View():
             min_abs_error, exact_min, pred_min, y_exact, y_pred, x_axis
         )
 
+    def generate_preview_GP(self, master):
+        prev = Training()
+        save_model_flag = master.save_model.get()
+
+        city = master.get_end(master.data_s.get())
+        n_tests = int(master.num_teste.get())
+        split_percentage = int(master.por_trei.get())
+        alpha_gp = master.param_frame.alpha_gp.get()
+        kernel_type = master.kernel_type.get()
+        normalize_y_gp = master.param_frame.normalize_y_gp.get()
+        lenght_scale = master.param_frame.lenght_scale.get()
+        nu = master.param_frame.nu.get()
+        sigma_0 = master.param_frame.sigma_0.get()
+        alpha_rq = master.param_frame.alpha_rq.get()
+        n_restarts_op = master.param_frame.n_restarts_op.get()
+
+        indicator = master.ind_s.get()
+        indicator = get_indicator_code(indicator)
+
+        score, mean_abs_error, mean_rel_error, max_abs_error, exact_max, pred_max, min_abs_error, exact_min, pred_min, y_exact, y_pred, x_axis = prev.gaussian_process_regression(
+            city, indicator, split_percentage, n_tests, kernel_type, lenght_scale, 
+            nu, sigma_0, alpha_rq, alpha_gp, n_restarts_op, normalize_y_gp, save_model_flag
+        )
+
+        master.data_preview(
+            score, mean_abs_error, mean_rel_error, max_abs_error, exact_max, pred_max,
+            min_abs_error, exact_min, pred_min, y_exact, y_pred, x_axis
+        )
+
+
     def generate_preview_kn(self, master):
         prev = Training()
         save_model_flag = master.save_model.get()

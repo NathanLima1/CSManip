@@ -36,6 +36,7 @@ src/csmanip/meta_learning/view.py
 src/csmanip/styles/colors.py
 src/csmanip/training/__init__.py
 src/csmanip/training/decision_tree_tr.py
+src/csmanip/training/gaussian_process_tr.py
 src/csmanip/training/k_neighbors_tr.py
 src/csmanip/training/neural_network_tr.py
 src/csmanip/training/support_vector_tr.py

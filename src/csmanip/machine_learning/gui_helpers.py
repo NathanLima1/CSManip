@@ -26,15 +26,27 @@ class GPParameterFrame(LabelFrame):
         Label(self, text='Normalize_y (Bool 1/0):', font='Arial 12 bold', fg='white', bg=fundo).place(x=50, y=180)
         Entry(self, textvariable=self.normalize_y_gp, font='Arial 12', width=27, justify=CENTER).place(x=50, y=205)
 
-        self.copy_X_train = BooleanVar()
-        self.copy_X_train.set(0)
-        Label(self, text='Copy_X_train (Bool 1/0):', font='Arial 12 bold', fg='white', bg=fundo).place(x=340, y=180)
-        Entry(self, textvariable=self.copy_X_train, font='Arial 12', width=27, justify=CENTER).place(x=340, y=205)
+        self.kernel_type = StringVar()
+        self.kernel_type.set('RBF')
+        Label(self, text='Kernel type (Str ("RBF", "Matern", "DotProduct", "RationalQuadratic")):', font='Arial 12 bold', fg='white', bg=fundo).place(x=340, y=180)
+        Entry(self, textvariable=self.kernel_type, font='Arial 12', width=27, justify=CENTER).place(x=340, y=205)
 
-        self.rand_state_gp = StringVar()
-        self.rand_state_gp.set('None')
-        Label(self, text='Random_state ("None" / int):', font='Arial 12 bold', fg='white', bg=fundo).place(x=50, y=240)
-        Entry(self, textvariable=self.rand_state_gp, font='Arial 12', width=27, justify=CENTER).place(x=50, y=265)
+        self.length_scale = StringVar(value='1.0')
+        self.nu = StringVar(value='1.5')
+        self.sigma_0 = StringVar(value='1.0')
+        self.alpha_rq = StringVar(value='1.0')
+
+        Label(self, text='length_scale (float):', font='Arial 12 bold', fg='white', bg=fundo).place(x=50, y=140)
+        Entry(self, textvariable=self.length_scale, font='Arial 12', width=15, justify=CENTER).place(x=50, y=165)
+
+        Label(self, text='nu (Matern):', font='Arial 12 bold', fg='white', bg=fundo).place(x=230, y=140)
+        Entry(self, textvariable=self.nu, font='Arial 12', width=15, justify=CENTER).place(x=230, y=165)
+
+        Label(self, text='sigma_0 (DotProduct):', font='Arial 12 bold', fg='white', bg=fundo).place(x=410, y=140)
+        Entry(self, textvariable=self.sigma_0, font='Arial 12', width=15, justify=CENTER).place(x=410, y=165)
+
+        Label(self, text='alpha (RationalQuadratic):', font='Arial 12 bold', fg='white', bg=fundo).place(x=50, y=200)
+        Entry(self, textvariable=self.alpha_rq, font='Arial 12', width=15, justify=CENTER).place(x=50, y=225)
 
         self.lbf_dt_nn = LabelFrame(self, text='Dados', width=600, height=170, font='Arial 12 bold', fg ='white', bg=fundo).place(x=20, y=320)
 

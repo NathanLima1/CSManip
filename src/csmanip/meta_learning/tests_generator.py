@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import Label, LabelFrame, Toplevel, StringVar, IntVar, Entry, Button, Checkbutton, CENTER
 from tksheet import Sheet
+import threading
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from ..meta_learning.meta_learning import MetaLearning
@@ -18,18 +19,18 @@ class TestsGenerator(Toplevel):
 
         Label(self, text='META-LEARNING', font='Arial 14 bold', fg='white', bg=colors.fundo).place(x=240, y=20)
 
-        LabelFrame(self, text='TESTE PERSONALIZADO:', width=600, height=450, font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=20, y=60)
+        LabelFrame(self, text='CUSTOM TEST:', width=600, height=450, font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=20, y=60)
 
         Label(self, text='Base-Learning (Level 0):', font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=40, y=90)
         self.ml_lv0_p = StringVar()
         self.ml_lv0_p.set('Decision Trees')
-        lista_ml0 =  ['Nenhum','Decision Trees', 'Neural network', 'Nearest Neighbors', 'Support Vector', 'Gaussian Process']
+        lista_ml0 =  ['None','Decision Trees', 'Neural network', 'Nearest Neighbors', 'Support Vector', 'Gaussian Process']
         ttk.Combobox(self, values=lista_ml0, textvariable=self.ml_lv0_p, width=30, font='Arial 11', justify=CENTER, state='readonly').place(x=40, y=120)
 
         Label(self, text='Triangulation (Level 0):', font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=40, y=190)
         self.ml_tr0_p = StringVar()
         self.ml_tr0_p.set('Arithmetic Average')
-        lista_tr0 =  ['Nenhum', 'Arithmetic Average', 'Inverse Distance Weighted', 'Regional Weight', 'Optimized Normal Ratio']
+        lista_tr0 =  ['None', 'Arithmetic Average', 'Inverse Distance Weighted', 'Regional Weight', 'Optimized Normal Ratio']
         ttk.Combobox(self, values=lista_tr0, textvariable=self.ml_tr0_p, width=30, font='Arial 11', justify=CENTER, state='readonly').place(x=40, y=220)
 
         Label(self, text='Meta-Learning (Level 1):', font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=340, y=145)
@@ -46,27 +47,28 @@ class TestsGenerator(Toplevel):
 
         self.num_teste_mtp = IntVar()
         self.num_teste_mtp.set(1)
-        Label(self, text="Número de testes (int):", font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=340, y=270)
+        Label(self, text="Number of tests (int):", font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=340, y=270)
         self.ent_num_teste = Entry(self, textvariable=self.num_teste_mtp, width=29, font='Arial 12', justify=CENTER).place(x=340, y=300)
 
-        Label(self, text='Deseja usar alguma ML pré-parametrizada?', font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=40, y=340)
+        Label(self, text='Would you like to use any pre-configured ML model?', font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=40, y=340)
         self.pre_para_lv0 = IntVar()
         self.pre_para_lv1 = IntVar()
         Checkbutton(self, text='Level 0', variable=self.pre_para_lv0, bg=colors.fundo, font='Arial 12 bold', activebackground=colors.fundo).place(x=40, y=360)
         Checkbutton(self, text='Level 1', variable=self.pre_para_lv1, bg=colors.fundo, font='Arial 12 bold', activebackground=colors.fundo).place(x=180, y=360)
         
-        Label(self, text='Deseja utilizar a janela deslizante?', font='Arial 12 bold', fg='White', bg=colors.fundo).place(x=40, y=400)
+        Label(self, text='Would you like to use sliding window?', font='Arial 12 bold', fg='White', bg=colors.fundo).place(x=40, y=400)
         self.type_input = StringVar()
-        self.type_input.set('Sim')
-        lista_type_input = ['Sim', 'Não']
+        self.type_input.set('Yes')
+        lista_type_input = ['Yes', 'No']
         ttk.Combobox(self, values=lista_type_input, textvariable=self.type_input, width=30, font='Arial 11', justify=CENTER, state='readonly').place(x=40, y=430)
         
-        Button(self, text='Gerar Preview', font='Arial 11 bold', bg=colors.fun_meta_le, fg='white', width=62, command=self.generate_custom_test).place(x=40, y=470)
+        self.button_ct = Button(self, text='Generate Preview', font='Arial 11 bold', bg=colors.fun_meta_le, fg='white', width=62, command=self.on_click_ct)
+        self.button_ct.place(x=40, y=470)
 
         '''Teste global'''
-        LabelFrame(self, text='TESTE GLOBAL:', width=600, height=210, font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=20, y=520)
+        LabelFrame(self, text='GLOBAL TEST:', width=600, height=210, font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=20, y=520)
         
-        Label(self, text='Quais MLs você deseja utilizar?', font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=40, y=550)
+        Label(self, text='Wich MLs woud you like to use?', font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=40, y=550)
 
         self.pre_nn_comb = IntVar()
         self.pre_dt_comb = IntVar()
@@ -79,7 +81,7 @@ class TestsGenerator(Toplevel):
         Checkbutton(self, text='SV', variable=self.pre_sv_comb, bg=colors.fundo, font='Arial 12 bold', activebackground=colors.fundo).place(x=340, y=580)
         Checkbutton(self, text='GP', variable=self.pre_gp_comb, bg=colors.fundo, font='Arial 12 bold', activebackground=colors.fundo).place(x=440, y=580)
         
-        Label(self, text='Indicador climático:', font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=40, y=620)
+        Label(self, text='Climatica Indicator:', font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=40, y=620)
         self.ind_meta_comb = StringVar()
         self.ind_meta_comb.set('Maximum temperature')
         lista_ind_meta_p = ["Precipitation", 'Maximum temperature', 'Minimum temperature']
@@ -87,16 +89,63 @@ class TestsGenerator(Toplevel):
 
         self.num_teste_mtc = IntVar()
         self.num_teste_mtc.set(1)
-        Label(self, text="Número de testes (int):", font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=340, y=620)
+        Label(self, text="Number of tests (int):", font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=340, y=620)
         self.ent_num_teste = Entry(self, textvariable=self.num_teste_mtc, width=29, font='Arial 12', justify=CENTER).place(x=340, y=650)
         
-        Button(self, text='Gerar Preview TG', font='Arial 11 bold', bg=colors.fun_meta_le, fg='white', width=62, command=self.generate_global_test).place(x=40, y=690)
+        self.button_gt = Button(self, text='Generate Preview GT', font='Arial 11 bold', bg=colors.fun_meta_le, fg='white', width=62, command=self.on_click_gt)
+        self.button_gt.place(x=40, y=690)
 
         #Aviso
-        LabelFrame(self, text='ATENÇÃO:', width=600, height=120, font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=20, y=740)
-        Label(self, text='Dependendo da combinação feita no "Teste Personalizado" ou no "TESTE ', font='Arial 12 bold', fg='#FF8C00', bg=colors.fundo).place(x=40, y=770)
-        Label(self, text='GLOBAL", pode demorar alguns minutos, devido ao processamento.', font='Arial 12 bold', fg='#FF8C00', bg=colors.fundo).place(x=40, y=790)
-        Label(self, text='Fique à vontade para utilizar seu computador para fazer outras coisas.', font='Arial 12 bold', fg='#FF8C00', bg=colors.fundo).place(x=40, y=820)
+        LabelFrame(self, text='Warning!:', width=600, height=120, font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=20, y=740)
+        Label(self, text='Depending on the combination selected in the "Custom Test" or in the "GLOBAL ', font='Arial 12 bold', fg='#FF8C00', bg=colors.fundo).place(x=40, y=770)
+        Label(self, text='TEST", it may take a few minutes due to processing', font='Arial 12 bold', fg='#FF8C00', bg=colors.fundo).place(x=40, y=790)
+        Label(self, text='Feel free to use your computer for other tasks in meantime.', font='Arial 12 bold', fg='#FF8C00', bg=colors.fundo).place(x=40, y=820)
+
+    def on_click_gt(self):
+        self.button_gt.config(command=None)  # Remove o comando temporariamente
+        self.button_gt.config(fg='white')    # Força a cor branca
+        self.loading = True
+        self.loading_step = 0
+        self.animate_loading_gt()
+        threading.Thread(target=self.run_process_gt).start()
+
+    def animate_loading_gt(self):
+        if self.loading:
+            dots = '.' * (self.loading_step % 4)
+            self.button_gt.config(text=f"Loading{dots}")
+            self.loading_step += 1
+            self.after(500, self.animate_loading_gt)
+
+    def run_process_gt(self):
+        self.generate_global_test()
+        self.after(0, self.reset_button_gt)
+
+    def reset_button_gt(self):
+        self.loading = False
+        self.button_gt.config(text="Generate Preview GT", command=self.on_click_gt)
+
+    def on_click_ct(self):
+        self.button_ct.config(command=None)  # Remove o comando temporariamente
+        self.button_ct.config(fg='white')    # Força a cor branca
+        self.loading = True
+        self.loading_step = 0
+        self.animate_loading_ct()
+        threading.Thread(target=self.run_process_ct).start()
+
+    def animate_loading_ct(self):
+        if self.loading:
+            dots = '.' * (self.loading_step % 4)
+            self.button_ct.config(text=f"Loading{dots}")
+            self.loading_step += 1
+            self.after(500, self.animate_loading_ct)
+
+    def run_process_ct(self):
+        self.generate_custom_test()
+        self.after(0, self.reset_button_ct)
+
+    def reset_button_ct(self):
+        self.loading = False
+        self.button_ct.config(text="Generate Preview", command=self.on_click_ct)
 
     def generate_custom_test(self):
         """
@@ -184,7 +233,7 @@ class TestsGenerator(Toplevel):
     def generate_global_test(self):
         target_variable = self.ind_meta_comb.get()
         num_tests = int(self.num_teste_mtc.get())
-        window_type = 'Sim'
+        window_type = 'Yes'
 
         meta_learner = MetaLearning()
         all_models, model_ranking = meta_learner.combine_meta_learning(target_variable, 0, 0, num_tests, window_type)

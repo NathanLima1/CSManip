@@ -40,7 +40,7 @@ class MetaLearning:
         normalizer = Training()
         normalized_data = normalizer.normalize(data_matrix)  # Normalize each column and each row
 
-        if sliding_window == 'Sim':
+        if sliding_window == 'Yes':
             input_matrix, target_matrix = self.sliding_window(normalized_data)  # Prepare data using sliding window format
         else:
             input_matrix, target_matrix = self.common_input(normalized_data)
@@ -151,7 +151,7 @@ class MetaLearning:
         # Preparing level-0 learner predictions for level-1 learner
         prepared_predict_matrix = []
         
-        if sliding_window == 'Sim':
+        if sliding_window == 'Yes':
             for i in range(len(predict_inputs)):
                 predicted_value = float(base_learner.predict([predict_inputs[i]])[0])
                 prepared_sample = [

@@ -63,8 +63,9 @@ def combine_meta_learning(self, target, pre1, pre2, n_test, window):
                                 entry.extend([base_dates[l][0], base_dates[l][1], base_dates[l][2], interp_matrix[l], input_matrix[l][3]])
                             final_matrix.append(entry)
 
-                        os.system('cls')  # Clear terminal
+                        os.system('cls' if os.name == 'nt' else 'clear')  # Clear terminal
                         print(f"{final_matrix[0]} ---")
+                        print("Loading...")
 
                         if pre2 == 0:
                             if meta_models[k] == 'Decision Trees':
