@@ -255,10 +255,11 @@ class Headless():
 
         nome_y, col = self.get_col(parameter)
 
+        """
         if city == 'Common data':
             self.grafico_dc(city, self.first_year, self.last_year)
             return
-
+        """
         eixo_x = []
         eixo_y = []
         dados_lb = []
