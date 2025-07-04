@@ -35,8 +35,10 @@ src/csmanip/meta_learning/tests_generator.py
 src/csmanip/meta_learning/view.py
 src/csmanip/styles/colors.py
 src/csmanip/training/__init__.py
+src/csmanip/training/custom_tree.py
 src/csmanip/training/decision_tree_tr.py
 src/csmanip/training/gaussian_process_tr.py
+src/csmanip/training/hiperparam.py
 src/csmanip/training/k_neighbors_tr.py
 src/csmanip/training/neural_network_tr.py
 src/csmanip/training/support_vector_tr.py

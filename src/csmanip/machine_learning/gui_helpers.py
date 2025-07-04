@@ -101,29 +101,29 @@ class DTParameterFrame(LabelFrame):
     def _create_widgets(self, fundo, fun_alt):
         self.criterion_v = StringVar()
         lista_cri = ["squared_error", "friedman_mse", "absolute_error", "poisson"]
-        self.criterion_v.set("squared_error")
+        self.criterion_v.set("absolute_error")
         Label(self, text='Criterion:', font='Arial 12 bold', fg='white', bg=fundo).place(x=50, y=120)
         ttk.Combobox(self, values=lista_cri, textvariable=self.criterion_v, width=25, font='Arial 12', justify=CENTER, state='readonly').place(x=50, y=145)
 
         self.splitter_v = StringVar()
         lista_spl = ["best", "random"]
-        self.splitter_v.set("best")
+        self.splitter_v.set("random")
         Label(self, text='Splitter:', font='Arial 12 bold', fg='white', bg=fundo).place(x=340, y=120)
         ttk.Combobox(self, values=lista_spl, textvariable=self.splitter_v, width=25, font='Arial 12', justify=CENTER, state='readonly').place(x=340, y=145)
 
 
         self.maxd_v = StringVar()
-        self.maxd_v.set("10")
-        Label(self, text="Max_deph (int):", font='Arial 12 bold', fg='white', bg=fundo).place(x=50, y=180)
+        self.maxd_v.set("22")
+        Label(self, text="Max_depth (int):", font='Arial 12 bold', fg='white', bg=fundo).place(x=50, y=180)
         self.ent_maxd = Entry(self, textvariable=self.maxd_v, width=27, font='Arial 12', justify=CENTER).place(x=50, y=205)
 
         self.minsam_s_v = IntVar()
-        self.minsam_s_v.set(2)
+        self.minsam_s_v.set(6)
         Label(self, text="Min_samples_split (int/float (.)):", font='Arial 12 bold', fg='white', bg=fundo).place(x=340, y=180)
         self.minsam_s = Entry(self, textvariable=self.minsam_s_v, width=27, font='Arial 12', justify=CENTER).place(x=340, y=205)
 
         self.minsam_l_v = IntVar()
-        self.minsam_l_v.set(50)
+        self.minsam_l_v.set(5)
         Label(self, text="Min_samples_leaf (int/float (.)):", font='Arial 12 bold', fg='white', bg=fundo).place(x=50, y=240)
         self.ent_minsam_l = Entry(self, textvariable=self.minsam_l_v, width=27, font='Arial 12', justify=CENTER).place(x=50, y=265)
 
@@ -150,7 +150,7 @@ class DTParameterFrame(LabelFrame):
         self.ent_minimp_dec = Entry(self, textvariable=self.minimp_dec, width=27, font='Arial 12', justify=CENTER).place(x=340, y=385)
 
         self.ccp_alp_v = StringVar()
-        self.ccp_alp_v.set("0.0")
+        self.ccp_alp_v.set("0.001")
         Label(self, text="Ccp_alpha (value>0.0 float):", font='Arial 12 bold', fg='white', bg=fundo).place(x=50, y=420)
         self.ent_ccp_alp = Entry(self, textvariable=self.ccp_alp_v, width=27, font='Arial 12', justify=CENTER).place(x=50, y=445)
 

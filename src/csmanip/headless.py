@@ -18,6 +18,7 @@ from .data_processing.data_processing import DataProcessing
 from .triangulation.triangulation import Triangulation
 from .machine_learning.machine_learning import MachineLearning
 from .machine_learning.ml import Ml
+from .training.hiperparam import Hiperparam
 from .meta_learning.meta_learning import MetaLearning
 from .meta_learning.test_generat import TestsGenerator
 
@@ -153,8 +154,9 @@ class Headless():
         print("Entrou Headless generate_range")
         data_p = DataProcessing()
         self.years = data_p.get_year_range(city)
+
         if begin not in self.years or end not in self.years:
-            raise ValueError("The selected year cannot be selected")
+            raise ValueError("The selected year cannot be selected. Select one of these:", self.years)
         if begin > end:
             raise ValueError("The start year cannot be bigger than the end year")
         
@@ -254,7 +256,7 @@ class Headless():
         nome_y, col = self.get_col(parameter)
 
         if city == 'Common data':
-            self.grafico_dc(self.first_year, self.last_year)
+            self.grafico_dc(city, self.first_year, self.last_year)
             return
 
         eixo_x = []
@@ -553,3 +555,11 @@ class Headless():
                              num_tests=1, window_type='Yes', print_results=True):
         meta = TestsGenerator()
         meta.generate_global_test(indicator, num_tests, window_type, print_results)
+
+    def grid_search_dt(self):
+        hiper = Hiperparam()
+        hiper.grid_search_dt()
+
+    def randomized_search_dt(self):
+        hiper = Hiperparam()
+        hiper.randomized_search_dt()
