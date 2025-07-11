@@ -500,12 +500,12 @@ class Headless():
     def decision_tree(self, criterion_v="squared_error", splitter="best", maxd_v='10',
                       minsam_s_v=2, minsam_l_v=50, minweifra_l_v='0.0', maxfeat_v="sqrt",
                       maxleaf_n='10', minimp_dec='0.0', ccp_alp_v='0.0', 
-                      por_trei=70, num_teste=5,save_model=False):
+                      por_trei=70, num_tests=5,save_model=False):
         ml = Ml()
         ml.decision_tree(criterion_v, splitter, maxd_v,
                       minsam_s_v, minsam_l_v, minweifra_l_v, maxfeat_v,
                       maxleaf_n, minimp_dec, ccp_alp_v, 
-                      por_trei, num_teste,save_model)
+                      por_trei, num_tests,save_model)
         
     def neural_network(self, activation_v='relu', solver_v='adam', alpha_v='0.0001',
                        batch_size_v='auto', learning_rate_v='constant', learning_rate_init_v='0.001',
@@ -513,7 +513,7 @@ class Headless():
                        verbose_v=False, warm_start_v=False, momentum_v='0.9', nesterovs_momentum_v=True,
                        early_stopping_v=False, validation_fraction_v='0.1', beta_1_v='0.9',
                        beta_2_v='0.999', n_iter_no_change_v='10', max_fun_v='15000', por_trei=70,
-                       num_teste=5, save_model=False):
+                       num_tests=5, save_model=False):
         ml = Ml()
         ml.neural_network(activation_v, solver_v, alpha_v,
                        batch_size_v, learning_rate_v, learning_rate_init_v,
@@ -521,7 +521,7 @@ class Headless():
                        verbose_v, warm_start_v, momentum_v, nesterovs_momentum_v,
                        early_stopping_v, validation_fraction_v, beta_1_v,
                        beta_2_v, n_iter_no_change_v, max_fun_v, por_trei,
-                       num_teste, save_model)
+                       num_tests, save_model)
         
     def nearest_neighbors(self, n_neighbors_v=5, algorithm_v='auto', leaf_size_v=30,
                           p_v=2, n_jobs_v='5', por_trei=70, num_teste=5, save_model=False):
@@ -529,14 +529,14 @@ class Headless():
         ml.nearest_neighbors(n_neighbors_v, algorithm_v, leaf_size_v, p_v, n_jobs_v,
                              por_trei, num_teste, save_model)
         
-    def support_vector(self, kernel_v='rbf', degree_v=3, gamma_v='scale', coef0_v='0.0',
+    def support_vector_machine(self, kernel_v='rbf', degree_v=3, gamma_v='scale', coef0_v='0.0',
                        tol_v='0.001', c_v='1.0', epsilon_v='0.1', shrinking_v=True,
                        cache_size_v='200', verbose_v=False, maxiter_v=-1, por_trei=70,
-                       num_teste=5, save_model=False):
+                       num_tests=5, save_model=False):
         ml = Ml()
         ml.support_vector(kernel_v, degree_v, gamma_v, coef0_v, tol_v, c_v, epsilon_v,
                           shrinking_v, cache_size_v, verbose_v, maxiter_v, por_trei,
-                          num_teste, save_model)
+                          num_tests, save_model)
         
     def gaussian_process(self, alpha_gp='0.0000000001', n_restarts_op=0,
                          normalize_y_gp=False, copy_X_train=False, rand_state_gp='None',
@@ -553,9 +553,9 @@ class Headless():
                                   indicator, num_tests, input_window)
         
     def generate_global_test(self, indicator='Maximum temperature', 
-                             num_tests=1, window_type='Yes', print_results=True):
+                             num_tests=1, input_window='Yes', print_results=True):
         meta = TestsGenerator()
-        meta.generate_global_test(indicator, num_tests, window_type, print_results)
+        meta.generate_global_test(indicator, num_tests, input_window, print_results)
 
     def grid_search_dt(self):
         hiper = Hiperparam()
