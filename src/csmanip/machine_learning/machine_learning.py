@@ -32,6 +32,7 @@ class MachineLearning(Toplevel):
         self.ml_selected = StringVar()
         self.ml_selected.set('Decision Trees')
         lista_ml = ['Decision Trees',
+                    'Bagged Trees',
                      'Neural network',
                      'Nearest Neighbors',
                      'Support Vector',
@@ -121,6 +122,36 @@ class MachineLearning(Toplevel):
             #Button(self, text='Salvar Paramt.', font='Arial 11 bold', fg='white', bg=fun_b, width=25, command=self.salvar_paramt).place(x=340, y=685)
             self.save_model = IntVar()
             Checkbutton(self, text='Save model', variable=self.save_model, bg=fundo, font='Arial 12 bold', activebackground=fundo).place(x=340, y=685)
+        elif opcao == 'Bagged Trees':
+            Canvas(self, width=615, height=900, background=fundo, border=0).place(x=10, y=95)
+            self.param_frame = DTParameterFrame(self, fundo, fun_alt)
+            
+            Label(self, text="Training data:", font='Arial 12 bold', fg='white', bg=fundo).place(x=50, y=520)
+            self.combo_c = ttk.Combobox(self, values=self.list_dt, textvariable=self.data_s, width=25, font='Arial 12', justify=CENTER, state='readonly').place(x=50, y=545)
+
+            Label(self, text='Indicador:', font='Arial 12 bold', fg='white', bg=fundo).place(x=340, y=520)
+            ttk.Combobox(self, values=self.list_ind, textvariable=self.ind_s, width=25, font='Arial 12', justify=CENTER, state='readonly').place(x=340, y=545)
+
+            self.por_trei = IntVar()
+            self.por_trei.set(70)
+            Label(self, text="Training portion:", font='Arial 12 bold', fg='white', bg=fundo).place(x=50, y=580)
+            Scale(self, variable=self.por_trei, orient=HORIZONTAL, length=240).place(x=50, y=605)
+        
+            self.num_teste = IntVar()
+            self.num_teste.set(5)
+            Label(self, text="Number of tests (int):", font='Arial 12 bold', fg='white', bg=fundo).place(x=340, y=580)
+            self.ent_num_teste = Entry(self, textvariable=self.num_teste, width=27, font='Arial 12', justify=CENTER).place(x=340, y=605)
+
+            self.n_estimators = IntVar()
+            self.n_estimators.set(10)
+            Label(self, text='Number of estimators (int):', font='Arial 12 bold', fg='white', bg=fundo).place(x=50, y=640)
+            self.ent_n_estimators = Entry(self, textvariable=self.n_estimators, width=27, font='Arial 12', justify=CENTER).place(x=50, y=665)
+
+            Button(self, text='Preview', font='Arial 11 bold', fg='white', bg=fun_b, width=25, command=self.generate_preview_dt).place(x=50, y=685)
+            #Button(self, text='Salvar Paramt.', font='Arial 11 bold', fg='white', bg=fun_b, width=25, command=self.salvar_paramt).place(x=340, y=685)
+            self.save_model = IntVar()
+            Checkbutton(self, text='Save model', variable=self.save_model, bg=fundo, font='Arial 12 bold', activebackground=fundo).place(x=340, y=685)
+        
         elif opcao == 'Neural network':
             Canvas(self, width=615, height=900, background=fundo, border=0).place(x=10, y=95)
             self.param_frame = NNParameterFrame(self, fundo)

@@ -2,6 +2,7 @@ from .neural_network_tr import neural_network
 from .k_neighbors_tr import KNeighbors
 from .support_vector_tr import support_vector_regression
 from .decision_tree_tr import decision_tree_tr
+from .bagging_tree_tr import bagging_trees_tr
 from .gaussian_process_tr import gaussian_process_regression
 from math import floor
 from ..data_processing.data_processing import DataProcessing
@@ -18,6 +19,18 @@ class Training:
             max_depth, min_samples_leaf, max_features, max_leaf_nodes,
             n_tests, min_samples_split, min_weight_fraction_leaf,
             min_impurity_decrease, ccp_alpha, save_model)
+    
+    def bagging_trees(
+        self, city: str, indicator_code: int, split_ratio: float, criterion: str, splitter: str,
+        max_depth: int, min_samples_leaf: int, max_features, max_leaf_nodes: int,
+        n_tests: int, min_samples_split: int, min_weight_fraction_leaf: float,
+        min_impurity_decrease: float, ccp_alpha: float, save_model: bool, n_estimators: int
+        ):
+        return bagging_trees_tr(
+            self, city, indicator_code, split_ratio, criterion, splitter,
+            max_depth, min_samples_leaf, max_features, max_leaf_nodes,
+            n_tests, min_samples_split, min_weight_fraction_leaf,
+            min_impurity_decrease, ccp_alpha, save_model, n_estimators)
     
     def neural_network(
         self, city: str, indicator_code: int, split_ratio: float, n_tests: int,

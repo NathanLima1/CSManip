@@ -8,7 +8,7 @@ def generate_param(self):
 
     create_training_widgets(self, 340)
     
-    Button(self, text='Preview', font='Arial 11 bold', fg='white', bg=fun_b, width=25, command=self.gerar_preview_svm).place(x=50, y=505)
+    Button(self, text='Preview', font='Arial 11 bold', fg='white', bg=fun_b, width=25, command=self.generate_preview_svm).place(x=50, y=505)
     self.save_model = IntVar()
     Checkbutton(self, text='Salvar modelo', variable=self.save_model, bg=fundo, font='Arial 12 bold', activebackground=fundo).place(x=340, y=505)
 

@@ -5,6 +5,7 @@ from tkinter import Label, LabelFrame
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from . import decision_trees
+from . import bagging_trees
 from . import support_vector
 from . import neural_network
 from . import gaussian_process
@@ -77,6 +78,42 @@ class View():
         indicator = get_indicator_code(indicator)
 
         score, mean_abs_error, mean_rel_error, max_abs_error, exact_max, pred_max, min_abs_error, exact_min, pred_min, y_exact, y_pred, x_axis = prev.decision_tree(
+            city, indicator, split_percentage, criterion, splitter, max_depth,
+            min_samples_leaf, max_features, max_leaf_nodes, n_tests, min_samples_split,
+            min_weight_fraction_leaf, min_impurity_decrease, ccp_alpha, save_model_flag
+        )
+        master.data_preview(
+            score, mean_abs_error, mean_rel_error, max_abs_error, exact_max, pred_max,
+            min_abs_error, exact_min, pred_min, y_exact, y_pred, x_axis
+        )
+
+    def generate_preview_bt(self, master):
+        prev = Training()
+        save_model_flag = master.save_model.get()
+
+        # city = master.get_end(master.data_s.get())
+        city = master.data_s.get()
+        indicator = master.ind_s.get()
+        split_percentage = int(master.por_trei.get())
+        criterion = master.param_frame.criterion_v.get()
+        splitter = master.param_frame.splitter_v.get()
+        max_depth = int(master.param_frame.maxd_v.get())
+        min_samples_split = master.int_float(master.param_frame.minsam_s_v.get())
+        min_samples_leaf = master.int_float(master.param_frame.minsam_l_v.get())
+        min_weight_fraction_leaf = float(master.param_frame.minweifra_l_v.get())
+        max_features = master.valid_maxf(master.param_frame.maxfeat_v.get())
+        max_leaf_nodes = int(master.param_frame.maxleaf_n.get())
+
+        print("Max features ", max_features)
+        
+        min_impurity_decrease = float(master.param_frame.minimp_dec.get())
+        ccp_alpha = float(master.param_frame.ccp_alp_v.get())
+        n_tests = int(master.num_teste.get())
+        n_estimators = int(master.n_estimators.get())
+
+        indicator = get_indicator_code(indicator)
+
+        score, mean_abs_error, mean_rel_error, max_abs_error, exact_max, pred_max, min_abs_error, exact_min, pred_min, y_exact, y_pred, x_axis = prev.bagging_trees(
             city, indicator, split_percentage, criterion, splitter, max_depth,
             min_samples_leaf, max_features, max_leaf_nodes, n_tests, min_samples_split,
             min_weight_fraction_leaf, min_impurity_decrease, ccp_alpha, save_model_flag
@@ -227,6 +264,8 @@ class View():
         opcao = master.ml_selected.get()
         if opcao == 'Decision Trees':
             decision_trees.generate_param(master)
+        elif opcao == 'Bagged Trees':
+            bagging_trees.generate_param(master)
         elif opcao == 'Neural network':
             neural_network.generate_param(master)
         elif opcao == 'Nearest Neighbors':
