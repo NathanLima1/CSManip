@@ -12,6 +12,21 @@ class DTParameter:
         self.minimp_dec = minimp_dec
         self.ccp_alp_v = ccp_alp_v
 
+class BTParameter:
+    def __init__(self, criterion_v, splitter, maxd_v, minsam_s_v, minsam_l_v,
+                 minweifra_l_v, maxfeat_v, maxleaf_n, minimp_dec, ccp_alp_v, n_estimators):
+        self.criterion_v = criterion_v
+        self.splitter_v = splitter
+        self.maxd_v = maxd_v
+        self.minsam_s_v = minsam_s_v
+        self.minsam_l_v = minsam_l_v
+        self.minweifra_l_v = minweifra_l_v
+        self.maxfeat_v = maxfeat_v
+        self.maxleaf_n = maxleaf_n
+        self.minimp_dec = minimp_dec
+        self.ccp_alp_v = ccp_alp_v
+        self.n_estimators = n_estimators
+
 class NNParameter:
     def __init__(self, activation_v, solver_v, alpha_v, batch_size_v,
                  learning_rate_v, learning_rate_init_v, power_t_v, max_iter_v,

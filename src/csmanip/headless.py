@@ -507,6 +507,16 @@ class Headless():
                       maxleaf_n, minimp_dec, ccp_alp_v, 
                       por_trei, num_tests,save_model)
         
+    def bagged_trees(self, criterion_v="squared_error", splitter="best", maxd_v='10',
+                      minsam_s_v=2, minsam_l_v=50, minweifra_l_v='0.0', maxfeat_v="sqrt",
+                      maxleaf_n='10', minimp_dec='0.0', ccp_alp_v='0.0', 
+                      por_trei=70, num_tests=5,save_model=False, n_estimators=10):
+        ml = Ml()
+        ml.bagged_trees(criterion_v, splitter, maxd_v,
+                      minsam_s_v, minsam_l_v, minweifra_l_v, maxfeat_v,
+                      maxleaf_n, minimp_dec, ccp_alp_v, 
+                      por_trei, num_tests,save_model, n_estimators)
+        
     def neural_network(self, activation_v='relu', solver_v='adam', alpha_v='0.0001',
                        batch_size_v='auto', learning_rate_v='constant', learning_rate_init_v='0.001',
                        power_t_v='0.5', max_iter_v='200', shuffle_v=True, tol_v='0.0001',

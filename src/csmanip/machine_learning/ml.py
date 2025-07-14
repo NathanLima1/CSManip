@@ -65,6 +65,10 @@ class Ml:
     def generate_preview_dt(self):
         v = View()
         v.generate_preview_dt(self)
+    
+    def generate_preview_bt(self):
+        v = View()
+        v.generate_preview_bt(self)
 
     def generate_preview_nn(self):
         v = View()
@@ -104,6 +108,34 @@ class Ml:
         self.num_teste = num_teste
         self.save_model = save_model
         self.generate_preview_dt()
+
+    def bagged_trees(self, criterion_v="squared_error", splitter="best", maxd_v='10',
+                      minsam_s_v=2, minsam_l_v=50, minweifra_l_v='0.0', maxfeat_v="sqrt",
+                      maxleaf_n='10', minimp_dec='0.0', ccp_alp_v='0.0', 
+                      por_trei=70, num_teste=5,save_model=False, n_estimators=10):
+        
+        list_cri = ["squared_error", "friedman_mse", "absolute_error", "poisson"]
+        if criterion_v not in list_cri:
+            raise ValueError(f"Selected criterion_v is not compatible. "
+            f"Please try one of the following options: 'squared_error', 'friedman_mse', 'absolute_error', 'poisson'.")
+        
+        list_spl = ['best', 'random']
+        if splitter not in list_spl:
+            raise ValueError(f"Selected splitter is not compatible. "
+                             f"Please try one of the following options: 'best', 'random'")
+        
+        list_maxfeat_v = ['int', 'float', 'sqrt', 'log2']
+        if maxfeat_v not in list_maxfeat_v:
+            raise ValueError(f"Selected maxfeat_v is not compatible. "
+                             f"Please try one of the following options: 'int', 'float', 'sqrt', 'log2'")
+        
+        self.param_frame = BTParameter(criterion_v, splitter, maxd_v, minsam_s_v, minsam_l_v,
+                                       minweifra_l_v, maxfeat_v, maxleaf_n, minimp_dec, ccp_alp_v, n_estimators)
+        self.por_trei = por_trei
+        self.num_teste = num_teste
+        self.save_model = save_model
+        self.n_estimators = n_estimators
+        self.generate_preview_bt()
 
     def neural_network(self, activation_v='relu', solver_v='adam', alpha_v='0.0001',
                        batch_size_v='auto', learning_rate_v='constant', learning_rate_init_v='0.001',

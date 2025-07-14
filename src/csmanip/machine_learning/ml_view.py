@@ -6,6 +6,7 @@ from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 import matplotlib.pyplot as plt
 from . import decision_trees
+from . import bagging_trees
 from . import support_vector
 from . import neural_network
 from . import gaussian_process
@@ -78,6 +79,40 @@ class View():
             city, indicator, split_percentage, criterion, splitter, max_depth,
             min_samples_leaf, max_features, max_leaf_nodes, n_tests, min_samples_split,
             min_weight_fraction_leaf, min_impurity_decrease, ccp_alpha, save_model_flag
+        )
+        self.data_preview(
+            score, mean_abs_error, mean_rel_error, max_abs_error, exact_max, pred_max,
+            min_abs_error, exact_min, pred_min, y_exact, y_pred, x_axis
+        )
+    
+    def generate_preview_bt(self, master):
+        prev = Training()
+        save_model_flag = master.save_model
+
+        # city = master.get_end(master.data_s.get())
+        city = master.data_s
+        indicator = master.ind_s
+        split_percentage = int(master.por_trei)
+        criterion = master.param_frame.criterion_v
+        splitter = master.param_frame.splitter_v
+        max_depth = int(master.param_frame.maxd_v)
+        min_samples_split = master.int_float(master.param_frame.minsam_s_v)
+        min_samples_leaf = master.int_float(master.param_frame.minsam_l_v)
+        min_weight_fraction_leaf = float(master.param_frame.minweifra_l_v)
+        max_features = master.valid_maxf(master.param_frame.maxfeat_v)
+        max_leaf_nodes = int(master.param_frame.maxleaf_n)
+
+        min_impurity_decrease = float(master.param_frame.minimp_dec)
+        ccp_alpha = float(master.param_frame.ccp_alp_v)
+        n_tests = int(master.num_teste)
+        n_estimators = int(master.n_estimators)
+
+        indicator = get_indicator_code(indicator)
+
+        score, mean_abs_error, mean_rel_error, max_abs_error, exact_max, pred_max, min_abs_error, exact_min, pred_min, y_exact, y_pred, x_axis = prev.bagging_trees(
+            city, indicator, split_percentage, criterion, splitter, max_depth,
+            min_samples_leaf, max_features, max_leaf_nodes, n_tests, min_samples_split,
+            min_weight_fraction_leaf, min_impurity_decrease, ccp_alpha, save_model_flag, n_estimators
         )
         self.data_preview(
             score, mean_abs_error, mean_rel_error, max_abs_error, exact_max, pred_max,
@@ -194,6 +229,8 @@ class View():
     def generate_param(self, master, option):
         if option == 'Decision Trees':
             decision_trees.generate_param(master)
+        elif option == 'Bagged Trees':
+            bagging_trees.generate_param(master)
         elif option == 'Neural network':
             neural_network.generate_param(master)
         elif option == 'Nearest Neighbors':
