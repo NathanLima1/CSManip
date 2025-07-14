@@ -24,7 +24,7 @@ class TestsGenerator(Toplevel):
         Label(self, text='Base-Learning (Level 0):', font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=40, y=90)
         self.ml_lv0_p = StringVar()
         self.ml_lv0_p.set('Decision Trees')
-        lista_ml0 =  ['None','Decision Trees', 'Neural network', 'Nearest Neighbors', 'Support Vector', 'Gaussian Process']
+        lista_ml0 =  ['None','Decision Trees', 'Bagged Trees', 'Neural network', 'Nearest Neighbors', 'Support Vector', 'Gaussian Process']
         ttk.Combobox(self, values=lista_ml0, textvariable=self.ml_lv0_p, width=30, font='Arial 11', justify=CENTER, state='readonly').place(x=40, y=120)
 
         Label(self, text='Triangulation (Level 0):', font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=40, y=190)
@@ -36,7 +36,7 @@ class TestsGenerator(Toplevel):
         Label(self, text='Meta-Learning (Level 1):', font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=340, y=145)
         self.ml_lv1 = StringVar()
         self.ml_lv1.set('Decision Trees')
-        lista_ml1 =  ['Decision Trees', 'Neural network', 'Nearest Neighbors', 'Support Vector', 'Gaussian Process']
+        lista_ml1 =  ['Decision Trees', 'Bagged Trees', 'Neural network', 'Nearest Neighbors', 'Support Vector', 'Gaussian Process']
         ttk.Combobox(self, values=lista_ml1, textvariable=self.ml_lv1, width=30, font='Arial 11', justify=CENTER, state='readonly').place(x=340, y=175)
 
         Label(self, text='Indicador climático:', font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=40, y=270)
@@ -72,6 +72,7 @@ class TestsGenerator(Toplevel):
 
         self.pre_nn_comb = IntVar()
         self.pre_dt_comb = IntVar()
+        self.pre_bt_comb = IntVar()
         self.pre_nneig_comb = IntVar()
         self.pre_sv_comb = IntVar()
         self.pre_gp_comb = IntVar()
@@ -80,8 +81,9 @@ class TestsGenerator(Toplevel):
         Checkbutton(self, text='NNeig.', variable=self.pre_nneig_comb, bg=colors.fundo, font='Arial 12 bold', activebackground=colors.fundo).place(x=240, y=580)
         Checkbutton(self, text='SV', variable=self.pre_sv_comb, bg=colors.fundo, font='Arial 12 bold', activebackground=colors.fundo).place(x=340, y=580)
         Checkbutton(self, text='GP', variable=self.pre_gp_comb, bg=colors.fundo, font='Arial 12 bold', activebackground=colors.fundo).place(x=440, y=580)
-        
-        Label(self, text='Climatica Indicator:', font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=40, y=620)
+        Checkbutton(self, text='BT.', variable=self.pre_bt_comb, bg=colors.fundo, font='Arial 12 bold', activebackground=colors.fundo).place(x=540, y=580)
+
+        Label(self, text='Climatic Indicator:', font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=40, y=620)
         self.ind_meta_comb = StringVar()
         self.ind_meta_comb.set('Maximum temperature')
         lista_ind_meta_p = ["Precipitation", 'Maximum temperature', 'Minimum temperature']

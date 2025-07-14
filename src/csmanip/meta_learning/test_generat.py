@@ -5,11 +5,11 @@ from ..meta_learning.meta_learning import MetaLearning
 class TestsGenerator:
     def __init__(self):
         self.ml_lv0_p = 'Decision Trees'
-        lista_ml0 =  ['Nenhum','Decision Trees', 'Neural network', 'Nearest Neighbors', 'Support Vector', 'Gaussian Process']
+        lista_ml0 =  ['Nenhum','Decision Trees', 'Bagged Trees', 'Neural network', 'Nearest Neighbors', 'Support Vector', 'Gaussian Process']
         self.ml_tr0_p = 'Arithmetic Average'
         lista_tr0 =  ['Nenhum', 'Arithmetic Average', 'Inverse Distance Weighted', 'Regional Weight', 'Optimized Normal Ratio']
         self.ml_lv1 = 'Decision Trees'
-        lista_ml1 =  ['Decision Trees', 'Neural network', 'Nearest Neighbors', 'Support Vector', 'Gaussian Process']
+        lista_ml1 =  ['Decision Trees', 'Neural network', 'Bagged Trees', 'Nearest Neighbors', 'Support Vector', 'Gaussian Process']
         self.ind_meta_perso = 'Maximum temperature'
         lista_ind_meta_p = ["Precipitation", 'Maximum temperature', 'Minimum temperature']
         self.num_teste_mtp = 1
@@ -23,6 +23,7 @@ class TestsGenerator:
         self.pre_nneig_comb = False
         self.pre_sv_comb = False
         self.pre_gp_comb = False
+        self.pre_bt_comb = False
 
         self.ind_meta_comb = 'Maximum temperature'
         self.num_teste_mtc = 1

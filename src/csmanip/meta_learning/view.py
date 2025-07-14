@@ -59,8 +59,36 @@ class View:
 
         indicator = get_indicator_code(indicator)
 
-        pts, media_ea, media_er, maior_ea, exat_maior, pre_maior, menor_ea, exat_menor, pre_menor, eixo_y_exato, eixo_y_predict, eixo_x = prev.ArvoreDecisao(cidade, indicator, divisao, criterio, splitter, maxd, minsaml, maxfe, maxleaf, n_tes, minsams, minwei, minim, ccp, salvar_m)
+        pts, media_ea, media_er, maior_ea, exat_maior, pre_maior, menor_ea, exat_menor, pre_menor, eixo_y_exato, eixo_y_predict, eixo_x = prev.decision_tree(cidade, indicator, divisao, criterio, splitter, maxd, minsaml, maxfe, maxleaf, n_tes, minsams, minwei, minim, ccp, salvar_m)
         self.data_prev(pts, media_ea, media_er, maior_ea, exat_maior, pre_maior, menor_ea, exat_menor, pre_menor, eixo_y_exato, eixo_y_predict, eixo_x)
+
+    def generate_preview_bt(self):
+        prev = Training()
+        salvar_m = self.save_model.get()
+        
+        #cidade = self.get_end(self.data_s.get())
+        cidade = self.data_s.get()
+        indicator = self.ind_s.get()
+        divisao = int(self.por_trei.get())
+        criterio = self.criterion_v.get()
+        splitter = self.splitter_v.get()
+        maxd = int(self.maxd_v.get())             #* Max_depth
+        minsams = self.int_float(self.minsam_s_v.get())    #* Min_samples_split
+        minsaml = self.int_float(self.minsam_l_v.get())    #* Min_samples_leaf
+        minwei = float(self.minweifra_l_v.get())
+        maxfe = self.valid_maxf(self.maxfeat_v.get())
+        maxleaf = int(self.maxleaf_n.get())
+        
+        minim = float(self.minimp_dec.get())
+        ccp = float(self.ccp_alp_v.get())
+        n_tes = int(self.num_teste.get())
+        n_estimators = int(self.n_estimators.get())
+
+        indicator = get_indicator_code(indicator)
+
+        pts, media_ea, media_er, maior_ea, exat_maior, pre_maior, menor_ea, exat_menor, pre_menor, eixo_y_exato, eixo_y_predict, eixo_x = prev.bagging_trees(cidade, indicator, divisao, criterio, splitter, maxd, minsaml, maxfe, maxleaf, n_tes, minsams, minwei, minim, ccp, salvar_m, n_estimators)
+        self.data_prev(pts, media_ea, media_er, maior_ea, exat_maior, pre_maior, menor_ea, exat_menor, pre_menor, eixo_y_exato, eixo_y_predict, eixo_x)
+
 
     def generate_preview_nn(self):
         prev = Training()

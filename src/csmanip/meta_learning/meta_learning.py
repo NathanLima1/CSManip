@@ -269,6 +269,10 @@ class MetaLearning:
     def generate_preview_dt(self):
         v = View()
         v.generate_preview_dt(self)
+
+    def generate_preview_bt(self):
+        v = View()
+        v.generate_preview_bt(self)
     
     def generate_preview_nn(self):
         """

@@ -84,6 +84,10 @@ class MachineLearning(Toplevel):
         v = View()
         v.generate_preview_dt(self)
 
+    def generate_preview_bt(self):
+        v = View()
+        v.generate_preview_bt(self)
+
     def generate_preview_nn(self):
         v = View()
         v.generate_preview_nn(self)
@@ -147,7 +151,7 @@ class MachineLearning(Toplevel):
             Label(self, text='Number of estimators (int):', font='Arial 12 bold', fg='white', bg=fundo).place(x=50, y=640)
             self.ent_n_estimators = Entry(self, textvariable=self.n_estimators, width=27, font='Arial 12', justify=CENTER).place(x=50, y=665)
 
-            Button(self, text='Preview', font='Arial 11 bold', fg='white', bg=fun_b, width=25, command=self.generate_preview_dt).place(x=50, y=685)
+            Button(self, text='Preview', font='Arial 11 bold', fg='white', bg=fun_b, width=25, command=self.generate_preview_bt).place(x=50, y=685)
             #Button(self, text='Salvar Paramt.', font='Arial 11 bold', fg='white', bg=fun_b, width=25, command=self.salvar_paramt).place(x=340, y=685)
             self.save_model = IntVar()
             Checkbutton(self, text='Save model', variable=self.save_model, bg=fundo, font='Arial 12 bold', activebackground=fundo).place(x=340, y=685)

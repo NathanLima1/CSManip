@@ -59,8 +59,36 @@ class View:
 
         indicator = get_indicator_code(indicator)
 
-        pts, media_ea, media_er, maior_ea, exat_maior, pre_maior, menor_ea, exat_menor, pre_menor, eixo_y_exato, eixo_y_predict, eixo_x = prev.ArvoreDecisao(cidade, indicator, divisao, criterio, splitter, maxd, minsaml, maxfe, maxleaf, n_tes, minsams, minwei, minim, ccp, salvar_m)
+        pts, media_ea, media_er, maior_ea, exat_maior, pre_maior, menor_ea, exat_menor, pre_menor, eixo_y_exato, eixo_y_predict, eixo_x = prev.decision_tree(cidade, indicator, divisao, criterio, splitter, maxd, minsaml, maxfe, maxleaf, n_tes, minsams, minwei, minim, ccp, salvar_m)
         self.data_prev(pts, media_ea, media_er, maior_ea, exat_maior, pre_maior, menor_ea, exat_menor, pre_menor, eixo_y_exato, eixo_y_predict, eixo_x)
+
+    def generate_preview_bt(self):
+        prev = Training()
+        salvar_m = self.save_model
+        
+        #cidade = self.get_end(self.data_s.get())
+        cidade = self.data_s
+        indicator = self.ind_s
+        divisao = int(self.por_trei)
+        criterio = self.criterion_v
+        splitter = self.splitter_v
+        maxd = int(self.maxd_v)             #* Max_depth
+        minsams = self.int_float(self.minsam_s_v)    #* Min_samples_split
+        minsaml = self.int_float(self.minsam_l_v)    #* Min_samples_leaf
+        minwei = float(self.minweifra_l_v)
+        maxfe = self.valid_maxf(self.maxfeat_v)
+        maxleaf = int(self.maxleaf_n)
+        
+        minim = float(self.minimp_dec)
+        ccp = float(self.ccp_alp_v)
+        n_tes = int(self.num_teste)
+        n_estimators = int(self.n_estimators)
+
+        indicator = get_indicator_code(indicator)
+
+        pts, media_ea, media_er, maior_ea, exat_maior, pre_maior, menor_ea, exat_menor, pre_menor, eixo_y_exato, eixo_y_predict, eixo_x = prev.decision_tree(cidade, indicator, divisao, criterio, splitter, maxd, minsaml, maxfe, maxleaf, n_tes, minsams, minwei, minim, ccp, salvar_m, n_estimators)
+        self.data_prev(pts, media_ea, media_er, maior_ea, exat_maior, pre_maior, menor_ea, exat_menor, pre_menor, eixo_y_exato, eixo_y_predict, eixo_x)
+
 
     def generate_preview_nn(self):
         prev = Training()
