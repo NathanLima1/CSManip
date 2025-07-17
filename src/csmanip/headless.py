@@ -357,6 +357,9 @@ class Headless():
         elif method == 'Inverse Distance Weighted':
             trian.idw(focus)
             eixo_x, eixo_y_tri, eixo_y_exato, media_ea, media_er, _ = trian.get_idw()
+        elif method == 'Optimized Inverse Distance Weighted':
+            trian.oidw(focus)
+            eixo_x, eixo_y_tri, eixo_y_exato, media_ea, media_er, _ = trian.get_oidw()
         elif method == 'Regional Weight':
             trian.rw(focus)
             eixo_x, eixo_y_tri, eixo_y_exato, media_ea, media_er, _ = trian.get_rw()

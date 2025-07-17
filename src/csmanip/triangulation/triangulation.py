@@ -58,15 +58,23 @@ class Triangulation:
 
     def idw(self, focus):
         """
-        Calculate Inverse Distance Weightened
+        Calculate Inverse Distance Weighted
         """
         idw(self, focus)
 
     def get_idw(self):
         """
-        Returns the variables of the inverse distance weightened
+        Returns the variables of the inverse distance weighted
         """
         return self.idw_x, self.idw_y, self.idw_target_y, self.idw_abs_error, self.idw_rel_error, self.meta_matrix_idw
+
+    def oidw(self, focus):
+        "Calculate Optimized Inverse Distance Weighted"
+        oidw(self, focus)
+
+    def get_oidw(self):
+        "Returns the variables of Optimized Inverse Distance Weighted"
+        return  self.oidw_x, self.oidw_y, self.oidw_target_y, self.oidw_abs_error, self.oidw_rel_error, self.meta_matrix_oidw
 
     def avg(self, focus):
         """
@@ -121,8 +129,6 @@ class Triangulation:
     
         webbrowser.open_new_tab('map.html')
 
-    def oidw(self, focus):
-        oidw(self, focus)
 
     def rw(self, focus):
         """
@@ -153,7 +159,7 @@ class Triangulation:
             elif foco == 3:
                 index = 5 #Minimum temperature na target
                 data = treatment.load_data_file('Common data')
-        elif cidade == 'VizA':
+        elif cidade == 'neighborA':
             if foco == 1:
                 index = 6 
                 data = treatment.normalize_data(treatment.load_data_file('Common data'))
@@ -163,7 +169,7 @@ class Triangulation:
             elif foco == 3:
                 index = 8
                 data = treatment.load_data_file('Common data')
-        elif cidade == 'vizB':
+        elif cidade == 'neighborB':
             if foco == 1:
                 index = 9
                 data = treatment.normalize_data(treatment.load_data_file('Common data'))
@@ -184,29 +190,32 @@ class Triangulation:
                 index = 14
                 data = treatment.load_data_file('Common data')
 
-        #encontar o index da ultima data de cada mes
-        for i in range(len(data)):
-            try:
-                if data[i][1] != data[i+1][1]:
-                    self.index_end.append(i)
-            except IndexError:
-                pass
-       
-        for i in range(len(data)):
-            try:
-                if data[i][1] != data[i+1][1]:
-                    sum = sum + float(data[i][index])
-                    cont = cont + 1
-                    monthly_avg.append(sum/cont)
-                    sum = 0
-                    cont = 1
-                else:
-                    sum = sum + float(data[i][index])
-                    cont = cont + 1
+        current_month_sum = 0
+        current_month_days = 0
 
-                
-            except IndexError:
-                pass
+        if not data:
+            return []
+        
+        for i in range(len(data)):
+            current_month_sum += float(data[i][index])
+            current_month_days += 1
+
+            is_last_day_month = False
+            is_last_day_file = (i == len(data) - 1)
+
+            if not is_last_day_file:
+                # Compara o mês da linha atual com a próxima
+                if data[i][1] != data[i+1][1]:
+                    is_last_day_month = True
+
+            if is_last_day_month or is_last_day_file:
+                if current_month_days > 0:
+                    average = current_month_sum/current_month_days
+                    monthly_avg.append(average)
+
+                current_month_sum = 0
+                current_month_days = 0
+
         return monthly_avg
     
     def generate_correlation_coefficients(self, focus):

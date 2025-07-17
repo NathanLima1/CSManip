@@ -19,7 +19,11 @@ dependencies = [
     "scikit-learn",
     "numpy",
     "tksheet",
-    "pyscreenshot"
+    "pyscreenshot",
+    "pandas",
+    "xclim",
+    "xarray",
+    "netcdf4"
 ]
 
 [project.urls]
