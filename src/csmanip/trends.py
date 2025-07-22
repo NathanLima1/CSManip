@@ -41,6 +41,6 @@ class Trends:
         c = Climdex()
         c.write_indices(indices_ds, name, output_dir)
 
-    def plot_and_save_indices(self, indices_ds, output_dir):
+    def plot_and_save_indices(self, indices_ds, name, output_dir):
         c = Climdex()
         c.plot_and_save_indices(indices_ds, name, output_dir)
