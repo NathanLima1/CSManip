@@ -1,25 +1,21 @@
 import pandas as pd
 import os
 
-"""cities = ["BELOHORIZONTE.csv", "SAOSIMAO.csv", "ARAXA.csv", "BARBALHA.csv", "BELEM.csv", 
-          "CAPARAO.csv", "CUIABA.csv", "CURITIBA.csv", "MANAUS.csv", "NATAL.csv", "SAOPAULO.csv", 
-          "CABROBO.csv"]
-"""
           
-def read_csv(cities: list, output_dir:str="../second_processed"):
+def process_csv(cities: list, input_dir:str, output_dir:str):
     os.makedirs(output_dir, exist_ok=True)
-    columns = ["data", "prec", "tmax", "tmean", "tmin"]
+    columns = ["data", "prec", "tmax", "tmin"]
 
     for city in cities:
-        input_file = os.path.join("..", "second_data", city)
+        input_file = os.path.join(input_dir, city)
         output_file = os.path.join(output_dir, city)
         try:
             df = pd.read_csv(input_file, skiprows=11, header=None, names=columns, sep=";", decimal=".", index_col=False)
             
             # Substituir valores ausentes nas colunas climáticas por -99
-            df[["prec", "tmax", "tmean", "tmin"]] = df[["prec", "tmax", "tmean", "tmin"]].fillna(-99)
+            df[["prec", "tmax", "tmin"]] = df[["prec", "tmax", "tmin"]].fillna(-99)
             # Remover linhas com qualquer -99
-            df = df[(df["prec"] != -99) & (df["tmax"] != -99) & (df["tmean"] != -99) & (df["tmin"] != -99)]
+            df = df[(df["prec"] != -99) & (df["tmax"] != -99) & (df["tmin"] != -99)]
 
             df["data"] = pd.to_datetime(df["data"], format="%Y-%m-%d", errors="coerce")
 
@@ -29,7 +25,7 @@ def read_csv(cities: list, output_dir:str="../second_processed"):
 
             df.drop(columns=["data"], inplace=True)
 
-            sorted_columns = ["year", "month", "day", "prec", "tmax", "tmean", "tmin"]
+            sorted_columns = ["year", "month", "day", "prec", "tmax", "tmin"]
             df = df[sorted_columns]
             
             df.to_csv(output_file, index=False, sep=",", header=False)

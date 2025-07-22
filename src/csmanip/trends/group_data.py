@@ -1,24 +1,10 @@
 import numpy as np
 import pandas as pd
 
-def group_data():
-    city_files = {
-        1: "ARAXA.csv",
-        2: "BARBALHA.csv",
-        3: "BELOHORIZONTE.csv",
-        4: "BELEM.csv",
-        5: "CAPARAO.csv",
-        6: "CUIABA.csv",
-        7: "CURITIBA.csv",
-        8: "MANAUS.csv",
-        9: "NATAL.csv",
-        10: "SAOPAULO.csv",
-        11: "SAOSIMAO.csv",
-        12: "Cabrobo.csv"
-    }
-    for index in range(1, 13):
-        city_name = city_files[index].split(".")[0]
-        cidade = pd.read_csv(f"address/{city_files[index]}").values
+def group_data(city_files:list):
+    for city in city_files:
+        city_name = city.split(".")[0]
+        cidade = pd.read_csv(f"address/{city_files}").values
         
         dadosMensais = []
         Tmax = []
