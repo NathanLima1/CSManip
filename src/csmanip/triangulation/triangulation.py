@@ -4,7 +4,7 @@ from folium.map import Popup
 import webbrowser
 import math
 from scipy import stats
-from .ratio_weightened import rw
+from .regional_weight import rw
 from .optimal_norm_ratio import onr
 from .inverse_dist_weightened import idw
 from .optimized_idw import  oidw
