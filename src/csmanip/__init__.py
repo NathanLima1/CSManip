@@ -5,6 +5,7 @@ from .machine_learning.machine_learning import MachineLearning
 from .meta_learning.meta_learning import MetaLearning
 from .framework import Framework
 from .headless import Headless
+from .trends import Trends
 
 
-__all__ = ["DataProcessing", "Training", "Triangulation", "MachineLearning", "MetaLearning", "Framework", "Headless"]
+__all__ = ["DataProcessing", "Training", "Triangulation", "MachineLearning", "MetaLearning", "Framework", "Headless", "Trends"]

@@ -157,25 +157,3 @@ class Climdex:
                 plt.close()
             
             print(f"Gráfico salvo em: {pdf_path}")
-
-
-# --- Exemplo de como usar a classe com a nova função de plotagem ---
-if __name__ == '__main__':
-    nomes_estacoes = ["estacao1"] # Use uma estação para o exemplo
-    
-    climdex_calculator = Climdex()
-    
-    # 1. Ler os arquivos
-    dados_das_estacoes = climdex_calculator.read_files(names=nomes_estacoes)
-    
-    for nome_estacao, df_estacao in dados_das_estacoes.items():
-        print(f"\n--- Processando dados para: {nome_estacao} ---")
-        
-        # 2. Calcular todos os índices
-        indices_calculados = climdex_calculator.calculate_indices(df_estacao)
-        
-        # 3. Salvar os índices em arquivos CSV
-        climdex_calculator.write_indices(indices_calculados, name=nome_estacao)
-
-        # 4. Gerar e salvar os gráficos
-        climdex_calculator.plot_and_save_indices(indices_calculados, name=nome_estacao)
