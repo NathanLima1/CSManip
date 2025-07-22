@@ -4,7 +4,7 @@ from .trends.make_data_base import clean_missing_data, make_database, normalize_
 from .trends.processing import process_csv
 from .trends.climdex import Climdex
 
-class Trends:
+class Trends():
     def analyze_trend(self, csv_file, column_name):
         return analyze_trend(csv_file, column_name)
     

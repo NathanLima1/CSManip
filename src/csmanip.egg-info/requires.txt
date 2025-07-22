@@ -6,3 +6,8 @@ scikit-learn
 numpy
 tksheet
 pyscreenshot
+pandas
+xclim
+xarray
+netcdf4
+statsmodels

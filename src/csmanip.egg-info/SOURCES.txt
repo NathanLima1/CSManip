@@ -4,6 +4,7 @@ src/csmanip/__init__.py
 src/csmanip/framework.py
 src/csmanip/headless.py
 src/csmanip/main.py
+src/csmanip/trends_climdex.py
 src/csmanip.egg-info/PKG-INFO
 src/csmanip.egg-info/SOURCES.txt
 src/csmanip.egg-info/dependency_links.txt
@@ -53,12 +54,11 @@ src/csmanip/trends/identify_trends.py
 src/csmanip/trends/make_data_base.py
 src/csmanip/trends/plot_warming_stripes.py
 src/csmanip/trends/processing.py
-src/csmanip/trends/trends.py
 src/csmanip/triangulation/__init__.py
 src/csmanip/triangulation/inverse_dist_weightened.py
 src/csmanip/triangulation/optimal_norm_ratio.py
 src/csmanip/triangulation/optimized_idw.py
-src/csmanip/triangulation/ratio_weightened.py
+src/csmanip/triangulation/regional_weight.py
 src/csmanip/triangulation/triangulation.py
 src/csmanip/triangulation/utils.py
 src/csmanip/utils/indicator.py

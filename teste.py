@@ -2,7 +2,7 @@ import csmanip
 from tkinter import StringVar
 
 clim = csmanip.Headless()
-files = ["src/csmanip/data/BeloHorizonte.csv", "src/csmanip/data/Ibirite.csv", "src/csmanip/data/Florestal.csv", "src/csmanip/data/SeteLagoas.csv"]
+files = ["src/csmanip/data/Nova_Xavantina.csv", "src/csmanip/data/Goiania.csv", "src/csmanip/data/Canarana.csv", "src/csmanip/data/Poxoreu.csv"]
 #clim.set_cities(files)
 #clim.process_selection()
 #clim.grid_search_dt()
@@ -12,5 +12,5 @@ files = ["src/csmanip/data/BeloHorizonte.csv", "src/csmanip/data/Ibirite.csv", "
 #clim.generate_global_test()
 #loop = csmanip.Framework()
 #loop.mainloop()
-#clim.triangulation("Arithmetic Average", "Maximum temperature")
-clim.triangulation("Optimized Inverse Distance Weighted", "Maximum temperature")
+clim.triangulation("Optimized Normal Ratio", "Maximum Temperature")
+#clim.triangulation("Optimized Inverse Distance Weighted", "Maximum temperature")

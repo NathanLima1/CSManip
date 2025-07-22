@@ -15,3 +15,8 @@ Requires-Dist: scikit-learn
 Requires-Dist: numpy
 Requires-Dist: tksheet
 Requires-Dist: pyscreenshot
+Requires-Dist: pandas
+Requires-Dist: xclim
+Requires-Dist: xarray
+Requires-Dist: netcdf4
+Requires-Dist: statsmodels

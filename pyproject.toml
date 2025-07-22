@@ -23,7 +23,8 @@ dependencies = [
     "pandas",
     "xclim",
     "xarray",
-    "netcdf4"
+    "netcdf4",
+    "statsmodels"
 ]
 
 [project.urls]
