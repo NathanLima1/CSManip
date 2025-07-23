@@ -12,5 +12,7 @@ files = ["src/csmanip/data/Nova_Xavantina.csv", "src/csmanip/data/Goiania.csv", 
 #clim.generate_global_test()
 #loop = csmanip.Framework()
 #loop.mainloop()
-clim.triangulation("Optimized Normal Ratio", "Maximum Temperature")
+#clim.triangulation("Optimized Normal Ratio", "Maximum Temperature")
 #clim.triangulation("Optimized Inverse Distance Weighted", "Maximum temperature")
+clim.generate_custom_test(base_model='Decision Trees', triangulation='Arithmetic Average', meta_model='Neural Network',
+                            indicator="Maximum temperature", num_tests=1, input_window='Yes')

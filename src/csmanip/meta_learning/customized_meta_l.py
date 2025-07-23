@@ -7,13 +7,13 @@ from math import floor
 def customized_meta_learning(self, indicator, base_l, triangulation_method, meta_l, pre1, pre2, n_test, sliding_window):
         m1_40_t, m1_40_r, m2_40_t, m2_40_r, m3_20_t, m3_20_r = self.prepare_input(indicator, sliding_window)
 
-        if base_l != 'Nenhum':
+        if base_l != 'None':
             input_matrix, base_ea, base_er, base_percentage, base_r2 = self.base_learn(
                 base_l, 0, n_test, m1_40_t, m1_40_r, m3_20_t, m3_20_r, m2_40_t, m2_40_r, sliding_window
             )
             del input_matrix[:2]
 
-        if triangulation_method != 'Nenhum':
+        if triangulation_method != 'None':
             _, triangulation_matrix, tria_ea, tria_er = self.triangula(triangulation_method, indicator)
             del triangulation_matrix[:4]
 
@@ -26,9 +26,9 @@ def customized_meta_learning(self, indicator, base_l, triangulation_method, meta
 
         for i in range(len(data_matrix)):
             aux = []
-            if base_l == 'Nenhum':
+            if base_l == 'None':
                 aux.extend([data_matrix[i][0], data_matrix[i][1], data_matrix[i][2], triangulation_matrix[i]])
-            elif triangulation_method == 'Nenhum':
+            elif triangulation_method == 'None':
                 aux.extend([data_matrix[i][0], data_matrix[i][1], data_matrix[i][2], input_matrix[i][3]])
             else:
                 aux.extend([data_matrix[i][0], data_matrix[i][1], data_matrix[i][2], triangulation_matrix[i], input_matrix[i][3]])
@@ -37,7 +37,7 @@ def customized_meta_learning(self, indicator, base_l, triangulation_method, meta
         if pre2 == 0:
             if meta_l == 'Decision Trees':
                 level1_learner = tree.DecisionTreeRegressor()
-            elif meta_l == 'Neural network':
+            elif meta_l == 'Neural Network':
                 level1_learner = MLPRegressor()
             elif meta_l == 'Nearest Neighbors':
                 level1_learner = KNeighborsRegressor()
@@ -99,9 +99,9 @@ def customized_meta_learning(self, indicator, base_l, triangulation_method, meta
         meta_percentage_error = meta_ea * 100
         meta_r2 = r2_sum / n_test
 
-        if base_l == 'Nenhum':
+        if base_l == 'None':
             return meta_ea, meta_er, meta_percentage_error, meta_r2, x_meta, y_meta, y_target, 0, 0, 0, 0, tria_ea, tria_er
-        elif triangulation_method == 'Nenhum':
+        elif triangulation_method == 'None':
             return meta_ea, meta_er, meta_percentage_error, meta_r2, x_meta, y_meta, y_target, base_ea, base_er, base_percentage, base_r2, 0, 0
         else:
             return meta_ea, meta_er, meta_percentage_error, meta_r2, x_meta, y_meta, y_target, base_ea, base_er, base_percentage, base_r2, tria_ea, tria_er

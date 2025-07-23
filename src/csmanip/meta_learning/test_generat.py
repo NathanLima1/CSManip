@@ -5,9 +5,9 @@ from ..meta_learning.meta_learning import MetaLearning
 class TestsGenerator:
     def __init__(self):
         self.ml_lv0_p = 'Decision Trees'
-        lista_ml0 =  ['Nenhum','Decision Trees', 'Bagged Trees', 'Neural network', 'Nearest Neighbors', 'Support Vector', 'Gaussian Process']
+        lista_ml0 =  ['None','Decision Trees', 'Bagged Trees', 'Neural network', 'Nearest Neighbors', 'Support Vector', 'Gaussian Process']
         self.ml_tr0_p = 'Arithmetic Average'
-        lista_tr0 =  ['Nenhum', 'Arithmetic Average', 'Inverse Distance Weighted', 'Regional Weight', 'Optimized Normal Ratio']
+        lista_tr0 =  ['None', 'Arithmetic Average', 'Inverse Distance Weighted', 'Regional Weight', 'Optimized Normal Ratio']
         self.ml_lv1 = 'Decision Trees'
         lista_ml1 =  ['Decision Trees', 'Neural network', 'Bagged Trees', 'Nearest Neighbors', 'Support Vector', 'Gaussian Process']
         self.ind_meta_perso = 'Maximum temperature'
