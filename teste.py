@@ -14,5 +14,32 @@ files = ["src/csmanip/data/Nova_Xavantina.csv", "src/csmanip/data/Goiania.csv", 
 #loop.mainloop()
 #clim.triangulation("Optimized Normal Ratio", "Maximum Temperature")
 #clim.triangulation("Optimized Inverse Distance Weighted", "Maximum temperature")
-clim.generate_custom_test(base_model='Decision Trees', triangulation='Arithmetic Average', meta_model='Neural Network',
-                            indicator="Maximum temperature", num_tests=1, input_window='Yes')
+
+trends = csmanip.Trends()
+
+input_dir = "src/csmanip/data"
+output_dir = "src/csmanip/processed_data"
+
+cidades = ["Barbalha.csv"]
+trends.process_csv(cidades, input_dir, output_dir)
+dados_das_estacoes = trends.read_files_climdex(output_dir, cidades)
+
+df_barbalha = dados_das_estacoes["Barbalha.csv"]
+indices_calculados = trends.calculate_indices(df_barbalha, ("1991-01-01", "2020-12-31"))
+
+output_dir_indices = 'indices_climaticos'
+#trends.write_indices(indices_calculados, "BarbalhaIndex", output_dir)
+
+pdf_output_path = f"{output_dir_indices}/graficos_indices_barbalha.pdf"
+
+trends.plot_and_save_indices(indices_calculados, "Barbalha", output_dir)
+
+
+print(f"Gráficos de extremos salvos em: {pdf_output_path}")
+
+resultado_tendencia = trends.analyze_trend(
+    csv_file='src/csmanip/processed_data/BarbalhadadosAnuais.csv',
+    column_name='Tmean'
+)
+
+print(resultado_tendencia)

@@ -1,11 +1,14 @@
 import pandas as pd
 import xarray as xr
 import xclim
+from xclim.indicators import icclim
+from xclim import indices
 from pathlib import Path
 import os
-# Importações necessárias para a plotagem
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
+import numpy as np
+
 
 class Climdex:
     def __init__(self):
@@ -17,7 +20,6 @@ class Climdex:
             "PRCPTOT", "R95p", "RX1DAY", "RX5DAY", "CDD", "CWD"
         ]
         
-        # MELHORIA 1: Mapa de unidades para plotagem dinâmica
         self.units_map = {
             "TXx": "°C", "TX10p": "dias", "TX90p": "dias",
             "TNn": "°C", "TN10p": "dias", "TN90p": "dias",
@@ -25,60 +27,152 @@ class Climdex:
             "CDD": "dias", "CWD": "dias"
         }
 
-    # ... (os métodos read_files e calculate_indices permanecem os mesmos da versão anterior) ...
     def read_files_climdex(self, processed_dir: str, station_names: list) -> dict:
-        """Lê uma lista de arquivos CSV e retorna um dicionário de DataFrames."""
         dataframes = {}
+        col_names = ["year", "month", "day", "prec", "tmax", "tmin", "tmean"]
+
         for name in station_names:
-            # 1. Constrói o caminho do arquivo de forma flexível
-            file_path = os.path.join(processed_dir, f"{name}.csv")
+            file_path = os.path.join(processed_dir, f"{name}")
             
             if not os.path.exists(file_path):
                 print(f"AVISO: Arquivo não encontrado em '{file_path}'. Pulando estação '{name}'.")
                 continue
 
-            df = pd.read_csv(file_path)
+            df = pd.read_csv(file_path, header=None, names=col_names)
 
-            if 'prec' in df.columns:
-                df.rename(columns={'prec': 'pr'}, inplace=True)
+            # --- LINHAS DE CORREÇÃO ---
+            # Renomeia as colunas para o padrão que a xclim espera.
+            rename_dict = {
+                'prec': 'pr',
+                'tmax': 'tasmax', # Renomeia tmax para tasmax
+                'tmin': 'tasmin'  # Renomeia tmin para tasmin
+            }
+            df.rename(columns=rename_dict, inplace=True)
+            # --- FIM DA CORREÇÃO ---
             
             df['time'] = pd.to_datetime(df[['year', 'month', 'day']])
-            
+            df.set_index('time', inplace=True)
+            df.drop(columns=['year', 'month', 'day'], inplace=True)
+
             if 'Unnamed: 0' in df.columns:
-                df = df.drop(columns=['Unnamed: 0'])
+                df.drop(columns=['Unnamed: 0'], inplace=True)
 
             dataframes[name] = df
             
         return dataframes
 
-    def calculate_indices(self, df: pd.DataFrame, base_period: tuple = ("1991-01-01", "2020-12-31")) -> xr.Dataset:
-        """Calcula os índices climáticos usando xclim de forma dinâmica."""
+    def calculate_indices(self, df: pd.DataFrame, base_period: tuple[str, str]):
+        """
+        Calcula uma lista de índices climáticos do ETCCDI usando xclim.
+
+        Esta versão foi atualizada com os nomes de função corretos, validados
+        com a documentação oficial da biblioteca xclim.
+
+        Args:
+            df (pd.DataFrame): DataFrame contendo os dados climáticos.
+                            Deve ter um DatetimeIndex e colunas como 'tasmax',
+                            'tasmin', e 'pr'.
+            base_period (tuple[str, str]): Tupla com data de início e fim
+                                        do período de referência.
+
+        Returns:
+            pd.DataFrame: Um DataFrame contendo os valores mensais de cada
+                        índice climático calculado.
+        """
+        # 1. Converter o DataFrame do pandas para um Dataset do xarray
+        if not isinstance(df.index, pd.DatetimeIndex):
+            raise ValueError("O DataFrame de entrada deve ter um DatetimeIndex.")
         ds = df.to_xarray()
-        ds['tmax'].attrs['units'] = 'degC'
-        ds['tmin'].attrs['units'] = 'degC'
-        ds['pr'].attrs['units'] = 'mm/day'
-        tmax_climatology = ds.tmax.sel(time=slice(base_period[0], base_period[1]))
-        tmin_climatology = ds.tmin.sel(time=slice(base_period[0], base_period[1]))
-        pr_climatology = ds.pr.sel(time=slice(base_period[0], base_period[1]))
-        indices_to_calc = {}
-        indicator_map = {
-            "TXx": (xclim.atmos.tx_max, ds.tmax, {}), "TX10p": (xclim.atmos.tx10p, ds.tmax, {'per': tmax_climatology}),
-            "TX90p": (xclim.atmos.tx90p, ds.tmax, {'per': tmax_climatology}), "TNn": (xclim.atmos.tn_min, ds.tmin, {}),
-            "TN10p": (xclim.atmos.tn10p, ds.tmin, {'per': tmin_climatology}), "TN90p": (xclim.atmos.tn90p, ds.tmin, {'per': tmin_climatology}),
-            "PRCPTOT": (xclim.atmos.prcptot, ds.pr, {}), "R95p": (xclim.atmos.r95p, ds.pr, {'per': pr_climatology}),
-            "RX1DAY": (xclim.atmos.rx1day, ds.pr, {}), "RX5DAY": (xclim.atmos.rx5day, ds.pr, {}),
-            "CDD": (xclim.atmos.consecutive_dry_days, ds.pr, {}), "CWD": (xclim.atmos.consecutive_wet_days, ds.pr, {}),
-        }
-        for index_name in self.indices_base:
-            if index_name in indicator_map:
-                func, data_var, kwargs = indicator_map[index_name]
-                indices_to_calc[index_name] = func(data_var, freq='MS', **kwargs)
-                indices_to_calc[f"{index_name}_annual"] = func(data_var, freq='YS', **kwargs)
-        return xr.Dataset(indices_to_calc).compute()
+
+        ds.tasmax.attrs.update({
+            'standard_name': 'air_temperature',
+            'cell_methods': 'time: maximum',
+            'units': 'degC'
+        })
+        ds.tasmin.attrs.update({
+            'standard_name': 'air_temperature',
+            'cell_methods': 'time: minimum',
+            'units': 'degC'
+        })
+        if 'pr' in ds:
+            ds.pr.attrs.update({
+                'standard_name': 'precipitation_flux',
+                'cell_methods': 'time: mean',
+                'units': 'mm/day'
+            })
+
+        # 2. Preparar o período base para cálculo dos percentis
+        ds_base = ds.sel(time=slice(base_period[0], base_period[1]))
+
+        # 3. Pré-calcular todos os percentis necessários
+        with xr.set_options(keep_attrs=True):
+            tx10_thresh = xclim.core.calendar.percentile_doy(ds_base.tasmax, per=10).sel(percentiles=10).drop_vars('percentiles')
+            tx90_thresh = xclim.core.calendar.percentile_doy(ds_base.tasmax, per=90).sel(percentiles=90).drop_vars('percentiles')
+            tn10_thresh = xclim.core.calendar.percentile_doy(ds_base.tasmin, per=10).sel(percentiles=10).drop_vars('percentiles')
+            tn90_thresh = xclim.core.calendar.percentile_doy(ds_base.tasmin, per=90).sel(percentiles=90).drop_vars('percentiles')
+            if 'pr' in ds:
+                pr95_thresh = xclim.core.calendar.percentile_doy(ds_base.pr, per=95).sel(percentiles=95).drop_vars('percentiles')
+
+        # 4. Definir e calcular cada índice com os nomes de função corretos
+        indices_results = {}
+        freq_m = 'MS'  # Frequência Mensal (Month Start)
+
+        # --- Índices de Temperatura ---
+        indices_results['TXx'] = icclim.TXx(tasmax=ds.tasmax, freq=freq_m)
+        indices_results['TNn'] = icclim.TNn(tasmin=ds.tasmin, freq=freq_m)
+        indices_results['TX10p'] = indices.tx10p(tasmax=ds.tasmax, tasmax_per=tx10_thresh, freq=freq_m)
+        indices_results['TX90p'] = indices.tx90p(tasmax=ds.tasmax, tasmax_per=tx90_thresh, freq=freq_m)
+        indices_results['TN10p'] = indices.tn10p(tasmin=ds.tasmin, tasmin_per=tn10_thresh, freq=freq_m)
+        indices_results['TN90p'] = indices.tn90p(tasmin=ds.tasmin, tasmin_per=tn90_thresh, freq=freq_m)
+        indices_results['TR'] = icclim.TR(tasmin=ds.tasmin, freq=freq_m)
+        indices_results['FD'] = icclim.FD(tasmin=ds.tasmin, freq=freq_m)
+
+
+        # --- Índices de Precipitação ---
+        if 'pr' in ds:
+            indices_results['PRCPTOT'] = icclim.PRCPTOT(pr=ds.pr, freq=freq_m)
+            indices_results['R95p'] = icclim.R95p(pr=ds.pr, pr_per=pr95_thresh, freq=freq_m)
+            indices_results['RX1DAY'] = icclim.RX1day(pr=ds.pr, freq=freq_m)
+            indices_results['RX5DAY'] = icclim.RX5day(pr=ds.pr, freq=freq_m)
+            indices_results['CDD'] = icclim.CDD(pr=ds.pr, freq=freq_m)
+            indices_results['CWD'] = icclim.CWD(pr=ds.pr, freq=freq_m)
+            indices_results['R10mm'] = icclim.R10mm(pr=ds.pr, freq=freq_m)
+            indices_results['R20mm'] = icclim.R20mm(pr=ds.pr, freq=freq_m)
+
+        else:
+            print("Aviso: Coluna 'pr' de precipitação não encontrada. Índices de precipitação não serão calculados.")
+
+        # 5. Combinar todos os resultados em um único DataFrame
+        valid_indices = {k: v for k, v in indices_results.items() if v is not None}
+        final_ds = xr.Dataset(valid_indices)
+        
+        freq_a = 'AS'  # Frequência Anual (Year Start)
+        annual_indices = {}
+
+        # Agregação para índices de contagem ou soma (dias, mm)
+        sum_indices = ["TX10p", "TX90p", "TN10p", "TN90p", "PRCPTOT", "R95p", "R10mm", "R20mm", "FD", "TR", "CWD", "CDD"]
+        for name, da in final_ds.items():
+            if name in sum_indices:
+                annual_indices[f"{name}_annual"] = da.resample(time=freq_a).sum(skipna=False)
+
+        # Agregação para índices de máximo (°C, mm)
+        max_indices = ["TXx", "RX1DAY", "RX5DAY"]
+        for name, da in final_ds.items():
+            if name in max_indices:
+                annual_indices[f"{name}_annual"] = da.resample(time=freq_a).max(skipna=False)
+
+        # Agregação para índices de mínimo (°C)
+        min_indices = ["TNn"]
+        for name, da in final_ds.items():
+            if name in min_indices:
+                annual_indices[f"{name}_annual"] = da.resample(time=freq_a).min(skipna=False)
+                
+        # 7. Combinar os resultados anuais com os mensais
+        final_ds = xr.merge([final_ds, xr.Dataset(annual_indices)])
+
+        return final_ds
 
     def write_indices(self, indices_ds: xr.Dataset, name: str, output_dir: str = "indices_xclim"):
-        """Salva cada índice em um arquivo CSV separado."""
-        # Este método permanece como antes
         output_path = Path(output_dir)
         output_path.mkdir(parents=True, exist_ok=True)
         for index_name in self.indices_base:
@@ -91,24 +185,17 @@ class Climdex:
             df_annual = annual_da.to_dataframe().rename(columns={f"{index_name}_annual": "annual"})
             df_annual.index = df_annual.index.year
             final_df = df_wide.join(df_annual['annual']).reset_index().reindex(columns=self.write_columns)
-            final_csv_path = output_path / f"{name}_{index_name}.csv"
+            final_csv_path = output_path / f"{name}_{index_name}"
             final_df.round(2).to_csv(final_csv_path, index=False, sep=",")
             print(f"Índice salvo em: {final_csv_path}")
 
-
-    # NOVO MÉTODO DE PLOTAGEM INTEGRADO
     def plot_and_save_indices(self, indices_ds: xr.Dataset, name: str, output_dir: str = "graficos_indices"):
-        """
-        Gera gráficos para cada índice e os salva em arquivos PDF separados.
-        """
         output_path = Path(output_dir)
         output_path.mkdir(parents=True, exist_ok=True)
         
-        # Itera sobre cada índice base para criar um PDF para cada um
         for index_name in self.indices_base:
             print(f"Gerando gráfico para o índice: {index_name}")
             
-            # Prepara os dados no formato longo, ideal para plotagem
             monthly_da = indices_ds[index_name]
             df_long = monthly_da.to_dataframe(name=index_name).reset_index()
             df_long['year'] = df_long['time'].dt.year
@@ -120,7 +207,6 @@ class Climdex:
                 start_year = df_long["year"].min()
                 end_year = df_long["year"].max()
                 
-                # Gera lista de décadas para criar os subplots
                 decades = list(range(start_year, end_year + 1, 10))
                 if not decades: continue
 
@@ -128,7 +214,6 @@ class Climdex:
 
                 for i, start_decade in enumerate(decades):
                     end_decade = start_decade + 9
-                    # Filtra os dados para a década atual
                     subset = df_long[(df_long["year"] >= start_decade) & (df_long["year"] <= end_decade)]
 
                     if subset.empty:
@@ -136,19 +221,15 @@ class Climdex:
 
                     ax = plt.subplot(len(decades), 1, i + 1)
                     
-                    # Cria um eixo x contínuo (ex: 2001.0 para Jan, 2001.5 para Jun)
                     x_axis = subset["year"] + (subset["month"] - 1) / 12
                     ax.plot(x_axis, subset[index_name], color="blue", linewidth=0.8, marker='o', markersize=2, linestyle='-')
 
-                    # MELHORIA 2: Título e eixos dinâmicos
-                    unit = self.units_map.get(index_name, "") # Pega a unidade do mapa
+                    unit = self.units_map.get(index_name, "")
                     ax.set_title(f"Estação: {name}, Década: {start_decade}-{min(end_decade, end_year)}, Índice: {index_name}", fontsize=10)
                     ax.set_ylabel(f"Valor ({unit})")
                     
-                    # MELHORIA 3: Limites e Ticks dos eixos dinâmicos
                     ax.set_xlim(start_decade, min(end_decade, end_year) + 1)
                     ax.set_xticks(range(start_decade, min(end_decade, end_year) + 2, 1))
-                    # Deixa o matplotlib definir os ticks do eixo y automaticamente
                     
                     ax.grid(True, linestyle='--', alpha=0.6)
 
