@@ -21,25 +21,12 @@ input_dir = "src/csmanip/data"
 output_dir = "src/csmanip/processed_data"
 
 cidades = ["Barbalha.csv"]
-trends.process_csv(cidades, input_dir, output_dir)
-dados_das_estacoes = trends.read_files_climdex(output_dir, cidades)
 
-df_barbalha = dados_das_estacoes["Barbalha.csv"]
-indices_calculados = trends.calculate_indices(df_barbalha, ("1991-01-01", "2020-12-31"))
-
-output_dir_indices = 'indices_climaticos'
-#trends.write_indices(indices_calculados, "BarbalhaIndex", output_dir)
-
-pdf_output_path = f"{output_dir_indices}/graficos_indices_barbalha.pdf"
-
-trends.plot_and_save_indices(indices_calculados, "Barbalha", output_dir)
-
-
-print(f"Gráficos de extremos salvos em: {pdf_output_path}")
-
-resultado_tendencia = trends.analyze_trend(
-    csv_file='src/csmanip/processed_data/BarbalhadadosAnuais.csv',
-    column_name='Tmean'
+trends.group_data(cidades, output_dir, output_dir)
+trends.plot_annual_data(
+    csv_path='src/csmanip/processed_data/BarbalhadadosAnuais.csv',
+    index='tmean',  # Coluna a ser plotada ('tmax', 'tmin', 'tmean', 'prec')
+    file_name='tendencia_anual_tmedia_barbalha.png',
+    title_img='Tendência da Temperatura Média Anual em Barbalha',
+    caption_img='Fonte: INMET'
 )
-
-print(resultado_tendencia)

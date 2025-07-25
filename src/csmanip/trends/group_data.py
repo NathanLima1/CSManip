@@ -21,7 +21,9 @@ def group_data(city_files: list, input_dir: str, output_dir: str):
         input_path = os.path.join(input_dir, city_filename)
 
         try:
-            cidade = pd.read_csv(input_path).values
+            df = pd.read_csv(input_path, na_values=-99)
+            df.dropna(inplace=True)
+            cidade = df.values
         except FileNotFoundError:
             print(f"Erro: Arquivo de entrada não encontrado em '{input_path}'")
             continue # Pula para a próxima cidade se o arquivo não for encontrado
