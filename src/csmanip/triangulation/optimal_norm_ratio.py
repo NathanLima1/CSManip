@@ -3,7 +3,7 @@ from ..data_processing.data_processing import DataProcessing
 
 def onr(self, focus):
     """
-    Optimal normalizate ratio?
+    Optimized normal ratio
     """
     treatment = DataProcessing()
     data = treatment.load_data_file('Common data')
@@ -18,58 +18,48 @@ def onr(self, focus):
     else:
         raise ValueError("Invalid focus value. Must be 1, 2, or 3.")
 
-    self.onr_y = []
     result = []
     correlation_counter = 0
 
     for i in range(len(data)):
         try:
-            # A lógica de cálculo é a mesma, independentemente da condição if/else abaixo.
-            # Portanto, o cálculo foi movido para fora e simplificado.
-            
-            # Usamos abs() para garantir que a base da potência nunca será negativa.
-            # <--- ALTERAÇÃO PRINCIPAL AQUI --->
-            weight_a = math.pow(abs(coef_a[correlation_counter]), 2 * ((days[correlation_counter] - 2) / (1 - coef_a[correlation_counter])))
-            weight_b = math.pow(abs(coef_b[correlation_counter]), 2 * ((days[correlation_counter] - 2) / (1 - coef_b[correlation_counter])))
-            weight_c = math.pow(abs(coef_c[correlation_counter]), 2 * ((days[correlation_counter] - 2) / (1 - coef_c[correlation_counter])))
+            ca = coef_a[correlation_counter]
+            cb = coef_b[correlation_counter]
+            cc = coef_c[correlation_counter]
+            d = days[correlation_counter]
 
-            numerator = (
-                weight_a * float(data[i][target_index]) +
-                weight_b * float(data[i][target_index + 3]) +
-                weight_c * float(data[i][target_index + 6])
-            )
+            # Adiciona um valor pequeno (epsilon) para evitar divisão por zero se r^2 for 1.0
+            epsilon = 1e-9
+
+            weight_a = math.pow(abs(ca), 2 * (d - 2) / (1 - ca**2 + epsilon))
+            weight_b = math.pow(abs(cb), 2 * (d - 2) / (1 - cb**2 + epsilon))
+            weight_c = math.pow(abs(cc), 2 * (d - 2) / (1 - cc**2 + epsilon))
+
+            value_a = float(data[i][target_index])
+            value_b = float(data[i][target_index + 3])
+            value_c = float(data[i][target_index + 6])
+            
+            numerator = (weight_a * value_a) + (weight_b * value_b) + (weight_c * value_c)
             denominator = weight_a + weight_b + weight_c
 
-            result.append(numerator / denominator)
-
-            # Incrementa o contador apenas se o valor na próxima linha for diferente
-            if i + 1 < len(data) and data[i][1] != data[i + 1][1]:
-                correlation_counter += 1
-
-        # Os blocos de exceção foram combinados, pois o código de recuperação era idêntico.
-        except (IndexError, ValueError):
-            # Ocorre no final do loop ou se houver um erro de matemática (como divisão por zero se o coef for 1).
-            # Usamos o último contador válido.
-            last = correlation_counter - 1 if correlation_counter > 0 else 0
-            
-            # <--- ALTERAÇÃO PRINCIPAL AQUI (no bloco de exceção) --->
-            weight_a = math.pow(abs(coef_a[last]), 2 * ((days[last] - 2) / (1 - coef_a[last])))
-            weight_b = math.pow(abs(coef_b[last]), 2 * ((days[last] - 2) / (1 - coef_b[last])))
-            weight_c = math.pow(abs(coef_c[last]), 2 * ((days[last] - 2) / (1 - coef_c[last])))
-
-            numerator = (
-                weight_a * float(data[i][target_index]) +
-                weight_b * float(data[i][target_index + 3]) +
-                weight_c * float(data[i][target_index + 6])
-            )
-            denominator = weight_a + weight_b + weight_c
-            
-            # Evita divisão por zero caso os pesos sejam zero
-            if denominator != 0:
-                result.append(numerator / denominator)
+            if denominator == 0:
+                estimated_value = (value_a + value_b + value_c) / 3
             else:
-                result.append(0) # Ou outro valor padrão
+                estimated_value = numerator / denominator
+            
+            result.append(estimated_value)
 
+        except (IndexError, ValueError, ZeroDivisionError):
+            print(f"Alerta: Falha no cálculo para o dia {i}. Usando média simples como fallback.")
+            value_a = float(data[i][target_index])
+            value_b = float(data[i][target_index + 3])
+            value_c = float(data[i][target_index + 6])
+            result.append((value_a + value_b + value_c) / 3)
+
+        if i + 1 < len(data) and data[i][1] != data[i + 1][1]:
+            correlation_counter += 1
+
+    self.onr_y = []
     self.onr_x = []
     self.onr_alv_y = []
     self.meta_matrix_onr = []
