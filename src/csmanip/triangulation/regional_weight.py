@@ -4,11 +4,10 @@ def rw(self, focus):
         """
         Residual weightening ou ratio weightened?
         """
-        num_stations = 3
         monthly_avg_target = self.generate_monthly_avg(focus, 'target')
-        monthly_avg_vizA = self.generate_monthly_avg(focus, 'VizA')
-        monthly_avg_vizB = self.generate_monthly_avg(focus, 'VizB')
-        monthly_avg_vizC = self.generate_monthly_avg(focus, 'VizC')
+        monthly_avg_vizA = self.generate_monthly_avg(focus, 'neighborA')
+        monthly_avg_vizB = self.generate_monthly_avg(focus, 'neighborB')
+        monthly_avg_vizC = self.generate_monthly_avg(focus, 'neighborC')
 
         if focus == 1:
             index = 6

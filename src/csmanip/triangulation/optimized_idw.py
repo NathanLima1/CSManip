@@ -28,13 +28,13 @@ def oidw(self, focus):
 
     if focus == 1:
         index_start = 6
-        a = 5
+        a = 3
     elif focus == 2:
         index_start = 7
-        a = 6
+        a = 4
     elif focus == 3:
         index_start = 8
-        a = 7
+        a = 5
 
     treatment = DataProcessing()
     raw_data = treatment.load_data_file('Common data')

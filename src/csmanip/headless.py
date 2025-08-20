@@ -347,27 +347,39 @@ class Headless():
         elif parameter == 'Maximum temperature':
             focus = 2
             y_label = "Temperature (°C)"
-        else:
+        elif parameter == "Minimum temperature":
             focus = 3
             y_label = "Temperature (°C)"
+        else:
+            print("Error! This parameter is not supported!")
 
-        if method == 'Arithmetic Average':
+        avg = ["Arithmetic Average", "AA", "MA", "Média Aritmética", "avg"]
+        idw = ["idw", "IDW", "Inverse Distance Weighted"]
+        oidw = ["oidw", "OIDW", "Optimized Inverse Distance Weighted"]
+        rw = ["rw", "RW", "Regional Weight"]
+        onr = ["onr", "ONR", "Optimized Normal Ratio"]
+
+        if method in avg:
             trian.avg(focus)
             eixo_x, eixo_y_tri, eixo_y_exato, media_ea, media_er, _ = trian.get_avg()
-        elif method == 'Inverse Distance Weighted':
+        elif method in idw:
             trian.idw(focus)
             eixo_x, eixo_y_tri, eixo_y_exato, media_ea, media_er, _ = trian.get_idw()
-        elif method == 'Optimized Inverse Distance Weighted':
+        elif method in oidw:
             trian.oidw(focus)
             eixo_x, eixo_y_tri, eixo_y_exato, media_ea, media_er, _ = trian.get_oidw()
-        elif method == 'Regional Weight':
+        elif method in rw:
             trian.rw(focus)
             eixo_x, eixo_y_tri, eixo_y_exato, media_ea, media_er, _ = trian.get_rw()
-        elif method == 'Optimized Normal Ratio':
+        elif method in onr:
             trian.onr(focus)
             eixo_x, eixo_y_tri, eixo_y_exato, media_ea, media_er, _ = trian.get_onr()
         else:
             raise ValueError("Method of triangulation invalid")
+        
+        print(f"Method: {method}")
+        print()
+        print(f"media_ea: {media_ea}, media_er: {media_er}")
 
         media_ea = round(media_ea, 4)
         media_er = round(media_er, 4)

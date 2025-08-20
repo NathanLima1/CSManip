@@ -142,12 +142,8 @@ class Triangulation:
     def generate_monthly_avg(self, foco, cidade):
         treatment = DataProcessing()
         
-
         monthly_avg = list()
         self.index_end = list()
-        sum = 0
-        cont = 2
-
 
         if cidade == 'target':
             if foco == 1:
@@ -209,6 +205,9 @@ class Triangulation:
                     is_last_day_month = True
 
             if is_last_day_month or is_last_day_file:
+
+                self.index_end.append(i) 
+
                 if current_month_days > 0:
                     average = current_month_sum/current_month_days
                     monthly_avg.append(average)

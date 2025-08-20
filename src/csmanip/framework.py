@@ -310,6 +310,7 @@ class Framework(Frame):
         toolbar.update()
 
     def range_graphs(self):
+        print("Entrou Principal range_graphs")
         my_data = DataProcessing()
         data_ana = my_data.load_data_file(self.type_data.get())
         
@@ -441,6 +442,7 @@ class Framework(Frame):
         Button(self, text='Def. Range', font='Arial 11 bold', fg='white', bg=colors.fun_b, width=10, command=self.range_graphs).place(x=310, y=305)
 
     def triangulation(self):
+        print("Entrou Principal triangulation")
         met = self.metodo.get()
 
         canvas = Canvas(self, height=200, width=200, bg=colors.fundo, border=0).place(x=450, y=200)
@@ -478,10 +480,6 @@ class Framework(Frame):
         else:
             msg.showwarning(title="Triangulation method Missing!", message="You must select a method of triangulation!")
 
-        
-
-        
-       
         media_ea = round(media_ea, 4)
         media_er = round(media_er, 4)
         texto = 'Mean Absolute Error: '+ str(media_ea) + ' | Mean Relative Error: '+ str(media_er)
@@ -489,14 +487,12 @@ class Framework(Frame):
         figura.subplots_adjust(left=0.05, bottom=0.08, right=0.98, top=0.93)
         plot_r = figura.add_subplot(111)
         plot_r.plot(eixo_x, eixo_y_exato,label='Exact', color='green')
-        plot_r.plot(eixo_x, eixo_y_tri, label='IDW', color='red')
+        plot_r.plot(eixo_x, eixo_y_tri, label=f'{met}', color='red')
         plot_r.legend()
         plot_r.grid(True)
         plot_r.set_ylabel(y_label)
         plot_r.set_xlabel("Comparisons")
         plot_r.set_title(texto)
-        
-
         
         canvas = FigureCanvasTkAgg(figura, master=self.master)
         
@@ -509,6 +505,7 @@ class Framework(Frame):
         toolbar.update()
 
     def preparar_eixos(self, mat, foco):
+        print("Entrou Principal preparar_eixos")
         x = list()
         y = list()
 
@@ -520,12 +517,14 @@ class Framework(Frame):
         return x, y
 
     def prepara_mat(self, dados, foco):
+        print("Entrou principal prepara_mat")
         mat = list()
         for i in range(len(dados)):
             mat.append([int(dados[i][0]), int(dados[i][1]), int(dados[i][2]), float(dados[i][foco])])
         return mat
     
     def separa_estacao(self, dados, est):
+        print("Entrou Principal separa_estacao")
         if est == 1:
             mes1 = 12
             mes2 = 1
