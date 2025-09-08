@@ -11,6 +11,7 @@ from .optimized_idw import  oidw
 from .utils import choose_data
 from ..data_processing.data_processing import DataProcessing
 from ..training.training import Training
+import numpy as np
 
 class Triangulation:
     def __init__(self):
@@ -95,8 +96,10 @@ class Triangulation:
             sum = 0
             for j in range(index, 15, 3):
                 sum += float(data[i][j])
+                #print("sum: ", sum)
 
             avg = (1/3)*sum
+            #print("avg: ", avg)
             aux = []
 
             aux.append(float(data[i][0]))
@@ -111,7 +114,8 @@ class Triangulation:
 
             cont += 1
 
-        self.avg_abs_error, self.avg_rel_error = self.calculate_errors(self.avg_y, self.avg_target_y)
+        #self.avg_abs_error, self.avg_rel_error = self.calculate_errors(self.avg_y, self.avg_target_y)
+        self.avg_abs_error, self.avg_rel_error = self.calculate_errors_normalized(self.avg_y, self.avg_target_y)
 
     def get_avg(self):
         """
@@ -309,7 +313,9 @@ class Triangulation:
         sum_er = 0
         
         for i in range(len(exact)):
+            print(f"exact[{i}]: {exact[i]} aproximate[{i}]: {approximate[i]}")
             ea = abs(exact[i] - approximate[i])
+            print("ea: ", ea)
             er = ea / exact[i]
 
             sum_ea += ea
@@ -319,3 +325,35 @@ class Triangulation:
         relative_error = sum_er / len(exact)
 
         return absolute_error, relative_error
+
+    def calculate_errors_normalized(self, real, approx):
+        """
+        MAE (Erro Absoluto Médio)
+        NRSME (Normalized Root Mean Squared Error)
+        """
+
+        n = len(real)
+        if n == 0 or n != len(approx):
+            raise ValueError("Listas de tamanhos diferentes ou vazias.")
+
+        soma_abs = 0.0
+        for i in range(n):
+            soma_abs += abs(real[i] - approx[i])
+        mae = soma_abs / n
+
+        soma_quad = 0.0
+        for i in range(n):
+            soma_quad += (real[i] - approx[i]) ** 2
+        rmse = (soma_quad / n) ** 0.5
+        print("rmse", rmse)
+
+        valor_max = max(real)
+        valor_min = min(real)
+        value_range = valor_max - valor_min
+        if value_range == 0:
+            nrmse = 0.0
+        else:
+            nrmse = rmse / value_range
+        print("nrmse", nrmse)
+
+        return mae, nrmse

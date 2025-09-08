@@ -36,4 +36,5 @@ def idw(self, focus):
         self.idw_target_y.append(float(data[i][a]))
         cont2 += 1
 
-    self.idw_abs_error, self.idw_rel_error = self.calculate_errors(self.idw_y, self.idw_target_y)
+    #self.idw_abs_error, self.idw_rel_error = self.calculate_errors(self.idw_y, self.idw_target_y)
+    self.idw_abs_error, self.idw_rel_error = self.calculate_errors_normalized(self.idw_y, self.idw_target_y)

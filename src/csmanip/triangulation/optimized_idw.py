@@ -103,4 +103,5 @@ def oidw(self, focus):
             # chegou ao final da lista de dados
             pass
 
-    self.oidw_abs_error, self.oidw_rel_error = self.calculate_errors(self.oidw_y, self.oidw_target_y)
+    #self.oidw_abs_error, self.oidw_rel_error = self.calculate_errors(self.oidw_y, self.oidw_target_y)
+    self.oidw_abs_error, self.oidw_rel_error = self.calculate_errors_normalized(self.oidw_y, self.oidw_target_y)

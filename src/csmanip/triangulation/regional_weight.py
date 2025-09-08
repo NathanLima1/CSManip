@@ -88,4 +88,5 @@ def rw(self, focus):
 
             x += 1
 
-        self.rw_abs_error, self.rw_rel_error = self.calculate_errors(self.rw_y, self.rw_avg_y)
+        #self.rw_abs_error, self.rw_rel_error = self.calculate_errors(self.rw_y, self.rw_avg_y)
+        self.rw_abs_error, self.rw_rel_error = self.calculate_errors_normalized(self.rw_y, self.rw_avg_y)

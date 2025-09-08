@@ -16,6 +16,6 @@ loop.mainloop()
 #clim.triangulation("idw", "Maximum temperature")
 #clim.triangulation("Regional Weight", "Maximum temperature")
 #clim.triangulation("Optimized Inverse Distance Weighted", "Maximum temperature")
-#clim.triangulation("onr", "Maximum emperature")
+#clim.triangulation("onr", "Maximum temperature")
 #clim.triangulation("avg", "Maximum temperature")
 
