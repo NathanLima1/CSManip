@@ -22,14 +22,16 @@ def get_city_coords(city_name):
         print(f"Erro ao buscar as coordenadas: {e}")
         return None, None
 
-def find_stations(lat, lon):
-    radius = 0.5
+def find_stations(lat, lon, limit, required_types, radius):
     extent = f"{lat-radius},{lon-radius},{lat+radius},{lon+radius}"
 
     params = {
         "datasetid": "GHCND",
         "extent": extent,
-        "limit": 10
+        "limit": limit,
+        "datatypeid": required_types,
+        "sortfield": "maxdate",
+        "sortorder": "desc"
     }
 
     try:
@@ -42,7 +44,7 @@ def find_stations(lat, lon):
             print("Nenhuma estação encontrada na área especificada.")
             return None
         
-        stations.sort(key=lambda x: x['maxdate'], reverse=True)
+        #stations.sort(key=lambda x: x['maxdate'], reverse=True)
         
         print(f"Encontradas {len(stations)} estações. A mais recente reportou dados em: {stations[0]['maxdate']}")
         return stations
@@ -50,6 +52,58 @@ def find_stations(lat, lon):
     except requests.exceptions.RequestException as e:
         print(f"Erro ao buscar estações: {e}")
         return None
+    
+def get_available_datatypes(station_id, start_date, end_date):
+    """
+    Identifica os tipos de dados presentes naquela estação
+    """
+    params = {
+        "datasetid": "GHCND",
+        "stationid": station_id,
+        "startdate": start_date,
+        "enddate": end_date,
+        "limit": 200
+    }
+
+    try:
+        response = requests.get(f"{BASE_URL}datatypes", headers=headers, params=params)
+        response.raise_for_status()
+
+        data_types = response.json().get('results', [])
+
+        if not data_types:
+            print(f"Nenhum tipo de dado encontrado para a estação {station_id} no período especificado.")
+            return None
+        
+        return data_types
+    except requests.exceptions.RequestException as e:
+        print(f"Erro ao buscar os tipos de dados: {e}")
+        return None
+    
+
+def check_station_data_types(station_id, required_types, start_date, end_date):
+    """
+    Verifica se uma estação possui um conjunto específico de tipos de dados
+    e imprime um status detalhado para cada um.
+    """
+    status_check = {key: False for key in required_types}
+
+    available_types = get_available_datatypes(station_id, start_date, end_date)
+    
+    if available_types:
+        available_ids = {dtype['id'] for dtype in available_types}
+        for data_type in status_check:
+            if data_type in available_ids:
+                status_check[data_type] = True
+
+    print("--- Status de disponibilidade dos dados:")
+    for data_type, is_available in status_check.items():
+        if is_available:
+            print(f"    - {data_type}: ✔️ Disponível")
+        else:
+            print(f"    - {data_type}: ❌ Indisponível")
+
+    return all(status_check.values())        
     
 def get_dly_climate_data_for_station(stationid, startdate, enddate, verbose):
     """
@@ -169,29 +223,48 @@ def salvar_dados_climaticos_csv(dados, nome_arquivo, info_estacao):
             except (ValueError, TypeError) as e:
                 print(f"Aviso: Não foi possível processar a linha: {linha}. Erro: {e}")
 
-if __name__ == "__main__":
-    city = "New York, US"
+def download_noaa_data(city, start_date, end_date, radius=0.5):
+    """
+    Função principal que cuida de encontrar a estação baseando se na cidade,
+    checa os tipos de dados disponíveis naquela estação e baixa
+    """
+    required_types = ["TMIN", "TMAX", "PRCP"]
+    lat, lon = get_city_coords(city)
+    print(lat, lon)
+    if lat is None or lon is None:
+        print("Não foi possível encontrar coordenadas para {city}. Verifique a escrita e formato, ela deve estar nesse formato 'New York, US'.")
     
-    start_date = "2023-01-01"
-    end_date = "2023-12-31"
-    dados_climaticos = get_dly_climate_data_for_station("GHCND:USC00477132", start_date, end_date, verbose=True)
+    print(f"Buscando estações perto de {city} (Lat: {lat}, Lon: {lon}) que tenham TMIN, TMAX e PRCP...")
 
-    if dados_climaticos:
-        # 3. Preparar informações da estação e salvar no CSV
-        info_estacao = {
-            'nome': 'Lock and Dam N.4, US',
-            'id': "GHCND:USC00470124",
-            'latitude': "38",
-            'longitude': "84",
-            'elevation': "143",
-            'data_inicial': start_date,
-            'data_final': end_date
-        }
-        
-        nome_do_arquivo_csv = "LockDam.csv"
-        salvar_dados_climaticos_csv(dados_climaticos, nome_do_arquivo_csv, info_estacao)
-        
-        print(f"\nDados salvos com sucesso no arquivo '{nome_do_arquivo_csv}'")
-    
+    stations = find_stations(lat, lon, 10, required_types, radius)
+    if not stations:
+        print("Não foi possível encontrar uma estação adequada, tente aumentar o raio de busca e verificar o período das datas.")
+    found_station = False
 
-    
+    for station in stations:
+        dtypes = check_station_data_types(station['id'], required_types, start_date, end_date)
+        if dtypes:
+            found_station = True
+            station_info = {
+                'nome': station['name'],
+                'id': station['id'],
+                'latitude': station.get('latitude', lat),
+                'longitude': station.get('longitude', lon),
+                'elevation':station.get('elevation', 'N/A'),
+                'data_inicial': start_date,
+                'data_final': end_date
+            }
+            station_id = station['id']
+            data = get_dly_climate_data_for_station(station_id, start_date, end_date, verbose=True)
+
+            if data:
+                temp_name = city.split(",")[0].replace(" ", "")
+                file_name = f"{temp_name}.csv"
+                print("Nome do arquivo:", file_name)
+                salvar_dados_climaticos_csv(data, file_name, station_info)
+                break
+            else:
+                print("Erro ao baixar os dados da estação:", station_id)
+
+    if not found_station:
+        print("Não foi possível encontrar uma estação com todos os dados necessários")

@@ -21,6 +21,8 @@ from .machine_learning.ml import Ml
 from .training.hiperparam import Hiperparam
 from .meta_learning.meta_learning import MetaLearning
 from .meta_learning.test_generat import TestsGenerator
+from .data_processing.era5_download import download_and_process_era_data
+from .data_processing.noaa_download import download_noaa_data
 
 class Headless():
     def __init__(self):
@@ -336,6 +338,12 @@ class Headless():
     def show_map(self):
         triang = Triangulation()
         triang.show_map()
+
+    def download_era5_data(self, city, start_date, end_date):
+        download_and_process_era_data(city, start_date, end_date)
+
+    def download_noaa_data(self, city, start_date, end_date):
+        download_noaa_data(city, start_date, end_date)
 
     def triangulation(self, method, parameter):
         print("Entrou headless triangulation")

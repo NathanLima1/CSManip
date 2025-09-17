@@ -16,6 +16,8 @@ from .triangulation.triangulation import Triangulation
 from .machine_learning.machine_learning import MachineLearning
 from .meta_learning.meta_learning import MetaLearning
 from .meta_learning.tests_generator import TestsGenerator
+from .data_processing.era5_download import download_and_process_era_data
+from .data_processing.noaa_download import download_noaa_data
 
 class Framework(Frame):
     def get_info(self, directory):  # Function that opens the folder with .csv files and returns important data
@@ -37,6 +39,12 @@ class Framework(Frame):
         address = directory
 
         return name, latitude, longitude, altitude, address
+    
+    def download_era5_data(self, city, start_date, end_date):
+        download_and_process_era_data(city, start_date, end_date)
+
+    def download_noaa_data(self, city, start_date, end_date):
+        download_noaa_data(city, start_date, end_date)
 
     def list_cities(self):
         print("Entrou Principal list_cities")
