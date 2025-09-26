@@ -27,13 +27,13 @@ def onr(self, focus):
             cb = coef_b[correlation_counter]
             cc = coef_c[correlation_counter]
             d = days[correlation_counter]
+            print("d", d)
 
-            # Adiciona um valor pequeno (epsilon) para evitar divisão por zero se r^2 for 1.0
+            # Valor pequeno para evitar divisão por zero se r^2 for 1.0
             epsilon = 1e-9
-
-            weight_a = math.pow(abs(ca), 2 * (d - 2) / (1 - ca**2 + epsilon))
-            weight_b = math.pow(abs(cb), 2 * (d - 2) / (1 - cb**2 + epsilon))
-            weight_c = math.pow(abs(cc), 2 * (d - 2) / (1 - cc**2 + epsilon))
+            weight_a = math.pow((ca), round(2 * (d - 2) / (1 - ca**2 + epsilon)))
+            weight_b = math.pow((cb), round(2 * (d - 2) / (1 - cb**2 + epsilon)))
+            weight_c = math.pow((cc), round(2 * (d - 2) / (1 - cc**2+epsilon)))
 
             value_a = float(data[i][target_index])
             value_b = float(data[i][target_index + 3])
@@ -48,13 +48,13 @@ def onr(self, focus):
                 estimated_value = numerator / denominator
             
             result.append(estimated_value)
-
         except (IndexError, ValueError, ZeroDivisionError):
             print(f"Alerta: Falha no cálculo para o dia {i}. Usando média simples como fallback.")
             value_a = float(data[i][target_index])
             value_b = float(data[i][target_index + 3])
             value_c = float(data[i][target_index + 6])
             result.append((value_a + value_b + value_c) / 3)
+        
 
         if i + 1 < len(data) and data[i][1] != data[i + 1][1]:
             correlation_counter += 1

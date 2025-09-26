@@ -175,6 +175,8 @@ class Headless():
 
         y_label, col_index = self.get_col(parameter)
 
+        city_names = data_processor.get_city_names()
+
         x_axis = []
         data_table = []
 
@@ -182,7 +184,7 @@ class Headless():
             y_axis_1, y_axis_2, y_axis_3, y_axis_4 = [], [], [], []
             common_count, target_count, va_count, vb_count, vc_count = data_processor.get_quantities()
             bar_y_values = [common_count, target_count, va_count, vb_count, vc_count]
-            bar_x_labels = ['Common', 'Target', 'Total vA', 'Total vB', 'Total vC']
+            bar_x_labels = ['Common', city_names[0], city_names[1], city_names[2], city_names[3]]
         else:
             y_axis = []
 
@@ -212,10 +214,10 @@ class Headless():
             fig, axs = plt.subplots(3, 2, figsize=(14.5, 9.5))
             axs = axs.flatten()
 
-            axs[0].plot(x_axis, y_axis_1, label="Target")
-            axs[1].plot(x_axis, y_axis_2, label="Neighbor A", color="red")
-            axs[2].plot(x_axis, y_axis_3, label="Neighbor B", color='green')
-            axs[3].plot(x_axis, y_axis_4, label="Neighbor C", color='orange')
+            axs[0].plot(x_axis, y_axis_1, label=city_names[0])
+            axs[1].plot(x_axis, y_axis_2, label=city_names[1], color="red")
+            axs[2].plot(x_axis, y_axis_3, label=city_names[2], color='green')
+            axs[3].plot(x_axis, y_axis_4, label=city_names[3], color='orange')
 
             axs[4].scatter(x_axis, y_axis_1, s=2, alpha=1, color='blue')
             axs[4].scatter(x_axis, y_axis_2, s=2, alpha=1, color='red')

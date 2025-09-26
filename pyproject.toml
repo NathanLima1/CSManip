@@ -24,7 +24,9 @@ dependencies = [
     "xclim",
     "xarray",
     "netcdf4",
-    "statsmodels"
+    "statsmodels",
+    "cdsapi",
+    "geopy"
 ]
 
 [project.urls]

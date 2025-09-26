@@ -459,6 +459,16 @@ class DataProcessing:
             lines = file.readlines()
         path = lines[6].strip()
         return path
+    
+    def get_city_names(self):
+        with open("Coordinates.txt", 'r') as file:
+            lines = file.readlines()
+
+        target_name = lines[0].strip()
+        neighborA_name = lines[4].strip()
+        neighborB_name = lines[8].strip()
+        neighborC_name = lines[12].strip()
+        return target_name, neighborA_name, neighborB_name, neighborC_name
 
     def get_file_path(self, option: str) -> str:
         """
@@ -469,7 +479,7 @@ class DataProcessing:
         with open('end.txt') as file:
             lines = file.readlines()
 
-        if option == 'Cidade alvo':
+        if option == 'Target city':
             return lines[0].replace("\n", '')
         elif option == 'Neighbor A':
             return lines[1].replace("\n", '')

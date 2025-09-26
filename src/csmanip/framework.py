@@ -39,6 +39,7 @@ class Framework(Frame):
         address = directory
 
         return name, latitude, longitude, altitude, address
+
     
     def download_era5_data(self, city, start_date, end_date):
         download_and_process_era_data(city, start_date, end_date)
@@ -232,12 +233,14 @@ class Framework(Frame):
 
         y_label, col_index = self.get_col()
 
+        city_names = data_processor.get_city_names()
+
         x_axis = []
         if self.type_data.get() == 'Common data':
             y_axis_1, y_axis_2, y_axis_3, y_axis_4 = [], [], [], []
             common_count, target_count, va_count, vb_count, vc_count = data_processor.get_quantities()
             bar_y_values = [common_count, target_count, va_count, vb_count, vc_count]
-            bar_x_labels = ['Common', 'Target', 'Total vA', 'Total vB', 'Total vC']
+            bar_x_labels = ['Common', city_names[0], city_names[1], city_names[2], city_names[3]]
         else:
             y_axis = []
 
@@ -279,10 +282,10 @@ class Framework(Frame):
             plot5 = fig.add_subplot(325)
             plot6 = fig.add_subplot(326)
 
-            plot1.plot(x_axis, y_axis_1, label="Target")
-            plot2.plot(x_axis, y_axis_2, label="Neighbor A", color="red")
-            plot3.plot(x_axis, y_axis_3, label="Neighbor B", color='green')
-            plot4.plot(x_axis, y_axis_4, label="Neighbor C", color='orange')
+            plot1.plot(x_axis, y_axis_1, label=city_names[0])
+            plot2.plot(x_axis, y_axis_2, label=city_names[1], color="red")
+            plot3.plot(x_axis, y_axis_3, label=city_names[2], color='green')
+            plot4.plot(x_axis, y_axis_4, label=city_names[3], color='orange')
 
             plot5.scatter(x_axis, y_axis_1, s=2, alpha=1, color='blue')
             plot5.scatter(x_axis, y_axis_2, s=2, alpha=1, color='red')

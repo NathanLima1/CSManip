@@ -11,3 +11,5 @@ xclim
 xarray
 netcdf4
 statsmodels
+cdsapi
+geopy

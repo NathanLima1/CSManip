@@ -20,3 +20,5 @@ Requires-Dist: xclim
 Requires-Dist: xarray
 Requires-Dist: netcdf4
 Requires-Dist: statsmodels
+Requires-Dist: cdsapi
+Requires-Dist: geopy
