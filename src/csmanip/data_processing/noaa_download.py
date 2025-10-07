@@ -3,6 +3,11 @@ from geopy.geocoders import Nominatim
 import csv
 import io
 from datetime import datetime
+import folium
+import webbrowser
+from folium.map import Popup
+import os
+
 
 BASE_URL = "https://www.ncdc.noaa.gov/cdo-web/api/v2/"
 
@@ -223,48 +228,111 @@ def salvar_dados_climaticos_csv(dados, nome_arquivo, info_estacao):
             except (ValueError, TypeError) as e:
                 print(f"Aviso: Não foi possível processar a linha: {linha}. Erro: {e}")
 
+def create_station_map_and_get_choice(stations):
+    """
+    Cria um mapa Folium com as estações, exibe no console uma lista numerada
+    e pede ao usuário para escolher uma.
+
+    :param stations: Lista de dicionários das estações válidas.
+    :return: O dicionário da estação escolhida pelo usuário, ou None se a escolha for inválida.
+    """
+    if not stations:
+        return None
+
+    # Define o local inicial do mapa como a localização da primeira estação
+    map_center = [stations[0]['latitude'], stations[0]['longitude']]
+    m = folium.Map(location=map_center, zoom_start=10)
+
+    print("\n--- Estações encontradas com todos os dados necessários ---")
+    
+    for i, station in enumerate(stations):
+        station_id_display = i + 1
+        popup_html = (f"<b>ID de Escolha: {station_id_display}</b><br>"
+                      f"Nome: {station['name']}<br>"
+                      f"ID Oficial: {station['id']}<br>"
+                      f"Lat: {station['latitude']}, Lon: {station['longitude']}")
+        
+        folium.Marker(
+            location=[station['latitude'], station['longitude']],
+            popup=folium.Popup(popup_html, max_width=300),
+            tooltip=f"Escolha #{station_id_display}"
+        ).add_to(m)
+        
+        # Imprime a opção no console
+        print(f"  [{station_id_display}] {station['name']} (ID: {station['id']})")
+
+    map_file = 'stations_map.html'
+    m.save(map_file)
+    print(f"\nMapa com as estações foi salvo como '{map_file}' e será aberto no seu navegador.")
+    webbrowser.open('file://' + os.path.realpath(map_file))
+
+    while True:
+        try:
+            choice = int(input("Digite o número da estação que deseja baixar (ex: 1): "))
+            if 1 <= choice <= len(stations):
+                return stations[choice - 1]
+            else:
+                print("Opção inválida. Por favor, escolha um número da lista.")
+        except ValueError:
+            print("Entrada inválida. Por favor, digite apenas o número.")
+
 def download_noaa_data(city, start_date, end_date, radius=0.5):
     """
-    Função principal que cuida de encontrar a estação baseando se na cidade,
-    checa os tipos de dados disponíveis naquela estação e baixa
+    Função principal modificada para encontrar todas as estações válidas,
+    mostrar um mapa e permitir que o usuário escolha qual baixar.
     """
     required_types = ["TMIN", "TMAX", "PRCP"]
     lat, lon = get_city_coords(city)
-    print(lat, lon)
-    if lat is None or lon is None:
-        print("Não foi possível encontrar coordenadas para {city}. Verifique a escrita e formato, ela deve estar nesse formato 'New York, US'.")
     
-    print(f"Buscando estações perto de {city} (Lat: {lat}, Lon: {lon}) que tenham TMIN, TMAX e PRCP...")
+    if lat is None or lon is None:
+        print(f"Não foi possível encontrar coordenadas para '{city}'. Verifique a escrita (formato 'Cidade, País' ou 'Cidade, Estado').")
+        return
+    
+    print(f"Buscando estações perto de {city} (Lat: {lat:.4f}, Lon: {lon:.4f})...")
 
-    stations = find_stations(lat, lon, 10, required_types, radius)
-    if not stations:
-        print("Não foi possível encontrar uma estação adequada, tente aumentar o raio de busca e verificar o período das datas.")
-    found_station = False
+    candidate_stations = find_stations(lat, lon, 50, required_types, radius)
+    if not candidate_stations:
+        print("Não foi possível encontrar estações candidatas. Tente aumentar o raio de busca ou verificar o período das datas.")
+        return
 
-    for station in stations:
-        dtypes = check_station_data_types(station['id'], required_types, start_date, end_date)
-        if dtypes:
-            found_station = True
-            station_info = {
-                'nome': station['name'],
-                'id': station['id'],
-                'latitude': station.get('latitude', lat),
-                'longitude': station.get('longitude', lon),
-                'elevation':station.get('elevation', 'N/A'),
-                'data_inicial': start_date,
-                'data_final': end_date
-            }
-            station_id = station['id']
-            data = get_dly_climate_data_for_station(station_id, start_date, end_date, verbose=True)
+    # Filtra apenas as estações que têm os dados para o período exato
+    valid_stations = []
+    for station in candidate_stations:
+        if check_station_data_types(station['id'], required_types, start_date, end_date):
+            valid_stations.append(station)
+            print(f"  ✔️ Estação '{station['name']}' ({station['id']}) possui os dados necessários.")
+        else:
+            print(f"  ❌ Estação '{station['name']}' ({station['id']}) não possui todos os dados para o período completo.")
 
-            if data:
-                temp_name = city.split(",")[0].replace(" ", "")
-                file_name = f"{temp_name}.csv"
-                print("Nome do arquivo:", file_name)
-                salvar_dados_climaticos_csv(data, file_name, station_info)
-                break
-            else:
-                print("Erro ao baixar os dados da estação:", station_id)
 
-    if not found_station:
-        print("Não foi possível encontrar uma estação com todos os dados necessários")
+    if not valid_stations:
+        print("\nNenhuma estação na área continha todos os tipos de dados (TMIN, TMAX, PRCP) para o período solicitado.")
+        print("Tente um período de datas diferente ou aumente o raio de busca.")
+        return
+
+    # Mostra o mapa e a lista para o usuário escolher
+    chosen_station = create_station_map_and_get_choice(valid_stations)
+
+    if chosen_station:
+        print(f"\nEstação escolhida: '{chosen_station['name']}' ({chosen_station['id']})")
+        
+        station_info = {
+            'nome': chosen_station['name'],
+            'id': chosen_station['id'],
+            'latitude': chosen_station.get('latitude', lat),
+            'longitude': chosen_station.get('longitude', lon),
+            'elevation': chosen_station.get('elevation', 'N/A'),
+            'data_inicial': start_date,
+            'data_final': end_date
+        }
+        
+        data = get_dly_climate_data_for_station(chosen_station['id'], start_date, end_date, verbose=True)
+
+        if data:
+            temp_name = city.split(",")[0].replace(" ", "")
+            file_name = f"{temp_name}_{chosen_station['id'].replace(':', '_')}.csv"
+            salvar_dados_climaticos_csv(data, file_name, station_info)
+        else:
+            print(f"Erro ao baixar os dados da estação escolhida: {chosen_station['id']}")
+
+
