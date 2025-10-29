@@ -148,7 +148,11 @@ class ViewDataPage(ttk.Frame):
         t = DataProcessing()
         data_hist = self.data_hist.get()
         if data_hist == '':
-            msg.showwarning(title="City Missing!", message="You must select a city!")
+            self.controller.show_translated_message(
+                msg_type='warning',
+                title_key='missing_city_title',
+                message_key='select_a_city_msg'
+                )
 
         data = t.load_data_file(data_hist)
         if self.paramt_hist.get() == "Precipitation":
@@ -158,7 +162,11 @@ class ViewDataPage(ttk.Frame):
         elif self.paramt_hist.get() == "Minimum temperature":
             col = 5
         else:
-            msg.showwarning(title="Parameter Missing!", message="You must select a parameter!")
+            self.controller.show_translated_message(
+                msg_type='warning',
+                title_key='missing_parameter_title',
+                message_key='select_a_parameter_msg'
+                )
 
         mat = self.prepara_mat(data, col)
         
@@ -288,7 +296,11 @@ class ViewDataPage(ttk.Frame):
         t = DataProcessing()
         data_hist = self.data_hist.get()
         if data_hist == '':
-            msg.showwarning(title="City Missing!", message="You must select a city!")
+            self.controller.show_translated_message(
+                msg_type='warning',
+                title_key='missing_city_title',
+                message_key='select_a_city_msg'
+                )
 
         data = t.load_data_file(data_hist)
         if self.paramt_hist.get() == "Precipitation":
@@ -298,7 +310,11 @@ class ViewDataPage(ttk.Frame):
         elif self.paramt_hist.get() == "Minimum temperature":
             col = 5
         else:
-            msg.showwarning(title="Parameter Missing!", message="You must select a parameter!")
+            self.controller.show_translated_message(
+                msg_type='warning',
+                title_key='missing_parameter_title',
+                message_key='select_a_parameter_msg'
+                )
 
         mat = self.prepara_mat(data, col)
         

@@ -238,7 +238,12 @@ class MetaLearningPage(ttk.Frame):
             # Atualiza a UI na thread principal
             self.after(0, self._display_custom_results, results)
         except Exception as e:
-            self.after(0, msg.showerror, "Erro no Teste Personalizado", f"Ocorreu um erro:\n{e}")
+            self.after(0, self.controller.show_translated_message(
+                msg_type='error',
+                title_key='customized_test_error_title',
+                message_key='error_msg',
+                error=str(e)
+                ))
         finally:
             # Reabilita o botão na thread principal
             self.after(0, self.reset_button_custom)
@@ -270,7 +275,11 @@ class MetaLearningPage(ttk.Frame):
             results = self._generate_global_test_logic()
             self.after(0, self._display_global_results, results)
         except Exception as e:
-             self.after(0, msg.showerror, "Erro no Teste Global", f"Ocorreu um erro:\n{e}")
+             self.after(0, self.controller.show_translated_message(
+                msg_type='error',
+                title_key='global_test_error_title',
+                message_key='error_msg',
+                ))
         finally:
             self.after(0, self.reset_button_global)
 

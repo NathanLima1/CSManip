@@ -148,7 +148,12 @@ class DataImputationPage(ttk.Frame):
         self.combo2['values'] = all_city_names
         self.combo3['values'] = all_city_names
         self.combo4['values'] = all_city_names
-        msg.showinfo("Sucesso", f"{len(all_city_names)} cidades carregadas com sucesso!")
+        self.controller.show_translated_message(
+            msg_type='info',
+            title_key='success_title',
+            message_key='cities_loaded_msg',
+            all_city_names=len(all_city_names)
+            )
 
     # --- Lógica de Animação (Adaptada) ---
     def on_click(self):
@@ -188,7 +193,11 @@ class DataImputationPage(ttk.Frame):
         neighbor_c_name = self.combo4.get()
 
         if not all([target_city_name, neighbor_a_name, neighbor_b_name, neighbor_c_name]):
-            msg.showerror(title='Dados Incompletos', message="Alguma(s) cidade(s) não foi(ram) selecionada(s)")
+            self.controller.show_translated_message(
+            msg_type='error',
+            title_key='incomplete_data_title',
+            message_key='cities_not_selected_msg',
+            )
             return
 
         # A lógica para encontrar os caminhos permanece a mesma
@@ -208,7 +217,12 @@ class DataImputationPage(ttk.Frame):
                     found = True
                     break
             if not found:
-                msg.showerror("Erro", f"Caminho não encontrado para a cidade: {name_to_find}")
+                self.controller.show_translated_message(
+                    msg_type='error',
+                    title_key='error_title',
+                    message_key='path_not_found_msg',
+                    name_to_find=name_to_find
+                    )
                 return
 
         data_processor = DataProcessing()
@@ -219,7 +233,11 @@ class DataImputationPage(ttk.Frame):
         data_processor.download_path = os.getcwd()
 
         data_processor.get_processed_data()
-        msg.showinfo(title="Sucesso!", message="Arquivos selecionados com sucesso!")
+        self.controller.show_translated_message(
+            msg_type='info',
+            title_key='succes_title',
+            message_key='files_selected_msg'
+            )
         
     def update_texts(self):
         i18n = self.controller.i18n

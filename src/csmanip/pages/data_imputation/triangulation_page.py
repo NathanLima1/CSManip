@@ -78,10 +78,18 @@ class TriangulationPage(ttk.Frame):
         ind = self.parameter_combo.get()
 
         if not met:
-            msg.showwarning(title="Método Faltando!", message="Você deve selecionar um método de triangulação!")
+            self.controller.show_translated_message(
+                msg_type='warning',
+                title_key='missing_method_title',
+                message_key='select_a_triang_method_msg'
+                )
             return
         if not ind:
-            msg.showwarning(title="Parâmetro Faltando!", message="Você deve selecionar um parâmetro climático!")
+            self.controller.show_translated_message(
+                msg_type='warning',
+                title_key='missing_parameter_title',
+                message_key='select_a_parameter_msg'
+                )
             return
 
         trian = Triangulation() 

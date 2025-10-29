@@ -66,7 +66,7 @@ class Framework(tk.Tk):
         for frame in self.frames.values():
             frame.update_texts()
 
-    def show_translated_message(self, title, msg_type, title_key, message_key, **kwargs):
+    def show_translated_message(self, msg_type, title_key, message_key, **kwargs):
         title = self.i18n.get(title_key)
         message_template = self.i18n.get(message_key)
 

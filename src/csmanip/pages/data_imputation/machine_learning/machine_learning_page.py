@@ -275,10 +275,18 @@ class MachineLearningPage(ttk.Frame):
         """Função "despachante" que chama a lógica de ML correta."""
         opcao = self.ml_combo.get()
         if not opcao:
-            msg.showwarning("Aviso", "Por favor, selecione um modelo de ML primeiro.")
+            self.controller.show_translated_message(
+                 msg_type='warning',
+                 title_key='warning_title',
+                 message_key='select_ml_model_msg'
+             )
             return
         if not self.current_param_frame:
-            msg.showwarning("Aviso", "Parâmetros do modelo não foram carregados. Selecione o modelo novamente.")
+            self.controller.show_translated_message(
+                 msg_type='warning',
+                 title_key='warning_title',
+                 message_key='select_ml_model_again_msg'
+             )
             return
 
         try:
@@ -289,9 +297,21 @@ class MachineLearningPage(ttk.Frame):
             elif opcao == 'Support Vector': self.generate_preview_svm()
             elif opcao == 'Gaussian Process': self.generate_preview_GP()
         except AttributeError as e:
-             msg.showerror("Erro de Parâmetro", f"Não foi possível ler um parâmetro do modelo '{opcao}'. Verifique se todos os campos estão corretos.\nDetalhe: {e}")
+             self.controller.show_translated_message(
+                 msg_type='error',
+                 title_key='parameter_error_title',
+                 message_key='coud_not_read_parameter_msg',
+                 option=opcao,
+                 error=str(e)
+             )
         except Exception as e:
-            msg.showerror("Erro na Execução", f"Ocorreu um erro ao rodar o modelo:\n{e}")
+            self.controller.show_translated_message(
+                 msg_type='error',
+                 title_key='execution_error_title',
+                 message_key='model_error_msg',
+                 option=opcao,
+                 error=str(e)
+             )
 
     def _get_common_params(self):
         city_file_name = self.data_combo.get() 
@@ -311,30 +331,58 @@ class MachineLearningPage(ttk.Frame):
         try:
             print(city_path)
             if not os.path.exists(city_path):
-                 msg.showerror("Erro", f"Arquivo de dados não encontrado: {city_path}")
+                 self.controller.show_translated_message(
+                    msg_type='error',
+                    title_key='error_title',
+                    message_key='file_not_found_msg',
+                    city_path=city_path
+                )
                  return None
         except Exception as e:
-            msg.showerror("Erro", f"Não foi possível determinar o caminho do arquivo de dados: {e}")
+            self.controller.show_translated_message(
+                msg_type='error',
+                title_key='error_title',
+                message_key='path_not_determinated_msg',
+                error=str(e)
+                )
             return None
 
         indicator = self.indicator_combo.get()
         indicator = self.indicator_combo.get()
         if not city_file_name or not indicator:
-            msg.showerror("Erro", "Por favor, selecione o Arquivo de Dados e o Indicador.")
+            self.controller.show_translated_message(
+                msg_type='error',
+                title_key='error_title',
+                message_key='file_and_indicator_not_selected_msg'
+                )
             return None
         try:
             split = int(self.split_var.get())
             tests = int(self.tests_var.get())
         except ValueError:
-             msg.showerror("Erro", "Porcentagem de Treino e Número de Testes devem ser números inteiros.")
+             self.controller.show_translated_message(
+                msg_type='error',
+                title_key='error_title',
+                message_key='train_number_tests_msg'
+                )
              return None
 
         try:
             if not os.path.exists(city_path):
-                msg.showerror("Erro", f"Arquivo de dados não encontrado: {city_path}")
+                self.controller.show_translated_message(
+                msg_type='error',
+                title_key='error_title',
+                message_key='file_not_found_msg',
+                city_path=city_path
+                )
                 return None
         except Exception as e:
-            msg.showerror("Erro", f"Não foi possível determinar o caminho do arquivo de dados: {e}")
+            self.controller.show_translated_message(
+                msg_type='error',
+                title_key='error_title',
+                message_key='path_not_determinated_msg',
+                error=str(e)
+                )
             return None
 
         return (
@@ -353,7 +401,12 @@ class MachineLearningPage(ttk.Frame):
             try:
                 return float(value_str)
             except ValueError:
-                msg.showerror("Erro de Valor", f"'{value_str}' não é um número válido.")
+                self.controller.show_translated_message(
+                msg_type='error',
+                title_key='value_error_title',
+                message_key='value_error_msg',
+                value_str=value_str
+                )
                 raise 
 
     def valid_maxf(self, value_str):
@@ -370,7 +423,12 @@ class MachineLearningPage(ttk.Frame):
                      return int(val_float)
                  return val_float
              except ValueError:
-                 msg.showerror("Erro de Valor", f"Valor inválido para Max Features: '{value_str}'. Use int, float, 'sqrt' ou 'log2'.")
+                 self.controller.show_translated_message(
+                    msg_type='error',
+                    title_key='value_error_title',
+                    message_key='invalid_max_features_msg',
+                    value_str=value_str
+                    )
                  raise 
 
     def get_end(self, city_filename):
@@ -387,7 +445,13 @@ class MachineLearningPage(ttk.Frame):
                  # treatment = DataProcessing() # Talvez precise instanciar aqui?
                  raise FileNotFoundError(f"Arquivo não encontrado via get_end: {city_filename}")
         except Exception as e:
-            msg.showerror("Erro em get_end", f"Não foi possível obter o caminho para {city_filename}: {e}")
+            self.controller.show_translated_message(
+                msg_type='error',
+                title_key='get_end_error_title',
+                message_key='cant_get_path_msg',
+                city_file_name=city_filename,
+                error=str(e)
+                )
             raise
 
     def _read_param(self, param_name, type_func, default_value=None):
@@ -421,14 +485,33 @@ class MachineLearningPage(ttk.Frame):
             return type_func(value_str) # General conversion attempt
 
         except AttributeError:
-            msg.showerror("Erro Interno", f"Atributo de parâmetro '{param_name}' não encontrado no frame atual.")
+            self.controller.show_translated_message(
+                msg_type='error',
+                title_key='internal_error_title',
+                message_key='atribute_not_found_msg',
+                param_name=param_name
+                )
             raise # Stop execution
         except (ValueError, TypeError) as e:
-            msg.showerror("Erro de Valor", f"Valor inválido para o parâmetro '{param_name}'.\nEsperado: {type_func.__name__}\nRecebido: '{value_str}'\nErro: {e}")
-            raise # Stop execution
+            self.controller.show_translated_message(
+                msg_type='error',
+                title_key='value_error_title',
+                message_key='value_invalid_for_parameter_msg',
+                param_name=param_name,
+                type_func=type_func.__name__,
+                value_str=value_str,
+                error=str(e)
+                )
+            raise
         except Exception as e:
-            msg.showerror("Erro Inesperado", f"Erro ao ler o parâmetro '{param_name}': {e}")
-            raise # Stop execution
+            self.controller.show_translated_message(
+                msg_type='error',
+                title_key='unexpected_error_title',
+                message_key='error_while_reading_parameter_msg',
+                param_name=param_name,
+                error=str(e)
+                )
+            raise
 
 
     def generate_preview_dt(self):
@@ -440,18 +523,16 @@ class MachineLearningPage(ttk.Frame):
             criterion = self._read_param('criterion_v', str)
             splitter = self._read_param('splitter_v', str)
             max_depth = self._read_param('maxd_v', int)
-            min_samples_split = self._read_param('minsam_s_v', int) # Assume int based on var name
-            min_samples_leaf = self._read_param('minsam_l_v', int)  # Assume int based on var name
+            min_samples_split = self._read_param('minsam_s_v', int)
+            min_samples_leaf = self._read_param('minsam_l_v', int)
             min_weight_fraction_leaf = self._read_param('minweifra_l_v', float)
-            # Use self.valid_maxf for specific logic if needed, otherwise use _read_param
             max_features = self.valid_maxf(self.current_param_frame.maxfeat_v.get())
-            # max_features = self._read_param('maxfeat_v', str) # Simpler alternative if valid_maxf is complex
 
             max_leaf_nodes = self._read_param('maxleaf_n', int)
             min_impurity_decrease = self._read_param('minimp_dec', float)
             ccp_alpha = self._read_param('ccp_alp_v', float)
-        except Exception: # Catch errors from _read_param or valid_maxf
-            return # Stop if reading failed
+        except Exception:
+            return
 
         prev = Training()
         score, mean_abs_error, mean_rel_error, max_abs_error, exact_max, pred_max, min_abs_error, exact_min, pred_min, y_exact, y_pred, x_axis = prev.decision_tree(
@@ -557,7 +638,11 @@ class MachineLearningPage(ttk.Frame):
             gamma = float(gamma_str) if gamma_str not in ['scale', 'auto'] else gamma_str
 
         except AttributeError:
-             msg.showerror("Erro Interno", "A UI para SVM (SVMParameterFrame) parece não estar carregada ou refatorada corretamente.")
+             self.controller.show_translated_message(
+                msg_type='error',
+                title_key='internal_error_title',
+                message_key='ui_problem_svm_msg',
+                )
              return
         except Exception:
             return # Error already shown by _read_param
