@@ -1,9 +1,5 @@
-from tkinter import Canvas, Label, LabelFrame, StringVar, IntVar, BooleanVar, Entry, Scale, Checkbutton, Button, HORIZONTAL, CENTER
-from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from ..training.training import Training
-from ..styles import colors
 from ..utils.indicator import get_indicator_code
 from ..utils.ml_param import get_parameters_ml
 from ..utils.insert_canvas import insert_canvas_toolbar

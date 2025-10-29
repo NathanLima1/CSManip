@@ -1,4 +1,5 @@
 from tkinter import Frame
+import tkinter as tk
 from tkinter import ttk
 from tkinter import Canvas, Label, StringVar, Button, CENTER, DISABLED
 import tkinter.filedialog as dlg
@@ -13,13 +14,77 @@ import threading
 from .styles import colors
 from .data_processing.data_processing import DataProcessing
 from .triangulation.triangulation import Triangulation
-from .machine_learning.machine_learning import MachineLearning
 from .meta_learning.meta_learning import MetaLearning
 from .meta_learning.tests_generator import TestsGenerator
 from .data_processing.era5_download import download_and_process_era_data
 from .data_processing.noaa_download import download_noaa_data
+from .language.language_manager import LanguageManager
 
-class Framework(Frame):
+from .pages.data_imputation.data_imputation_page import DataImputationPage
+from .pages.data_imputation.imputation_techniques_page import ImputationTechniquesPage
+from .pages.data_imputation.triangulation_page import TriangulationPage
+from .pages.data_imputation.machine_learning.machine_learning_page import MachineLearningPage
+from .pages.data_imputation.meta_learning.meta_learning_page import MetaLearningPage
+from .pages.data_imputation.view_data_page import ViewDataPage
+from .pages.trends.trends_page import ClimateTrendsPage
+from .pages.tutorial.tutorial_page import TutorialPage
+from .pages.download.download_page import DownloadDataPage
+from .pages.start_page import StartPage
+
+
+class Framework(tk.Tk):
+    def __init__(self, *args, **kwargs):
+        tk.Tk.__init__(self, *args, **kwargs)
+
+        # Inicializando o gerenciador de idiomas
+        self.i18n = LanguageManager()
+        self.i18n.set_language("pt_br")
+
+        self.title(self.i18n.get('app_main_title'))
+        self.geometry("1000x700")
+
+        container = ttk.Frame(self)
+        container.pack(side="top", fill="both", expand=True)
+        container.grid_rowconfigure(0, weight=1)
+        container.grid_columnconfigure(0, weight=1)
+
+        self.frames = {}
+        for F in (StartPage, TutorialPage, DownloadDataPage, DataImputationPage, ClimateTrendsPage, ViewDataPage, ImputationTechniquesPage,
+                  TriangulationPage, MachineLearningPage, MetaLearningPage): # Adicionar classes de tela aqui
+            frame = F(container, self)
+            self.frames[F] = frame
+            frame.grid(row=0, column=0, sticky="nsew")
+
+        self.show_frame(StartPage)
+
+    def show_frame(self, cont):
+        frame = self.frames[cont]
+        frame.tkraise()
+        
+    # MÉTODO PARA ATUALIZAR TODAS AS TELAS DE UMA VEZ
+    def update_all_frames_text(self):
+        for frame in self.frames.values():
+            frame.update_texts()
+
+    def show_translated_message(self, title, msg_type, title_key, message_key, **kwargs):
+        title = self.i18n.get(title_key)
+        message_template = self.i18n.get(message_key)
+
+        try:
+            message = message_template.format(**kwargs) if kwargs else message_template
+        except KeyError as e:
+            print(f"Erro de formatação na mensagem '{message_key}': Placeholder {e} faltando nos kwargs.")
+            message = message_template
+
+        if msg_type == 'error':
+            msg.showerror(title=title, message=message)
+        elif msg_type == 'info':
+            msg.showinfo(title=title, message=message)
+        elif msg_type == 'warning':
+            msg.showwarning(title=title, message=message)
+        else:
+            print(f"Tipo de mensagem desconhecido: {msg_type}")
+
     def get_info(self, directory):  # Function that opens the folder with .csv files and returns important data
         print("Entrou Principal get_info")
         raw_data = []
@@ -771,80 +836,9 @@ class Framework(Frame):
         toolbar = NavigationToolbar2Tk(canvas, self)
         toolbar.place(x=1150, y=10)
         toolbar.update()
-    
-    def open_machine(self):
-        window = MachineLearning()
-        window.mainloop()
 
     def open_meta(self):
         window = TestsGenerator()
         window.mainloop()
 
-    def __init__(self, *args, **kwargs):
-        Frame.__init__(self, master=None, bg=colors.fundo) #Configurando a janela da ferramenta
-        self.master.title("IC_FAPEMGIG - V1.0") #Colocando o titulo na aba da ferramenta
-        self.master.geometry('800x800') #Definindo o tamanho inicial da tela (podendo expandir)
-
-        Button(self, text='Select Data Base', font='Arial 12 bold', fg='white', bg=colors.fun_ap, width=38, command=self.list_cities).place(x=20, y=20) #Botão para os usuários selecionar a pasta que tem todos os arquivos.csv
-        self.pack(fill='both', expand=True)
-
-        Label(self, text='Target city:', font='Arial 11 bold', bg=colors.fundo, fg='white', state=DISABLED).place(x=20, y=65)
-        self.comb_target = ttk.Combobox(self, width=20, font='Arial 11', justify=CENTER, state=DISABLED).place(x=20, y=85)
-        Label(self, text='Neighbor A:', font='Arial 11 bold', bg=colors.fundo, fg='white', state=DISABLED).place(x=220, y=65)
-        self.comb_va = ttk.Combobox(self, width=20, font='Arial 11', justify=CENTER, state=DISABLED).place(x=224, y=85)
-        Label(self, text='Neighbor B:', font='Arial 11 bold', bg=colors.fundo, fg='white', state=DISABLED).place(x=20, y=115)
-        self.comb_vb = ttk.Combobox(self, width=20, font='Arial 11', justify=CENTER, state=DISABLED).place(x=20, y=135)
-        Label(self, text='Neighbor C:', font='Arial 11 bold', bg=colors.fundo, fg='white', state=DISABLED).place(x=220, y=115)
-        self.comb_vc = ttk.Combobox(self, width=20, font='Arial 11', justify=CENTER, state=DISABLED).place(x=224, y=135)
-
-        Button(self, text='Confirm Group', font='Arial 12 bold', fg='white', bg=colors.fun_b, width=38, command=self.process_selection, state=DISABLED).place(x=20, y=170)
-
-
-        Label(self, text='View Data', font='Arial 14 bold', fg='white', bg=colors.fundo).place(x=140, y=210)
-        Label(self, text='Data:', font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=20, y=240)
-        self.type_data = StringVar()
-        data_list = ['Target city', 'Neighbor A', 'Neighbor B', 'Neighbor C', 'Common data']
-        self.comb_type_data = ttk.Combobox(self, values=data_list, textvariable=self.type_data, width=12, font='Arial 12', justify=CENTER, state='readonly').place(x=20, y=260)
-        
-        Label(self, text='Parameter:', font='Arial 12 bold', fg='white', bg=colors.fundo).place(x=165, y=240)
-        self.parameter = StringVar()
-        para_list = ["Precipitation", 'Maximum temperature', 'Minimum temperature']
-        self.comb_parameter = ttk.Combobox(self, values=para_list, textvariable=self.parameter, width=12, font='Arial 12', justify=CENTER, state='readonly').place(x=165, y=260)
-        Button(self, text='Select', font='Arial 11 bold', fg='white', bg=colors.fun_b, width=10, command=self.common_graphs).place(x=310, y=255)
-
-       
-        Label(self, text='Start:', font='Arial 12 bold', fg='white', bg=colors.fundo, state=DISABLED).place(x=20, y=290)
-        self.com_ini = ttk.Combobox(self, font='Arial 12', justify=CENTER, state=DISABLED, width=12).place(x=20, y=310)
-        Label(self, text='End:', font='Arial 12 bold', fg='white', bg=colors.fundo, state=DISABLED).place(x=165, y=290)
-        self.com_fim = ttk.Combobox(self, font='Arial 12', justify=CENTER, state=DISABLED, width=12).place(x=165, y=310)
-        
-        Button(self, text='Def. Range', font='Arial 11 bold', fg='white', bg=colors.fun_b, width=10, command=self.range_graphs, state=DISABLED).place(x=310, y=305)
-
-
-        Label(self, text='Data', font='Arial 11 bold', fg='white', bg=colors.fundo).place(x=20, y=340)    
-        self.data_hist = StringVar()
-        datahist_list = ['Target city', 'Neighbor A', 'Neighbor B', 'Neighbor C']  
-        ttk.Combobox(self, values=datahist_list, textvariable=self.data_hist, width=18, font='Arial 12', justify=CENTER, state='readonly').place(x=20, y=360)
-        Label(self, text='Parameter', font='Arial 11 bold', fg='white', bg=colors.fundo).place(x=20, y=390)    
-        self.paramt_hist = StringVar()
-        ttk.Combobox(self, values=para_list, textvariable=self.paramt_hist, width=18, font='Arial 12', justify=CENTER, state='readonly').place(x=20, y=410)
-        Button(self, text='Histograma, last 10y', font='Arial 11 bold', fg='white', bg=colors.fun_meta_le, width=20, command=self.histograma).place(x=220, y=355) 
-        
-        Button(self, text='Boxplot, last 10y', font='Arial 11 bold', fg='white', bg=colors.fun_meta_le, width=20, command=self.boxplot_graph).place(x=220, y=405) 
-
-        Label(self, text='Techniques', font='Arial 14 bold', fg='white', bg=colors.fundo).place(x=170, y=460)
-        Button(self, text='Machine Learning', font='Arial 11 bold', fg='white', bg=colors.fun_ap, width=42, command=self.open_machine).place(x=20, y=495)
-
-        Label(self, text='Method', font='Arial 11 bold', fg='white', bg=colors.fundo).place(x=20, y=530)    
-        self.metodo = StringVar()
-        metodo_list = ['Arithmetic Average', 'Inverse Distance Weighted', 'Regional Weight', 'Optimized Normal Ratio']  
-        self.comb_metodo = ttk.Combobox(self, values=metodo_list, textvariable=self.metodo, width=18, font='Arial 12', justify=CENTER, state='readonly').place(x=20, y=550)
-        self.teste = Label(self, text='Parameter', font='Arial 11 bold', fg='white', bg=colors.fundo).place(x=20, y=580)    
-        self.paramt_tri = StringVar()
-        self.comb_para_tro = ttk.Combobox(self, values=para_list, textvariable=self.paramt_tri, width=18, font='Arial 12', justify=CENTER, state='readonly').place(x=20, y=600)
-        Button(self, text='Triangulation', font='Arial 11 bold', fg='white', bg=colors.fun_alt, width=20, height=4, command=self.triangulation).place(x=220, y=540) 
-        
-        Button(self, text='Show localization', font='Arial 11 bold', fg='white', bg=colors.fun_alt, width=42, command=self.show_map).place(x=20, y=640) 
-
-        Button(self, text='Meta Learning', font='Arial 11 bold', fg='white', bg=colors.fun_b, width=42, command=self.open_meta).place(x=20, y=680)
-       
+    

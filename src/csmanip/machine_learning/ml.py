@@ -5,7 +5,6 @@ Machine Learning algorithms and integrates functionalities such as
 parameter selection, data preview, and result visualization.
 """
 
-from tkinter import Toplevel
 from .ml_view import View
 from .utils import *
 from .ml_helpers import *

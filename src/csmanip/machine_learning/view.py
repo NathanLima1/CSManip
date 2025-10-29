@@ -12,7 +12,6 @@ from . import gaussian_process
 from . import nearest_neighbors
 from ..styles import colors
 from ..utils.indicator import get_indicator_code
-from ..utils.ml_param import get_parameters_ml
 from ..utils.insert_canvas import insert_canvas_toolbar 
 
 class View():

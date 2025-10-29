@@ -4,7 +4,7 @@ import pickle
 import os
 
 def gaussian_process_regression(self, city, indicator_code, division, num_tests, kernel_type, 
-                                len_scale, nu, sigma_0, alpha_rq, alpha, optimizer, normalize_y, save_model):
+                                len_scale, nu, sigma_0, alpha_rq, alpha, n_restart_optimizer, normalize_y, save_model):
     """
     Applies Gaussian Process Regression (GPR) for predictive analysis.
 
@@ -16,7 +16,7 @@ def gaussian_process_regression(self, city, indicator_code, division, num_tests,
         kernel_type (str): Type of kernel ('RBF', 'Matern', 'DotProduct', 'RationalQuadratic').
         kernel_params (dict): Parameters specific to the kernel.
         alpha (float): Value added to the diagonal of the kernel matrix during fitting.
-        optimizer (str or None): Optimizer for hyperparameter tuning.
+        n_restart_optimizer (int): Optimizer for hyperparameter tuning.
         normalize_y (bool): Whether to normalize the target values.
         save_model (bool): Whether to save the trained model.
 
@@ -57,7 +57,8 @@ def gaussian_process_regression(self, city, indicator_code, division, num_tests,
         model = GaussianProcessRegressor(
             kernel=kernel,
             alpha=alpha,
-            optimizer=optimizer,
+            optimizer=None,
+            n_restarts_optimizer=n_restart_optimizer,
             normalize_y=normalize_y
         )
         model.fit(train_features, train_targets)

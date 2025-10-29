@@ -4,17 +4,17 @@ import seaborn as sns
 import matplotlib.dates as mdates
 
 
-def plot_annual_data(csv_path, index, file_name, title_img, caption_img):
+def plot_annual_data(csv_path, index, file_name, title_img, caption_img, embed_mode=False):
     data_base = pd.read_csv(csv_path)
     data_base.columns = ["year", "prec", "tmax", "tmin", "tmean"]
     data_base[index] = data_base[index].replace(-99.9, None)
     data_base["date"] = pd.to_datetime(data_base["year"].astype(str) + "-01-01")
 
     sns.set_style("white")
-    plt.figure(figsize=(12, 2))
+    fig, ax = plt.subplots(figsize=(12, 2))
     cmap = sns.color_palette("RdBu_r", as_cmap=True)
 
-    scatter = plt.scatter(
+    scatter = ax.scatter(
         data_base["date"],
         [1] * len(data_base),
         c=data_base[index],
@@ -23,28 +23,35 @@ def plot_annual_data(csv_path, index, file_name, title_img, caption_img):
         s=200
     )
 
-    plt.gca().xaxis.set_major_locator(mdates.YearLocator(5))
-    plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%Y"))
-    plt.yticks([])
-    plt.title(title_img, fontsize=14, fontweight="bold")
-    plt.xlabel("")
-    plt.grid(False)
-    plt.colorbar(scatter, label=f"Temperatura ({index})")
-    plt.figtext(0.9, 0.02, caption_img, fontsize=10, ha="right")
-    plt.savefig(file_name, dpi=300, bbox_inches='tight')
-    plt.show()
+    ax.xaxis.set_major_locator(mdates.YearLocator(5))
+    ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y"))
+    ax.set_yticks([])
+    ax.set_title(title_img, fontsize=14, fontweight="bold")
+    ax.set_xlabel("")
+    ax.grid(False)
+    
+    fig.colorbar(scatter, ax=ax, label=f"Temperatura ({index})")
+    fig.text(0.9, 0.02, caption_img, fontsize=10, ha="right")
+
+    if embed_mode:
+        return fig
+    else:
+        fig.savefig(file_name, dpi=300, bbox_inches='tight')
+        plt.show()
+        plt.close(fig)
+        return None
 
 
-def plot_quarterly_data(csv_path, index, file_name, title_img, caption_img):
+def plot_quarterly_data(csv_path, index, file_name, title_img, caption_img, embed_mode=False):
     data_base = pd.read_csv(csv_path)
     data_base.columns = ["year", "quarter", "prec", "tmax", "tmin", "tmean"]
     data_base[index] = data_base[index].replace(-99.9, None)
 
     sns.set_style(style="white")
-    plt.figure(figsize=(14, 4))
+    fig, ax = plt.subplots(figsize=(14, 4))
     cmap = sns.color_palette("RdBu_r", as_cmap=True)
 
-    scatter = plt.scatter(
+    scatter = ax.scatter( 
         data_base["year"],
         data_base["quarter"],
         c=data_base[index],
@@ -53,30 +60,36 @@ def plot_quarterly_data(csv_path, index, file_name, title_img, caption_img):
         s=200
     )
 
-    plt.xticks(rotation=90)
-    plt.yticks([1, 2, 3, 4], labels=["T1", "T2", "T3", "T4"])
-    plt.title(title_img, fontsize=14, fontweight="bold")
-    plt.xlabel("Ano")
-    plt.ylabel("Trimestre")
-    plt.grid(False)
-    plt.colorbar(scatter, label=f"Temperatura ({index})")
-    plt.figtext(0.95, 0.02, caption_img, fontsize=10, ha="right")
+    ax.tick_params(axis='x', rotation=90)
+    ax.set_yticks([1, 2, 3, 4], labels=["T1", "T2", "T3", "T4"])
+    ax.set_title(title_img, fontsize=14, fontweight="bold")
+    ax.set_xlabel("Ano")
+    ax.set_ylabel("Trimestre")
+    ax.grid(False)
+    fig.colorbar(scatter, ax=ax, label=f"Temperatura ({index})")
+    fig.text(0.95, 0.02, caption_img, fontsize=10, ha="right")
 
-    plt.tight_layout()
-    plt.savefig(file_name, dpi=300, bbox_inches='tight')
-    plt.show()
+    fig.tight_layout()
+
+    if embed_mode:
+        return fig
+    else:
+        fig.savefig(file_name, dpi=300, bbox_inches='tight')
+        plt.show()
+        plt.close(fig)
+        return None
 
 
-def plot_monthly_data(csv_path, index, file_name, title_img, caption_img):
+def plot_monthly_data(csv_path, index, file_name, title_img, caption_img, embed_mode=False):
     data_base = pd.read_csv(csv_path)
     data_base.columns = ["year", "month", "prec", "tmax", "tmin", "tmean"]
     data_base[index] = data_base[index].replace(-99.9, None)
 
     sns.set_style(style="white")
-    plt.figure(figsize=(14, 5))
+    fig, ax = plt.subplots(figsize=(14, 5))
     cmap = sns.color_palette("RdBu_r", as_cmap=True)
 
-    scatter = plt.scatter(
+    scatter = ax.scatter(
         data_base["year"],
         data_base["month"],
         c=data_base[index],
@@ -85,19 +98,25 @@ def plot_monthly_data(csv_path, index, file_name, title_img, caption_img):
         s=150
     )
 
-    plt.gca().invert_yaxis()
-    plt.xticks(rotation=90)
-    plt.yticks(range(1, 13), labels=[
+    ax.invert_yaxis() 
+    ax.tick_params(axis='x', rotation=90)
+    ax.set_yticks(range(1, 13), labels=[
         "Jan", "Fev", "Mar", "Abr", "Mai", "Jun",
         "Jul", "Ago", "Set", "Out", "Nov", "Dez"
     ])
-    plt.title(title_img, fontsize=14, fontweight="bold")
-    plt.xlabel("Ano")
-    plt.ylabel("Mês")
-    plt.grid(False)
-    plt.colorbar(scatter, label=f"Temperatura ({index})")
-    plt.figtext(0.95, 0.02, caption_img, fontsize=10, ha="right")
+    ax.set_title(title_img, fontsize=14, fontweight="bold")
+    ax.set_xlabel("Ano")
+    ax.set_ylabel("Mês")
+    ax.grid(False) 
+    fig.colorbar(scatter, ax=ax, label=f"Temperatura ({index})") 
+    fig.text(0.95, 0.02, caption_img, fontsize=10, ha="right") 
 
-    plt.tight_layout()
-    plt.savefig(file_name, dpi=300, bbox_inches='tight')
-    plt.show()
+    fig.tight_layout()
+
+    if embed_mode:
+        return fig
+    else:
+        fig.savefig(file_name, dpi=300, bbox_inches='tight')
+        plt.show()
+        plt.close(fig)
+        return None
