@@ -142,5 +142,13 @@
     "missing_parameter_title": "Parâmetro faltando!",
     "select_a_parameter_msg": "Você deve selecionar um parâmetro climático!",
     "missing_city_title": "Cidade faltando!",
-    "select_a_city_msg": "Você deve selecionar uma cidade!"
+    "select_a_city_msg": "Você deve selecionar uma cidade!",
+    "download_method_label": "Método de download",
+    "city_label": "Cidade",
+    "time_period_label": "Período de tempo",
+    "radius_label": "Raio",
+    "start_download_btn": "Iniciar download",
+    "all_fields_required_msg": "Por favor, preencha todos os campos (Método, Cidade, Início, Fim).",
+    "missing_fields_title": "Campos faltando",
+    "radius_required_msg": "O método NOAA requer um valor de Raio."
   }
