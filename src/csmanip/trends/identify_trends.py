@@ -32,7 +32,6 @@ def mann_kendall_test(data):
     
     return {"trend": trend, "p-value": p_value, "Tau": tau, "Z-score": z}
 
-# A função analyze_trend permanece a mesma.
 def analyze_trend(csv_file, column_name):
     data_base = pd.read_csv(csv_file)
     

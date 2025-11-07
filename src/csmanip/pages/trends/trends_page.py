@@ -2,6 +2,9 @@ import tkinter as tk
 from tkinter import ttk, filedialog, messagebox as msg
 import os
 import typing
+import sys
+import subprocess
+from datetime import datetime
 
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
@@ -12,6 +15,7 @@ if typing.TYPE_CHECKING:
 from ...trends.plot_warming_stripes import plot_annual_data, plot_monthly_data, plot_quarterly_data
 from ...trends.processing import process_csv
 from ...trends.group_data import group_data
+from ...trends.identify_trends import analyze_trend
 from ...trends.climdex import Climdex
 
 class ClimateTrendsPage(ttk.Frame):
@@ -55,25 +59,54 @@ class ClimateTrendsPage(ttk.Frame):
         self.select_process_btn = ttk.Button(left_panel, text="", command=self.choose_and_process_file)
         self.select_process_btn.pack(fill=tk.X, padx=5, pady=5)
 
+        self.extremes_frame = ttk.LabelFrame(left_panel, text="")
+        self.extremes_frame.pack(fill=tk.X, padx=5, pady=(10, 5))
+        
+        # Frame interno para os combos
+        date_frame = ttk.Frame(self.extremes_frame)
+        date_frame.pack(fill=tk.X, padx=5, pady=5)
+        date_frame.grid_columnconfigure(0, weight=1)
+        date_frame.grid_columnconfigure(1, weight=1)
+
+        self.start_year_label = ttk.Label(date_frame, text="")
+        self.start_year_label.grid(row=0, column=0, sticky="w")
+        self.start_year_combo = ttk.Combobox(date_frame, state="disabled") # Começa desabilitado
+        self.start_year_combo.grid(row=1, column=0, sticky="ew", padx=(0, 5))
+
+        self.end_year_label = ttk.Label(date_frame, text="")
+        self.end_year_label.grid(row=0, column=1, sticky="w")
+        self.end_year_combo = ttk.Combobox(date_frame, state="disabled") # Começa desabilitado
+        self.end_year_combo.grid(row=1, column=1, sticky="ew", padx=(5, 0))
+
         self.climatic_extremes_btn = ttk.Button(left_panel, text="", command=self.calculate_extreme_indicators)
         self.climatic_extremes_btn.pack(fill=tk.X, padx=5, pady=5) # Mais espaço abaixo
 
-        self.analyze_trend_btn = ttk.Button(left_panel, text="")
-        self.analyze_trend_btn.pack(fill=tk.X, padx=5, pady=(5, 20))
+        self.analyze_trend_frame = ttk.LabelFrame(left_panel, text="")
+        self.analyze_trend_frame.pack(fill=tk.X, padx=5, pady=(10, 5))
+
+        self.trend_param_label = ttk.Label(self.analyze_trend_frame, text="")
+        self.trend_param_label.pack(anchor="w", padx=5)
+        
+        self.trend_param_combo = ttk.Combobox(self.analyze_trend_frame, state="readonly", values=["Maximum temperature", "Minimum temperature", "Precipitation"])
+        self.trend_param_combo.pack(fill=tk.X, padx=5, pady=5)
+
+        self.analyze_trend_btn = ttk.Button(self.analyze_trend_frame, text="", command=self.run_trend_analysis)
+        self.analyze_trend_btn.pack(fill=tk.X, padx=5, pady=(5, 10))
 
         # Seção de Plotagem de Trends
         self.plot_trends_frame = ttk.LabelFrame(left_panel, text="")
         self.plot_trends_frame.pack(fill=tk.X, padx=5)
 
-        self.parameter_combo = ttk.Combobox(self.plot_trends_frame, state="readonly", values= ["Maximum temperature", "Minimum temperature", "Precipitation"])
-        self.parameter_combo.pack(fill=tk.X, padx=5, pady=5)
+        self.plot_param_label = ttk.Label(self.plot_trends_frame, text="")
+        self.plot_param_label.pack(anchor="w", padx=5)
+        
+        self.plot_param_combo = ttk.Combobox(self.plot_trends_frame, state="readonly", values= ["Maximum temperature", "Minimum temperature", "Precipitation"])
+        self.plot_param_combo.pack(fill=tk.X, padx=5, pady=5)
 
         self.monthly_btn = ttk.Button(self.plot_trends_frame, text="", command=self.plot_monthly)
         self.monthly_btn.pack(fill=tk.X, expand=True, pady=5, padx=5)
-
         self.quarterly_btn = ttk.Button(self.plot_trends_frame, text="", command=self.plot_quarterly)
         self.quarterly_btn.pack(fill=tk.X, expand=True, pady=5, padx=5)
-        
         self.annual_btn = ttk.Button(self.plot_trends_frame, text="", command=self.plot_annual)
         self.annual_btn.pack(fill=tk.X, expand=True, pady=5, padx=5)
 
@@ -83,66 +116,133 @@ class ClimateTrendsPage(ttk.Frame):
         
         self.update_texts()
 
+    def _clear_panel(self, panel):
+        """Limpa todos os widgets de um painel."""
+        for widget in panel.winfo_children():
+            widget.destroy()
+
+    def _get_years_from_file(self, file_path):
+        """Lê o arquivo processado e retorna uma lista de anos únicos."""
+        available_years = set()
+        try:
+            with open(file_path, 'r') as f:
+                for line in f:
+                    if not line.strip(): continue
+                    parts = line.split(',')
+                    if parts[0].isdigit():
+                        available_years.add(int(parts[0]))
+        except FileNotFoundError:
+            self.controller.show_translated_message(
+                'error', 'folder_not_found_title', 'folder_not_found_msg', directory=file_path
+            )
+            return []
+        except Exception as e:
+            self.controller.show_translated_message(
+                'error', 'years_load_error_title', 'years_load_error_msg', error=str(e)
+            )
+            return []
+        
+        if not available_years:
+            return []
+            
+        sorted_years = sorted(list(available_years))
+        return [str(year) for year in sorted_years]
+
     def choose_and_process_file(self):
         print("choose and process file")
         """Abre o diálogo, processa o arquivo e atualiza a UI."""
         caminho_completo = filedialog.askopenfilename(
+            parent=self,
             title="Selecione o arquivo CSV de dados brutos",
             filetypes=[("Arquivos CSV", "*.csv"), ("Todos os arquivos", "*.*")]
         )
 
-        if not caminho_completo:
-            print("Nenhum arquivo selecionado.")
-            return
+        if not caminho_completo: return
 
         self.city_name_raw = os.path.basename(caminho_completo)
-        print("city", self.city_name_raw)
         
+        city_name_only = self.city_name_raw.split('.')[0]
+        self.city_name = city_name_only
+        
+        self.city_name_raw = os.path.basename(caminho_completo)
         input_dir = os.path.dirname(caminho_completo)
-        
-        base_dir = os.path.dirname(os.path.dirname(__file__))
-        self.output_dir = os.path.join(base_dir, "processed_data")
+        base_dir = os.path.abspath(os.path.dirname(sys.argv[0]))
+        self.output_dir = os.path.join(base_dir, "output_dir")
         os.makedirs(self.output_dir, exist_ok=True)
-        self.city = []
-        self.city.append(self.city_name_raw)
-
-
-        print(f"Arquivo de entrada: {self.city_name_raw}")
-        print(f"Pasta de saída: {self.output_dir}")
+        self.city = [self.city_name_raw]
 
         try:
             process_csv(self.city, input_dir, self.output_dir)
-            self.processed_file_name = f"processed_{self.city_name_raw}"
+            self.processed_file_name = f"{self.city_name_raw}"
 
             self.processed_file_entry.config(state="normal")
             self.processed_file_entry.delete(0, tk.END)
             self.processed_file_entry.insert(0, self.processed_file_name)
             self.processed_file_entry.config(state="readonly")
             
-            msg.showinfo("Sucesso", "Arquivo processado e salvo na pasta 'processed_data'.")
-        except Exception as e:
-            msg.showerror("Erro de Processamento", f"Ocorreu um erro ao processar o arquivo:\n{e}")
+            processed_path = os.path.join(self.output_dir, self.processed_file_name)
+            years_list = self._get_years_from_file(processed_path)
+            
+            if years_list:
+                self.start_year_combo.config(values=years_list, state="readonly")
+                self.end_year_combo.config(values=years_list, state="readonly")
+                # Define valores padrão (primeiro e último ano)
+                self.start_year_combo.set(years_list[0])
+                self.end_year_combo.set(years_list[-1])
+            else:
+                self.start_year_combo.config(values=[], state="disabled")
+                self.end_year_combo.config(values=[], state="disabled")
 
+            self.controller.show_translated_message('info', 'success_title', 'file_processed_success_msg')
+        
+        except Exception as e:
+            self.controller.show_translated_message('error', 'processing_error_title', 'processing_error_msg', error=str(e))
+    
     def calculate_extreme_indicators(self):
         """Calcula e mostra os indicadores climáticos."""
         print("calculate extreme indicators")
+        i18n = self.controller.i18n
         if not self.processed_file_name:
-            msg.showwarning("Aviso", "Por favor, selecione e processe um arquivo primeiro.")
+            self.controller.show_translated_message(
+                'warning', 'file_not_processed_title', 'file_not_processed_msg'
+            )
             return
         
-        c = Climdex()
-        data = c.read_files_climdex(self.output_dir, self.city)
-        city_name = self.city.split('.')
-        city_name = city_name[0]
-        self.city_name = city_name
+        start_year_str = self.start_year_combo.get()
+        end_year_str = self.end_year_combo.get()
 
-        df_city = data[self.city]
+        if not start_year_str or not end_year_str:
+            self.controller.show_translated_message('warning', 'year_selection_error_title', 'year_selection_error_msg')
+            return
 
-        indices = c.calculate_indices(df_city, (self.start_date, self.end_date))
-        c.write_indices(indices, self.city_name, self.output_dir)
+        start_year = int(start_year_str)
+        end_year = int(end_year_str)
 
-        pdf_output_path = f"{self.output_dir}/graphs_indices_{city_name}.pdf"
-        c.plot_and_save_indices(indices, self.city_name, self.output_dir)
+        if end_year < start_year:
+            self.controller.show_translated_message('warning', 'year_selection_error_title', 'year_order_error_msg')
+            return
+
+        start_date = datetime(start_year, 1, 1)
+        end_date = datetime(end_year, 12, 31)
+        
+        try:
+            c = Climdex()
+            data = c.read_files_climdex(self.output_dir, self.city)
+            city_name_with_ext = self.city[0]
+            city_name_only = city_name_with_ext.split('.')[0]
+            self.city_name = city_name_only
+            df_city = data[city_name_with_ext]
+
+            indices = c.calculate_indices(df_city, (start_date, end_date)) # Usa as datas dos combos
+            c.write_indices(indices, self.city_name, self.output_dir)
+
+            pdf_output_path = f"{self.output_dir}/graphs_indices_{self.city_name}.pdf"
+            c.plot_and_save_indices(indices, self.city_name, pdf_output_path)
+
+            self._display_file_list(self.output_dir)
+
+        except Exception as e:
+            self.controller.show_translated_message('error', 'calc_indices_error_title', 'calc_indices_error_msg', error=str(e))
 
     def _plot_graph_on_panel(self, fig):
         print("plot graph on panel")
@@ -162,6 +262,77 @@ class ClimateTrendsPage(ttk.Frame):
         canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
         toolbar.pack(side=tk.BOTTOM, fill=tk.X)
 
+    def _display_file_list(self, directory):
+        """Limpa o painel direito e exibe uma lista de arquivos de um diretório."""
+        i18n = self.controller.i18n
+        
+        self._clear_panel(self.right_panel)
+
+        try:
+            # Pega a lista de arquivos
+            files = os.listdir(directory)
+            # Filtra para mostrar apenas arquivos (sem pastas) e talvez tipos específicos
+            files = [f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f)) and not f.startswith('.')]
+        except FileNotFoundError:
+            self.controller.show_translated_message(
+                'error', 'folder_not_found_title', 'folder_not_found_msg', directory=directory
+            )
+            return
+        except Exception as e:
+            self.controller.show_translated_message(
+                'error', 'file_list_error_title', 'file_list_error_msg', error=str(e)
+            )
+            return
+
+        list_frame = ttk.Frame(self.right_panel)
+        list_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+        
+        label = ttk.Label(list_frame, text=i18n.get('generated_files_label'), font=("Verdana", 10, "bold"))
+        label.pack(anchor="w", pady=(0, 5))
+
+        scrollbar = ttk.Scrollbar(list_frame, orient=tk.VERTICAL)
+        
+        self.file_tree = ttk.Treeview(
+            list_frame,
+            columns=("filename"),
+            show="headings",
+            yscrollcommand=scrollbar.set
+        )
+        scrollbar.config(command=self.file_tree.yview)
+
+        self.file_tree.heading("filename", text=i18n.get('filename_header'))
+        self.file_tree.column("filename", anchor="w")
+
+        for f in sorted(files):
+            self.file_tree.insert("", "end", values=(f,))
+
+        # Empacota os widgets no frame
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        self.file_tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+        # Evento de clique duplo para abrir o arquivo
+        def open_file_location(event):
+            try:
+                item_id = self.file_tree.selection()[0]
+                filename = self.file_tree.item(item_id, "values")[0]
+                full_path = os.path.join(directory, filename)
+                
+                # Abre o arquivo com o programa padrão do sistema
+                if sys.platform == "win32":
+                    os.startfile(full_path)
+                elif sys.platform == "darwin": # macOS
+                    subprocess.run(["open", full_path])
+                else: # Linux
+                    subprocess.run(["xdg-open", full_path])
+            except IndexError:
+                pass # Clique duplo fora de um item
+            except Exception as e:
+                 self.controller.show_translated_message(
+                    'error', 'open_file_error_title', 'open_file_error_msg', file=filename, error=str(e)
+                )
+
+        self.file_tree.bind("<Double-1>", open_file_location)
+
     def get_parameter(self, temperature_parameter):
         print("get parameter")
         if temperature_parameter == "Maximum temperature":
@@ -180,7 +351,11 @@ class ClimateTrendsPage(ttk.Frame):
 
         group_data(self.city, self.output_dir, self.output_dir)
         
-        temperature_parameter = self.parameter_combo.get()
+        temperature_parameter = self.plot_param_combo.get()
+        if not temperature_parameter:
+            self.controller.show_translated_message('warning', 'param_not_selected_title', 'param_not_selected_msg')
+            return
+        
         parameter_abreviation = self.get_parameter(temperature_parameter)
         
         fig = plot_monthly_data(
@@ -201,7 +376,11 @@ class ClimateTrendsPage(ttk.Frame):
 
         group_data(self.city, self.output_dir, self.output_dir)
         
-        temperature_parameter = self.parameter_combo.get()
+        temperature_parameter = self.plot_param_combo.get()
+        if not temperature_parameter:
+            self.controller.show_translated_message('warning', 'param_not_selected_title', 'param_not_selected_msg')
+            return
+        
         parameter_abreviation = self.get_parameter(temperature_parameter)
         
         fig = plot_quarterly_data(
@@ -222,7 +401,11 @@ class ClimateTrendsPage(ttk.Frame):
 
         group_data(self.city, self.output_dir, self.output_dir)
 
-        temperature_parameter = self.parameter_combo.get()
+        temperature_parameter = self.plot_param_combo.get()
+        if not temperature_parameter:
+            self.controller.show_translated_message('warning', 'param_not_selected_title', 'param_not_selected_msg')
+            return
+        
         parameter_abreviation = self.get_parameter(temperature_parameter)
         
         fig = plot_annual_data(
@@ -234,6 +417,78 @@ class ClimateTrendsPage(ttk.Frame):
             embed_mode=True
         )
         self._plot_graph_on_panel(fig)
+
+    def run_trend_analysis(self):
+        """Coleta dados, chama a análise de tendência e exibe os resultados."""
+        i18n = self.controller.i18n
+        
+        if not self.processed_file_name or not self.city_name:
+            self.controller.show_translated_message('warning', 'file_not_processed_title', 'file_not_processed_msg')
+            return
+        
+        temperature_parameter = self.trend_param_combo.get()
+        if not temperature_parameter:
+            self.controller.show_translated_message('warning', 'param_not_selected_title', 'param_not_selected_msg')
+            return
+        
+        try:
+            group_data(self.city, self.output_dir, self.output_dir)
+            
+            csv_file_path = f'{self.output_dir}/{self.city_name}dadosAnuais.csv' # Foco na tendência anual
+            column_name = self.get_parameter(temperature_parameter) # ex: 'tmax', 'tmin', 'tmean'
+
+            if not os.path.exists(csv_file_path):
+                 self.controller.show_translated_message('error', 'file_not_found_title', 'annual_data_not_found_msg', file_path=csv_file_path)
+                 return
+
+            results = analyze_trend(csv_file_path, column_name)
+            
+            self._display_trend_results(results, temperature_parameter)
+
+        except ValueError as e:
+            self.controller.show_translated_message('error', 'trend_analysis_error_title', 'trend_analysis_value_error_msg', error=str(e))
+        except Exception as e:
+            self.controller.show_translated_message('error', 'trend_analysis_error_title', 'trend_analysis_error_msg', error=str(e))
+
+    def _display_trend_results(self, results, param_name):
+        """Limpa o painel direito e exibe os resultados da análise de tendência."""
+        self._clear_panel(self.right_panel)
+        i18n = self.controller.i18n
+
+        results_frame = ttk.LabelFrame(self.right_panel, text=i18n.get('trend_results_title', "Resultados da Análise de Tendência"))
+        results_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+        
+        grid_frame = ttk.Frame(results_frame)
+        grid_frame.pack(padx=10, pady=10)
+
+        mk_result = results.get("mann_kendall", {})
+        slope = results.get("sens_slope")
+
+        trend = mk_result.get('trend', 'no trend')
+        p_value = mk_result.get('p', 1.0)
+        
+        if trend == 'increasing':
+            trend_text = i18n.get('trend_increasing', "Aumento significativo")
+        elif trend == 'decreasing':
+            trend_text = i18n.get('trend_decreasing', "Redução significativa")
+        else: # no trend
+            trend_text = i18n.get('trend_no_trend', "Sem tendência significativa")
+
+        ttk.Label(grid_frame, text=f"{i18n.get('parameter_label', 'Parâmetro')}:", font=("Verdana", 10, "bold")).grid(row=0, column=0, sticky="w", pady=2)
+        ttk.Label(grid_frame, text=param_name).grid(row=0, column=1, sticky="w", pady=2, padx=5)
+        
+        ttk.Label(grid_frame, text=f"{i18n.get('mann_kendall_test_label', 'Teste Mann-Kendall')}:", font=("Verdana", 10, "bold")).grid(row=1, column=0, sticky="w", pady=2)
+        ttk.Label(grid_frame, text=trend_text).grid(row=1, column=1, sticky="w", pady=2, padx=5)
+
+        ttk.Label(grid_frame, text=f"{i18n.get('p_value_label', 'Valor-p')}:", font=("Verdana", 10, "bold")).grid(row=2, column=0, sticky="w", pady=2)
+        ttk.Label(grid_frame, text=f"{p_value:.6f}").grid(row=2, column=1, sticky="w", pady=2, padx=5)
+
+        ttk.Label(grid_frame, text=f"{i18n.get('sens_slope_label', 'Inclinação de Sen')}:", font=("Verdana", 10, "bold")).grid(row=3, column=0, sticky="w", pady=2)
+        ttk.Label(grid_frame, text=f"{slope:.6f} (unidades/ano)").grid(row=3, column=1, sticky="w", pady=2, padx=5)
+        
+        ttk.Separator(grid_frame, orient='horizontal').grid(row=4, column=0, columnspan=2, sticky='ew', pady=10)
+        explanation = i18n.get('trend_explanation')
+        ttk.Label(grid_frame, text=explanation, wraplength=450, justify=tk.LEFT).grid(row=5, column=0, columnspan=2, sticky="w")
     
     def go_to_start_page(self):
         from ..start_page import StartPage
@@ -245,7 +500,16 @@ class ClimateTrendsPage(ttk.Frame):
         self.page_title.config(text=i18n.get('climate_trends_page_title'))
         self.processed_file_label.config(text=i18n.get('processed_file_label'))
         self.select_process_btn.config(text=i18n.get('select_and_process_btn'))
+        self.extremes_frame.config(text=i18n.get('climate_extremes_label'))
+        self.start_year_label.config(text=i18n.get('start_year_label'))
+        self.end_year_label.config(text=i18n.get('end_year_label'))
         self.climatic_extremes_btn.config(text=i18n.get('climatic_extremes_btn'))
+        self.analyze_trend_frame.config(text=i18n.get('analyze_trend_label'))
+        self.trend_param_label.config(text=i18n.get('trend_parameter_label'))
+        self.analyze_trend_btn.config(text=i18n.get('analyse_trend_btn'))
+        
+        self.plot_trends_frame.config(text=i18n.get('plot_trends_label'))
+        self.plot_param_label.config(text=i18n.get('plot_parameter_label'))
         self.analyze_trend_btn.config(text=i18n.get('analyse_trend_btn'))
         self.plot_trends_frame.config(text=i18n.get('plot_trends_label'))
         self.monthly_btn.config(text=i18n.get('monthly_btn'))

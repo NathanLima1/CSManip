@@ -65,9 +65,6 @@ class Climdex:
         """
         Calcula uma lista de índices climáticos do ETCCDI usando xclim.
 
-        Esta versão foi atualizada com os nomes de função corretos, validados
-        com a documentação oficial da biblioteca xclim.
-
         Args:
             df (pd.DataFrame): DataFrame contendo os dados climáticos.
                             Deve ter um DatetimeIndex e colunas como 'tasmax',
@@ -79,7 +76,7 @@ class Climdex:
             pd.DataFrame: Um DataFrame contendo os valores mensais de cada
                         índice climático calculado.
         """
-        # 1. Converter o DataFrame do pandas para um Dataset do xarray
+        # Converter o DataFrame do pandas para um Dataset do xarray
         if not isinstance(df.index, pd.DatetimeIndex):
             raise ValueError("O DataFrame de entrada deve ter um DatetimeIndex.")
         ds = df.to_xarray()
@@ -101,10 +98,10 @@ class Climdex:
                 'units': 'mm/day'
             })
 
-        # 2. Preparar o período base para cálculo dos percentis
+        # Preparar o período base para cálculo dos percentis
         ds_base = ds.sel(time=slice(base_period[0], base_period[1]))
 
-        # 3. Pré-calcular todos os percentis necessários
+        # Pré-calcular todos os percentis necessários
         with xr.set_options(keep_attrs=True):
             tx10_thresh = xclim.core.calendar.percentile_doy(ds_base.tasmax, per=10).sel(percentiles=10).drop_vars('percentiles')
             tx90_thresh = xclim.core.calendar.percentile_doy(ds_base.tasmax, per=90).sel(percentiles=90).drop_vars('percentiles')
@@ -113,7 +110,7 @@ class Climdex:
             if 'pr' in ds:
                 pr95_thresh = xclim.core.calendar.percentile_doy(ds_base.pr, per=95).sel(percentiles=95).drop_vars('percentiles')
 
-        # 4. Definir e calcular cada índice com os nomes de função corretos
+        #  Definir e calcular cada índice com os nomes de função corretos
         indices_results = {}
         freq_m = 'MS'  # Frequência Mensal (Month Start)
 
@@ -142,7 +139,7 @@ class Climdex:
         else:
             print("Aviso: Coluna 'pr' de precipitação não encontrada. Índices de precipitação não serão calculados.")
 
-        # 5. Combinar todos os resultados em um único DataFrame
+        # Combinar todos os resultados em um único DataFrame
         valid_indices = {k: v for k, v in indices_results.items() if v is not None}
         final_ds = xr.Dataset(valid_indices)
         
