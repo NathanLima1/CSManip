@@ -1,0 +1,12 @@
+Nome: HIGHLAND LAKES 1 SW, NJ US
+Codigo Estacao: GHCND:USC00283706
+Latitude: 41.16332
+Longitude: -74.45938
+Altitude: 415.4
+Situacao: Operante
+Data Inicial: 2023-01-01
+Data Final: 2023-01-01
+Periodicidade da Medicao: Diaria
+
+Data Medicao;PRECIPITACAO TOTAL, DIARIO(mm);TEMPERATURA MAXIMA, DIARIA(°C);TEMPERATURA MINIMA, DIARIA(°C);
+2023-01-01;5,6;10,6;6,1;

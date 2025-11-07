@@ -188,5 +188,21 @@
     "annual_data_not_found_msg": "Arquivo de dados anuais não encontrado: {file_path}. Tente rodar 'Plotar Anual' primeiro.",
     "analyze_trend_label": "Analisar Tendência",
     "trend_parameter_label": "Parâmetro para Análise:",
-    "plot_parameter_label": "Parâmetro para Plotagem:"
+    "plot_parameter_label": "Parâmetro para Plotagem:",
+    "download_log_title": "Log de Download:",
+    "choose_station_title": "Escolha uma Estação",
+    "choose_station_prompt": "Encontramos estas estações. Clique duas vezes na desejada para baixar os dados:",
+    "station_name_header": "Nome da Estação",
+    "station_id_header": "ID",
+    "station_end_date_header": "Última Data",
+    "download_in_progress": "Download em andamento...",
+    "download_complete": "Download Concluído!",
+    "download_failed": "Download Falhou.",
+    "no_stations_found_title": "Nenhuma Estação Encontrada",
+    "no_stations_found_msg": "Nenhuma estação foi encontrada com os dados (TMIN, TMAX, PRCP) para o período e raio especificados. Tente um período diferente ou um raio maior.",
+    "coords_error_title": "Erro de Localização",
+    "coords_error_msg": "Não foi possível encontrar coordenadas para '{city}'. Verifique a escrita (use 'Cidade, País' ou 'Cidade, Estado').",
+    "api_error_title": "Erro de API",
+    "api_error_msg": "Erro ao buscar estações: {error}",
+    "no_station_chosen": "Nenhuma estação foi escolhida."
   }
