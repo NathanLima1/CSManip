@@ -4,12 +4,14 @@ if typing.TYPE_CHECKING:
 from .triangulation_page import TriangulationPage
 from .machine_learning.machine_learning_page import MachineLearningPage
 from .meta_learning.meta_learning_page import MetaLearningPage
+from ..tooltip import CreateToolTip
 
 class ImputationTechniquesPage(ttk.Frame):
     """Tela para escolher a técnica de imputação."""
     def __init__(self, parent, controller):
         ttk.Frame.__init__(self, parent)
         self.controller = controller
+        i18n = controller.i18n
 
         # --- Frame Superior (Título e Voltar) ---
         top_frame = ttk.Frame(self)
@@ -40,12 +42,15 @@ class ImputationTechniquesPage(ttk.Frame):
         # Botões das técnicas
         self.triangulation_btn = ttk.Button(left_panel, text="", command=lambda: controller.show_frame(TriangulationPage))
         self.triangulation_btn.pack(fill=tk.X, pady=5)
+        CreateToolTip(self.triangulation_btn, text=i18n.get('triangulation_input_hint'))
 
         self.machine_learning_btn = ttk.Button(left_panel, text="", command=lambda: controller.show_frame(MachineLearningPage))
         self.machine_learning_btn.pack(fill=tk.X, pady=5)
+        CreateToolTip(self.machine_learning_btn, text=i18n.get('machine_learning_input_hint'))
         
         self.meta_learning_btn = ttk.Button(left_panel, text="", command=lambda: controller.show_frame(MetaLearningPage))
         self.meta_learning_btn.pack(fill=tk.X, pady=5)
+        CreateToolTip(self.meta_learning_btn, text=i18n.get('meta_learning_input_hint'))
 
 
         # --- PAINEL DA DIREITA ---

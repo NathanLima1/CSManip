@@ -1,8 +1,8 @@
-# Importações necessárias no topo do seu arquivo
 import tkinter as tk
 import threading
 
-# Supondo que essas importações estejam corretas para a sua estrutura de projeto
+from ..tooltip import CreateToolTip
+
 from ..utils import *
 if typing.TYPE_CHECKING:
     from ..start_page import StartPage
@@ -13,6 +13,7 @@ class DataImputationPage(ttk.Frame):
     def __init__(self, parent, controller):
         ttk.Frame.__init__(self, parent)
         self.controller = controller
+        i18n = self.controller.i18n
 
         # --- Atributos para a lógica ---
         self.city_path_list = [] # Vai guardar [nome_cidade, caminho_arquivo]
@@ -50,41 +51,50 @@ class DataImputationPage(ttk.Frame):
         self.combo1 = ttk.Combobox(combobox_grid, state="readonly")
         self.label_combo1.grid(row=0, column=0, sticky="w", padx=5)
         self.combo1.grid(row=1, column=0, padx=5, pady=5)
+        CreateToolTip(self.combo1, text=i18n.get('alvo_data_hint'))
 
         self.label_combo2 = ttk.Label(combobox_grid, text="")
         self.combo2 = ttk.Combobox(combobox_grid, state="readonly")
         self.label_combo2.grid(row=0, column=1, sticky="w", padx=5)
         self.combo2.grid(row=1, column=1, padx=5, pady=5)
+        CreateToolTip(self.combo2, text=i18n.get('viz1_data_hint'))
 
         self.label_combo3 = ttk.Label(combobox_grid, text="")
         self.combo3 = ttk.Combobox(combobox_grid, state="readonly")
         self.label_combo3.grid(row=2, column=0, sticky="w", padx=5)
         self.combo3.grid(row=3, column=0, padx=5, pady=5)
+        CreateToolTip(self.combo3, text=i18n.get('viz2_data_hint'))
 
         self.label_combo4 = ttk.Label(combobox_grid, text="")
         self.combo4 = ttk.Combobox(combobox_grid, state="readonly")
         self.label_combo4.grid(row=2, column=1, sticky="w", padx=5)
         self.combo4.grid(row=3, column=1, padx=5, pady=5)
+        CreateToolTip(self.combo4, text=i18n.get('viz3_data_hint'))
         
         # --- Botões de Ações ---
         # Botão para selecionar os dados (pasta com .csv)
         self.select_data_btn = ttk.Button(self.select_data_frame, text="Selecionar Pasta de Dados", command=self.list_cities)
         self.select_data_btn.pack(pady=(10, 5))
+        CreateToolTip(self.select_data_btn, text=i18n.get('select_dir_data_hint'))
 
         # Botão para confirmar o grupo, agora com a animação
         self.confirm_group_btn = ttk.Button(self.select_data_frame, text="", command=self.on_click)
         self.confirm_group_btn.pack(pady=(5, 10))
+        CreateToolTip(self.confirm_group_btn, text=i18n.get('confirm_group_data_hint'))
 
         # Botões de navegação
         self.visualize_data_btn = ttk.Button(left_panel, text="", command=self.go_to_view_data)
         self.visualize_data_btn.pack(fill=tk.X, pady=5)
+        CreateToolTip(self.visualize_data_btn, text=i18n.get('visualize_data_hint'))
 
         self.imputation_tech_btn = ttk.Button(left_panel, text="", command=self.go_to_imputation_techiniques)
         self.imputation_tech_btn.pack(fill=tk.X, pady=5)
+        CreateToolTip(self.imputation_tech_btn, text=i18n.get('imputation_data_hint'))
         
         triang = Triangulation()
         self.show_location_btn = ttk.Button(left_panel, text="", command=triang.show_map)
         self.show_location_btn.pack(fill=tk.X, pady=5)
+        CreateToolTip(self.show_location_btn, text=i18n.get('show_location_data_hint'))
 
         right_panel = ttk.Frame(main_container, relief="solid", borderwidth=1)
         right_panel.grid(row=0, column=1, sticky="nsew", padx=(5, 0))

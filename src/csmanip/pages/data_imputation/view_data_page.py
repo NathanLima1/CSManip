@@ -1,6 +1,7 @@
 from ..utils import *
 import numpy as np
 import datetime as dt
+from ..tooltip import CreateToolTip
 if typing.TYPE_CHECKING:
     from ..data_imputation.data_imputation_page import DataImputationPage
 
@@ -9,6 +10,7 @@ class ViewDataPage(ttk.Frame):
     def __init__(self, parent, controller):
         ttk.Frame.__init__(self, parent)
         self.controller = controller
+        i18n = self.controller.i18n
 
         # --- Frame Superior (Título e Voltar) ---
         top_frame = ttk.Frame(self)
@@ -44,11 +46,13 @@ class ViewDataPage(ttk.Frame):
         self.lbl_view_param = ttk.Label(view_inputs_grid, text="")
         self.combo_view_data = ttk.Combobox(view_inputs_grid, state="readonly", values=["Target city", "Neighbor A", "Neighbor B", "Neighbor C"])
         self.combo_view_param = ttk.Combobox(view_inputs_grid, state="readonly", values=["Precipitation", 'Maximum temperature', "Minimum temperature"])
-        
+
         self.lbl_view_data.grid(row=0, column=0, sticky="w")
         self.combo_view_data.grid(row=1, column=0, padx=(0, 5))
         self.lbl_view_param.grid(row=0, column=1, sticky="w")
         self.combo_view_param.grid(row=1, column=1, padx=(5, 0))
+        CreateToolTip(self.combo_view_data, text=i18n.get('combo_data_view_hint'))
+        CreateToolTip(self.combo_view_param, text=i18n.get('parameter_view_hint'))
 
         self.lbl_time_period = ttk.Label(view_inputs_grid, text="")
         self.lbl_time_period.grid(row=2, column=0, columnspan=2, pady=(10, 0), sticky="w")
@@ -62,6 +66,8 @@ class ViewDataPage(ttk.Frame):
         self.combo_view_start.grid(row=4, column=0, padx=(0, 5))
         self.lbl_view_end.grid(row=3, column=1, sticky="w")
         self.combo_view_end.grid(row=4, column=1, padx=(5, 0))
+        CreateToolTip(self.combo_view_start, text=i18n.get('start_view_hint'))
+        CreateToolTip(self.combo_view_end, text=i18n.get('end_view_hint'))
 
         # --- Seção 2: Gerar Gráfico ---
         self.graph_section = ttk.LabelFrame(left_panel, text="")
@@ -81,11 +87,15 @@ class ViewDataPage(ttk.Frame):
         self.combo_graph_data.grid(row=1, column=0, padx=(0, 5))
         self.lbl_graph_param.grid(row=0, column=1, sticky="w")
         self.combo_graph_param.grid(row=1, column=1, padx=(5, 0))
+        CreateToolTip(self.combo_graph_data, text=i18n.get('graph_data_10_view_hint'))
+        CreateToolTip(self.combo_graph_param, text=i18n.get('graph_param_10_view_hint'))
         
         self.histogram_btn = ttk.Button(self.graph_section, text="", command=self.histogram)
         self.histogram_btn.pack(fill=tk.X, pady=5, padx=10)
         self.boxplot_btn = ttk.Button(self.graph_section, text="", command=self.boxplot_graph)
         self.boxplot_btn.pack(fill=tk.X, pady=(0,10), padx=10)
+        CreateToolTip(self.histogram_btn, text=i18n.get('histogram_view_hint'))
+        CreateToolTip(self.boxplot_btn, text=i18n.get('boxplot_view_hint'))
 
 
         # --- PAINEL DA DIREITA ---

@@ -5,6 +5,7 @@ import os
 import sys
 import optuna
 import functools
+from ...tooltip import CreateToolTip
 
 from ....training.training import Training
 from ....utils.indicator import get_indicator_code 
@@ -22,6 +23,7 @@ class MachineLearningPage(ttk.Frame):
     def __init__(self, parent, controller):
         ttk.Frame.__init__(self, parent)
         self.controller = controller
+        i18n = controller.i18n
 
         # --- Variáveis de Controle ---
         self.split_var = tk.StringVar(value="70")
@@ -81,21 +83,25 @@ class MachineLearningPage(ttk.Frame):
         self.data_label.pack(anchor="w", padx=5)
         self.data_combo = ttk.Combobox(general_frame, state="readonly", values=["Target", "Neighbor A", "Neighbor B", "Neighbor C"])
         self.data_combo.pack(fill=tk.X, padx=5, pady=(0, 5))
+        CreateToolTip(self.data_combo, text=i18n.get('data_MaL_hint'))
 
         self.indicator_label = ttk.Label(general_frame, text="")
         self.indicator_label.pack(anchor="w", padx=5)
         self.indicator_combo = ttk.Combobox(general_frame, state="readonly", values=["Precipitation", "Maximum temperature", "Minimum temperature"])
         self.indicator_combo.pack(fill=tk.X, padx=5, pady=(0, 10))
+        CreateToolTip(self.indicator_combo, text=i18n.get('param_MaL_hint'))
 
         self.training_percentage_label = ttk.Label(general_frame, text="")
         self.training_percentage_label.pack(anchor="w", padx=5)
         self.split_entry = ttk.Entry(general_frame, textvariable=self.split_var)
         self.split_entry.pack(fill=tk.X, padx=5, pady=(0, 5))
+        CreateToolTip(self.split_entry, text=i18n.get('train_percent_MaL_hint'))
 
         self.number_tests_label = ttk.Label(general_frame, text="")
         self.number_tests_label.pack(anchor="w", padx=5)
         self.tests_entry = ttk.Entry(general_frame, textvariable=self.tests_var)
         self.tests_entry.pack(fill=tk.X, padx=5, pady=(0, 10))
+        CreateToolTip(self.tests_entry, text=i18n.get('number_tests_MaL_hint'))
 
         self.save_model_check = ttk.Checkbutton(general_frame, text="", variable=self.save_model_var) # Atualizado em update_texts
         self.save_model_check.pack(anchor="w", padx=5, pady=(0, 5))
@@ -110,6 +116,7 @@ class MachineLearningPage(ttk.Frame):
         model_list = ['Decision Trees', 'Bagged Trees', 'Neural network', 'Nearest Neighbors', 'Support Vector', 'Gaussian Process']
         self.ml_combo = ttk.Combobox(model_frame, state="readonly", values=model_list)
         self.ml_combo.pack(fill=tk.X, padx=5, pady=(0, 5))
+        CreateToolTip(self.ml_combo, text=i18n.get('model_MaL_hint'))
         self.ml_combo.bind("<<ComboboxSelected>>", self.generate_param_ui)
 
         # --- Parâmetros do Modelo ---
@@ -120,10 +127,12 @@ class MachineLearningPage(ttk.Frame):
                                      text="", 
                                      command=self.run_optuna_optimization)
         self.optuna_btn.pack(fill=tk.X, pady=(10, 0), padx=5)
+        CreateToolTip(self.optuna_btn, text=i18n.get('optuna_MaL_hint'))
 
         # --- Executar ---
         self.run_btn = ttk.Button(self.scrollable_frame_left, text="", command=self.run_model_preview)
-        self.run_btn.pack(fill=tk.X, pady=10, padx=5) # Adiciona padx
+        self.run_btn.pack(fill=tk.X, pady=10, padx=5)
+        CreateToolTip(self.run_btn  , text=i18n.get('generate_prev_MaL_hint'))
 
         # --- PAINEL DIREITO ---
         self.right_panel = ttk.Frame(main_container, relief="solid", borderwidth=1)

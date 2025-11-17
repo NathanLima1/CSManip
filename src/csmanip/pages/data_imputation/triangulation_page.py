@@ -1,4 +1,6 @@
 from ..utils import *
+from ..tooltip import CreateToolTip
+
 if typing.TYPE_CHECKING:
     from .imputation_techniques_page import ImputationTechniquesPage
 
@@ -7,6 +9,7 @@ class TriangulationPage(ttk.Frame):
     def __init__(self, parent, controller):
         ttk.Frame.__init__(self, parent)
         self.controller = controller
+        i18n = controller.i18n
 
         self.graph_canvas = None
         self.toolbar = None
@@ -41,6 +44,7 @@ class TriangulationPage(ttk.Frame):
                                          values=['Arithmetic Average', 'Inverse Distance Weighted', 
                                                  'Regional Weight', 'Optimized Normal Ratio'])
         self.method_combo.pack(fill=tk.X, pady=(0, 15), padx=5)
+        CreateToolTip(self.method_combo, text=i18n.get('method_triang_hint'))
 
         # Label e Combobox para o Parâmetro Climático
         self.parameter_label = ttk.Label(left_panel, text="")
@@ -49,10 +53,12 @@ class TriangulationPage(ttk.Frame):
         self.parameter_combo = ttk.Combobox(left_panel, state="readonly",
                                             values=["Precipitation", 'Maximum temperature', "Minimum temperature"])
         self.parameter_combo.pack(fill=tk.X, pady=(0, 15), padx=5)
+        CreateToolTip(self.parameter_combo, text=i18n.get('param_triang_hint'))
 
         # Botão para executar a triangulação
         self.run_triangulation_btn = ttk.Button(left_panel, text="", command=self.run_triangulation_analysis)
         self.run_triangulation_btn.pack(pady=20, padx=5)
+        CreateToolTip(self.run_triangulation_btn, text=i18n.get('btn_triang_hint'))
 
 
         # --- PAINEL DA DIREITA ---
