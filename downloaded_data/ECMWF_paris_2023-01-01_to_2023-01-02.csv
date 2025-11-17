@@ -1,0 +1,13 @@
+Nome: Paris, France
+Codigo Estacao: ERA5-Land
+Latitude: 48.853
+Longitude: 2.349
+Altitude: 38.0
+Situacao: N/A
+Data Inicial: 2023-01-01
+Data Final: 2023-01-02
+Periodicidade da Medicao: Diaria
+
+Data Medicao;PRECIPITACAO TOTAL, DIARIO(mm);TEMPERATURA MAXIMA, DIARIA(°C);TEMPERATURA MINIMA, DIARIA(°C);
+2023-01-01;8,27876;14,4850;11,2138;
+2023-01-02;6,34433;13,9919;5,4794;

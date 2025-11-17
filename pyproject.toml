@@ -26,7 +26,8 @@ dependencies = [
     "netcdf4",
     "statsmodels",
     "cdsapi",
-    "geopy"
+    "geopy",
+    "optuna"
 ]
 
 [project.urls]

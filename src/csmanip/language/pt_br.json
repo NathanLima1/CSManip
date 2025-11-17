@@ -204,5 +204,18 @@
     "coords_error_msg": "Não foi possível encontrar coordenadas para '{city}'. Verifique a escrita (use 'Cidade, País' ou 'Cidade, Estado').",
     "api_error_title": "Erro de API",
     "api_error_msg": "Erro ao buscar estações: {error}",
-    "no_station_chosen": "Nenhuma estação foi escolhida."
+    "no_station_chosen": "Nenhuma estação foi escolhida.",
+    "n_trials_label": "Número de Tentativas (Optuna):",
+    "run_tuning_btn": "Rodar Tuning (Optuna)",
+    "tuning_in_progress": "Otimizando...",
+    "tuning_complete_title": "Otimização Concluída",
+    "tuning_complete_msg": "Melhor R² Score: {best_value:.4f}\nParâmetros atualizados na UI.",
+    "tuning_error_title": "Erro na Otimização",
+    "tuning_error_msg": "Ocorreu um erro durante a otimização: {error}",
+    "tuning_not_implemented_title": "Não Implementado",
+    "tuning_not_implemented_msg": "O tuning com Optuna ainda não foi implementado para o modelo '{model_name}'.",
+    "best_params_label": "Melhores Parâmetros Encontrados:",
+    "data_loading_error_title": "Erro ao Carregar Dados",
+    "data_loading_error_msg": "Não foi possível preparar os dados para o tuning. Verifique o arquivo e a classe Training.\nErro: {error}",
+    "param_optimizer_btn": "Otimizar Hiperparâmetros (Optuna)"
   }

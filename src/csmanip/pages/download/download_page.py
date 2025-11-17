@@ -21,7 +21,7 @@ class StationChoicePopup(tk.Toplevel):
         super().__init__(parent)
         self.controller = controller
         self.stations = stations
-        self.chosen_station = None # Armazena a estação escolhida
+        self.chosen_station = None
 
         self.title(controller.i18n.get('choose_station_title'))
         self.geometry("600x400")
@@ -106,7 +106,6 @@ class DownloadDataPage(ttk.Frame):
         self.method_label.pack(anchor="w", padx=5)
         self.method_combo = ttk.Combobox(left_panel, values=["NOAA", "ECMWF"], state="readonly")
         self.method_combo.pack(fill=tk.X, padx=5, pady=(0, 10))
-        # ✨ Vincula o evento de seleção à nossa função de lógica
         self.method_combo.bind("<<ComboboxSelected>>", self._on_method_selected)
 
         # --- Cidade ---
@@ -118,7 +117,6 @@ class DownloadDataPage(ttk.Frame):
         # --- Período de Tempo ---
         self.period_frame = ttk.LabelFrame(left_panel, text="")
         self.period_frame.pack(fill=tk.X, padx=5, pady=(0, 10))
-        # Usa grid dentro deste frame para alinhar Início e Fim
         self.period_frame.grid_columnconfigure(0, weight=1)
         self.period_frame.grid_columnconfigure(1, weight=1)
 
@@ -133,9 +131,7 @@ class DownloadDataPage(ttk.Frame):
         self.end_entry.grid(row=1, column=1, sticky="ew", padx=5, pady=(0, 5))
 
         # --- Frame Condicional para o Radius ---
-        # Este frame conterá os widgets de Radius
         self.radius_frame = ttk.Frame(left_panel)
-        # Não usamos .pack() aqui; ele será adicionado/removido dinamicamente
 
         self.radius_label = ttk.Label(self.radius_frame, text="")
         self.radius_label.pack(anchor="w", padx=5)
@@ -290,13 +286,27 @@ class DownloadDataPage(ttk.Frame):
     def _download_thread_target(self, method, city, start, end, radius):
         """A função que roda na thread separada para não congelar a UI."""
         i18n = self.controller.i18n
+
+        base_dir = os.path.abspath(os.path.dirname(sys.argv[0]))
+        output_dir = os.path.join(base_dir, "downloaded_data") # Salva tudo numa pasta 'downloaded_data'
+        os.makedirs(output_dir, exist_ok=True)
+
+        def gui_logger(message):
+            self.after(0, self._log, message)
+
         try:
             if method == "NOAA":
                 self._run_noaa_download(city, start, end, radius)
             else:
-                self._log("Iniciando download do ECMWF...")
-                download_and_process_era_data(city, start, end)
-                self._log("Download do ECMWF concluído.")
+                gui_logger("Iniciando download do ECMWF...")
+
+                download_and_process_era_data(
+                    city, 
+                    start, 
+                    end, 
+                    output_dir,  # Passa o diretório de saída
+                    logger=gui_logger # Passa a nossa função de log
+                )
             
             self.after(0, self.download_btn.config, {"state": "normal", "text": i18n.get('start_download_btn')})
             self.after(0, self.controller.show_translated_message, 'info', 'success_title', 'download_complete')

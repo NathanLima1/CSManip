@@ -3,6 +3,8 @@ from tkinter import ttk, messagebox as msg
 import typing
 import os
 import sys
+import optuna
+import functools
 
 from ....training.training import Training
 from ....utils.indicator import get_indicator_code 
@@ -112,7 +114,12 @@ class MachineLearningPage(ttk.Frame):
 
         # --- Parâmetros do Modelo ---
         self.param_container = ttk.LabelFrame(self.scrollable_frame_left, text="")
-        self.param_container.pack(fill=tk.X, pady=(0, 10), padx=5) # Adiciona padx
+        self.param_container.pack(fill=tk.X, pady=(0, 10), padx=5)
+
+        self.optuna_btn = ttk.Button(self.scrollable_frame_left, 
+                                     text="", 
+                                     command=self.run_optuna_optimization)
+        self.optuna_btn.pack(fill=tk.X, pady=(10, 0), padx=5)
 
         # --- Executar ---
         self.run_btn = ttk.Button(self.scrollable_frame_left, text="", command=self.run_model_preview)
@@ -157,7 +164,295 @@ class MachineLearningPage(ttk.Frame):
         self.model_label.config(text=i18n.get('model_label'))
         self.number_tests_label.config(text=i18n.get('number_tests_label'))
         self.training_percentage_label.config(text=i18n.get('training_percentage_label'))
+        self.optuna_btn.config(text=i18n.get('param_optimizer_btn'))
 
+    def run_optuna_optimization(self):
+        """
+        Inicia otimização do optuna para o modelo selecionado
+        """
+        model_name = self.ml_combo.get()
+        if not model_name:
+            self.controller.show_translated_message(
+                 msg_type='warning',
+                 title_key='warning_title',
+                 message_key='select_ml_model_msg'
+             )
+            return
+        common_params = self._get_common_params()
+        if common_params is None:
+            return
+        
+        objective_mapping = {
+            'Decision Trees': self.objective_dt,
+            'Bagged Trees': self.objective_bt,
+            'Neural network': self.objective_nn,
+            'Nearest Neighbors': self.objective_kn,
+            'Support Vector': self.objective_svm,
+            'Gaussian Process': self.objective_gp,
+        }
+
+        base_objective = objective_mapping.get(model_name)
+        if base_objective is None:
+            self.controller.show_translated_message(
+                msg_type='error',
+                title_key='error_title',
+                message_key='optuna_not_implemented_msg',
+                option=model_name
+            )
+            return
+        
+        msg.showinfo(
+            self.controller.i18n.get('optimization_started_title'),
+            self.controller.i18n.get('optimization_started_msg')
+        )
+
+        self.controller.update_idletasks()
+
+        try:
+            objective_func = functools.partial(base_objective, common_params=common_params)
+
+            study = optuna.create_study(direction='maximize')
+            study.optimize(objective_func, n_trials=10)
+
+            best_params = study.best_params
+            best_value = study.best_value
+
+            self.update_ui_with_params(best_params)
+
+            self.controller.show_translated_message(
+                msg_type='info',
+                title_key='optimization_complete_title',
+                message_key='optimization_complete_msg',
+                best_score=f"{best_value:.4f}",
+                params=str(best_params)
+            )
+
+        except Exception as e:
+            self.controller.show_translated_message(
+                 msg_type='error',
+                 title_key='optimization_error_title',
+                 message_key='optimization_error_msg',
+                 error=str(e)
+             )
+            
+    def update_ui_with_params(self, best_params):
+        """
+        Preenche os campos da UI (Entry, Combobox) com os 
+        parâmetros do dicionário 'best_params' do Optuna.
+        """
+
+        if not self.current_param_frame:
+            return
+        
+        param_map = {
+            # Decision Trees / Bagging
+            'criterion': 'criterion_v',
+            'splitter': 'splitter_v',
+            'max_depth': 'maxd_v',
+            'min_samples_split': 'minsam_s_v',
+            'min_samples_leaf': 'minsam_l_v',
+            'min_weight_fraction_leaf': 'minweifra_l_v',
+            'max_features': 'maxfeat_v',
+            'max_leaf_nodes': 'maxleaf_n',
+            'min_impurity_decrease': 'minimp_dec',
+            'ccp_alpha': 'ccp_alp_v',
+            # Bagging (nomeado diferente para evitar colisão)
+            'n_estimators_bag': 'n_estimators', 
+            # Neural Network
+            'activation': 'activation_v',
+            'solver': 'solver_v',
+            'alpha': 'alpha_v',
+            'batch_size': 'batch_size_v',
+            'learning_rate': 'learning_rate_v',
+            'learning_rate_init': 'learning_rate_init_v',
+            'max_iter': 'max_iter_v',
+            'momentum': 'momentum_v',
+            # Nearest Neighbors
+            'n_neighbors': 'n_neighbors_v',
+            'algorithm': 'algorithm_v',
+            'leaf_size': 'leaf_size_v',
+            'p_value': 'p_v',
+            # SVM
+            'kernel': 'kernel_v',
+            'degree': 'degree_v',
+            'gamma': 'gamma_v',
+            'c_param': 'c_v',
+            'epsilon': 'epsilon_v',
+            # Gaussian Process
+            'alpha_gp': 'alpha_gp',
+            'length_scale': 'length_scale',
+            'nu': 'nu',
+        }
+
+        for param_name, widget_var_name in param_map.items():
+            if param_name in best_params:
+                if hasattr(self.current_param_frame, widget_var_name):
+                    widget_var = getattr(self.current_param_frame, widget_var_name)
+                    widget_var.set(str(best_params[param_name]))
+                else:
+                    print(f"Aviso: Parâmetro '{param_name}' encontrado, mas UI var '{widget_var_name}' não existe no frame atual.")
+
+    def objective_dt(self, trial, common_params):
+        """Função objetivo para Decision Trees (VERSÃO CORRIGIDA)."""
+        city_path, indicator, split_percentage, n_tests, save_model_flag = common_params
+        
+        criterion = trial.suggest_categorical('criterion', ['squared_error', 'absolute_error'])
+        splitter = trial.suggest_categorical('splitter', ['best', 'random'])
+        max_depth = trial.suggest_int('max_depth', 5, 50)
+        min_samples_split = trial.suggest_int('min_samples_split', 2, 20)
+        min_samples_leaf = trial.suggest_int('min_samples_leaf', 1, 20)
+        max_features = trial.suggest_float('max_features', 0.5, 1.0)
+        
+        min_weight_fraction_leaf = 0.0 
+        
+        min_impurity_decrease = trial.suggest_float('min_impurity_decrease', 0.0, 0.01)
+        
+        ccp_alpha = trial.suggest_float('ccp_alpha', 1e-5, 0.005, log=True)
+
+        prev = Training()
+        score, *_ = prev.decision_tree(
+            city_path, indicator, split_percentage, criterion, splitter, max_depth,
+            min_samples_leaf, max_features, 
+            max_leaf_nodes=None,
+            n_tests=n_tests, 
+            min_samples_split=min_samples_split,
+            min_weight_fraction_leaf=min_weight_fraction_leaf, 
+            min_impurity_decrease=min_impurity_decrease, 
+            ccp_alpha=ccp_alpha,
+            save_model=False
+        )
+        
+        return score
+    
+    def objective_bt(self, trial, common_params):
+        """Função objetivo para Bagged Trees (VERSÃO CORRIGIDA)."""
+        city_path, indicator, split_percentage, n_tests, save_model_flag = common_params
+
+        n_estimators = trial.suggest_int('n_estimators_bag', 50, 200, log=True) 
+
+        criterion = trial.suggest_categorical('criterion', ['squared_error', 'absolute_error'])
+        max_depth = trial.suggest_int('max_depth', 5, 50)
+        min_samples_split = trial.suggest_int('min_samples_split', 2, 20)
+        min_samples_leaf = trial.suggest_int('min_samples_leaf', 1, 20)
+        max_features = trial.suggest_float('max_features', 0.5, 1.0)
+        
+        min_weight_fraction_leaf = 0.0
+        min_impurity_decrease = trial.suggest_float('min_impurity_decrease', 0.0, 0.01)
+        ccp_alpha = trial.suggest_float('ccp_alpha', 1e-5, 0.005, log=True)
+        
+        prev = Training()
+        score, *_ = prev.bagging_trees(
+             city_path, indicator, split_percentage, criterion, 
+             splitter='best',
+             max_depth=max_depth,
+             min_samples_leaf=min_samples_leaf, 
+             max_features=max_features, 
+             max_leaf_nodes=None, 
+             n_tests=n_tests, min_samples_split=min_samples_split,
+             min_weight_fraction_leaf=min_weight_fraction_leaf, 
+             min_impurity_decrease=min_impurity_decrease, 
+             ccp_alpha=ccp_alpha, 
+             save_model=False,
+             n_estimators=n_estimators
+        )
+        return score
+    
+    def objective_nn(self, trial, common_params):
+        """Função objetivo para Neural Network."""
+        city_path, indicator, split_percentage, n_tests, save_model_flag = common_params
+
+        activation = trial.suggest_categorical('activation', ['relu', 'tanh', 'logistic'])
+        solver = trial.suggest_categorical('solver', ['adam', 'lbfgs', 'sgd'])
+        alpha = trial.suggest_float('alpha', 1e-5, 1e-1, log=True)
+        batch_size_str = trial.suggest_categorical('batch_size', ['auto', '50', '100', '200'])
+        batch_size = int(batch_size_str) if batch_size_str != 'auto' else 'auto'
+        learning_rate = trial.suggest_categorical('learning_rate', ['constant', 'invscaling', 'adaptive'])
+        learning_rate_init = trial.suggest_float('learning_rate_init', 1e-4, 1e-2, log=True)
+        max_iter = trial.suggest_int('max_iter', 200, 1000)
+        momentum = 0.9
+        
+        if solver == 'sgd':
+            momentum = trial.suggest_float('momentum', 0.1, 0.99)
+        
+        prev = Training()
+        score, *_ = prev.neural_network(
+             city_path, indicator, split_percentage, n_tests, activation, solver, alpha, batch_size,
+             learning_rate, learning_rate_init, power_t=0.5, max_iter=max_iter, shuffle=True, 
+             tol=1e-4, verbose=False, warm_start=False, momentum=momentum, 
+             nesterovs_momentum=True, early_stopping=False, validation_fraction=0.1,
+             beta_1=0.9, beta_2=0.999, n_iter_no_change=10, max_fun=15000, 
+             save_model=False
+        )
+        return score
+
+    def objective_svm(self, trial, common_params):
+        """Função objetivo para Support Vector."""
+        city_path, indicator, split_percentage, n_tests, save_model_flag = common_params
+
+        kernel = 'rbf'
+        c_param = trial.suggest_float('c_param', 1e-2, 1e2, log=True)
+        epsilon = trial.suggest_float('epsilon', 1e-3, 1e-1, log=True)
+        
+        degree = 3
+        gamma = trial.suggest_float('gamma', 1e-4, 1.0, log=True)
+        
+        prev = Training()
+        score, *_ = prev.support_vector_regression(
+             city_path, indicator, split_percentage, n_tests, kernel, degree, gamma, 
+             coef0=0.0, tol=1e-3, C=c_param, epsilon=epsilon, 
+             shrinking=True, cache_size=200, verbose=False, max_iter=-1, 
+             save_model=False
+        )
+        return score
+
+    def objective_gp(self, trial, common_params):
+        """Função objetivo para Gaussian Process."""
+        city_path, indicator, split_percentage, n_tests, save_model_flag = common_params
+        
+        kernel_type = self.current_param_frame.kernel_type.get() 
+        
+        length_scale = trial.suggest_float('length_scale', 1e-2, 1e2, log=True)
+        nu = 1.5 
+        if kernel_type == 'Matern':
+            nu = trial.suggest_categorical('nu', [0.5, 1.5, 2.5])
+        
+        alpha_gp = trial.suggest_float('alpha_gp', 1e-10, 1e-2, log=True)
+
+        prev = Training()
+        score, *_ = prev.gaussian_process_regression(
+             city_path, indicator, split_percentage, n_tests, kernel_type, length_scale,
+             nu, sigma_0=1.0, alpha_rq=1.0,
+             alpha_gp=alpha_gp, 
+             n_restarts_optimizer=int(self.current_param_frame.n_restarts_op.get()), 
+             normalize_y_gp=self.current_param_frame.normalize_y_gp.get(), 
+             save_model=False
+        )
+        return score
+
+
+    def objective_kn(self, trial, common_params):
+        """Função objetivo para Nearest Neighbors (ESPAÇO REDUZIDO)."""
+        city_path, indicator, split_percentage, n_tests, save_model_flag = common_params
+        
+        n_neighbors = trial.suggest_int('n_neighbors', 3, 30)
+        
+        p_value = trial.suggest_int('p_value', 1, 2) # 1=Manhattan, 2=Euclidean
+
+        algorithm = 'auto'
+        leaf_size = 30   
+
+        prev = Training()
+        score, *_ = prev.KNeighbors(
+             city_path, indicator, split_percentage, n_tests, 
+             n_neighbors, 
+             algorithm,  
+             leaf_size,   
+             p_value,     
+             n_jobs=-1,
+             save_model=False
+        )
+        return score
+    
     def generate_param_ui(self, event=None):
         """Preenche o 'param_container' com os widgets corretos."""
         self._clear_panel(self.param_container)
