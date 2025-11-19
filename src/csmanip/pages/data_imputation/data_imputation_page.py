@@ -15,9 +15,8 @@ class DataImputationPage(ttk.Frame):
         self.controller = controller
         i18n = self.controller.i18n
 
-        # --- Atributos para a lógica ---
-        self.city_path_list = [] # Vai guardar [nome_cidade, caminho_arquivo]
-        self.loading = False     # Flag para a animação do botão
+        self.city_path_list = []
+        self.loading = False     
 
         # --- Widgets ---
         top_frame = ttk.Frame(self)
@@ -29,7 +28,6 @@ class DataImputationPage(ttk.Frame):
         self.page_title = ttk.Label(top_frame, text="", font=("Verdana", 16, "bold"))
         self.page_title.pack(side=tk.LEFT, expand=True)
 
-        # Layout principal de duas colunas
         main_container = ttk.Frame(self)
         main_container.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
         main_container.grid_columnconfigure(0, weight=1)
@@ -46,55 +44,51 @@ class DataImputationPage(ttk.Frame):
         combobox_grid = ttk.Frame(self.select_data_frame)
         combobox_grid.pack(pady=10, padx=10)
 
-        # Labels e Comboboxes criados aqui, e serão apenas atualizados depois
         self.label_combo1 = ttk.Label(combobox_grid, text="")
         self.combo1 = ttk.Combobox(combobox_grid, state="readonly")
         self.label_combo1.grid(row=0, column=0, sticky="w", padx=5)
         self.combo1.grid(row=1, column=0, padx=5, pady=5)
-        CreateToolTip(self.combo1, text=i18n.get('alvo_data_hint'))
+        self.combo1_hint = CreateToolTip(self.combo1, text=i18n.get('alvo_data_hint'))
 
         self.label_combo2 = ttk.Label(combobox_grid, text="")
         self.combo2 = ttk.Combobox(combobox_grid, state="readonly")
         self.label_combo2.grid(row=0, column=1, sticky="w", padx=5)
         self.combo2.grid(row=1, column=1, padx=5, pady=5)
-        CreateToolTip(self.combo2, text=i18n.get('viz1_data_hint'))
+        self.combo2_hint = CreateToolTip(self.combo2, text=i18n.get('viz1_data_hint'))
 
         self.label_combo3 = ttk.Label(combobox_grid, text="")
         self.combo3 = ttk.Combobox(combobox_grid, state="readonly")
         self.label_combo3.grid(row=2, column=0, sticky="w", padx=5)
         self.combo3.grid(row=3, column=0, padx=5, pady=5)
-        CreateToolTip(self.combo3, text=i18n.get('viz2_data_hint'))
+        self.combo3_hint = CreateToolTip(self.combo3, text=i18n.get('viz2_data_hint'))
 
         self.label_combo4 = ttk.Label(combobox_grid, text="")
         self.combo4 = ttk.Combobox(combobox_grid, state="readonly")
         self.label_combo4.grid(row=2, column=1, sticky="w", padx=5)
         self.combo4.grid(row=3, column=1, padx=5, pady=5)
-        CreateToolTip(self.combo4, text=i18n.get('viz3_data_hint'))
+        self.combo4_hint = CreateToolTip(self.combo4, text=i18n.get('viz3_data_hint'))
         
         # --- Botões de Ações ---
-        # Botão para selecionar os dados (pasta com .csv)
         self.select_data_btn = ttk.Button(self.select_data_frame, text="Selecionar Pasta de Dados", command=self.list_cities)
         self.select_data_btn.pack(pady=(10, 5))
-        CreateToolTip(self.select_data_btn, text=i18n.get('select_dir_data_hint'))
+        self.select_data_hint = CreateToolTip(self.select_data_btn, text=i18n.get('select_dir_data_hint'))
 
-        # Botão para confirmar o grupo, agora com a animação
         self.confirm_group_btn = ttk.Button(self.select_data_frame, text="", command=self.on_click)
         self.confirm_group_btn.pack(pady=(5, 10))
-        CreateToolTip(self.confirm_group_btn, text=i18n.get('confirm_group_data_hint'))
+        self.confirm_group_hint = CreateToolTip(self.confirm_group_btn, text=i18n.get('confirm_group_data_hint'))
 
-        # Botões de navegação
         self.visualize_data_btn = ttk.Button(left_panel, text="", command=self.go_to_view_data)
         self.visualize_data_btn.pack(fill=tk.X, pady=5)
-        CreateToolTip(self.visualize_data_btn, text=i18n.get('visualize_data_hint'))
+        self.visualize_data_hint = CreateToolTip(self.visualize_data_btn, text=i18n.get('visualize_data_hint'))
 
         self.imputation_tech_btn = ttk.Button(left_panel, text="", command=self.go_to_imputation_techiniques)
         self.imputation_tech_btn.pack(fill=tk.X, pady=5)
-        CreateToolTip(self.imputation_tech_btn, text=i18n.get('imputation_data_hint'))
+        self.imputation_tech_hint = CreateToolTip(self.imputation_tech_btn, text=i18n.get('imputation_data_hint'))
         
         triang = Triangulation()
         self.show_location_btn = ttk.Button(left_panel, text="", command=triang.show_map)
         self.show_location_btn.pack(fill=tk.X, pady=5)
-        CreateToolTip(self.show_location_btn, text=i18n.get('show_location_data_hint'))
+        self.show_location_hint = CreateToolTip(self.show_location_btn, text=i18n.get('show_location_data_hint'))
 
         right_panel = ttk.Frame(main_container, relief="solid", borderwidth=1)
         right_panel.grid(row=0, column=1, sticky="nsew", padx=(5, 0))
@@ -131,16 +125,15 @@ class DataImputationPage(ttk.Frame):
         return name, latitude, longitude, altitude, directory
 
     def list_cities(self):
-        # MUDANÇA: Esta função agora APENAS busca os dados e ATUALIZA os comboboxes existentes.
         db_location = dlg.askdirectory()
-        if not db_location: # Se o usuário cancelar a seleção da pasta
+        if not db_location:
             return
 
         file_name_list = os.listdir(db_location)
         file_path_list = [f"{db_location}/{file_name}" for file_name in file_name_list]
 
         all_city_names = []
-        self.city_path_list.clear() # Limpa a lista anterior
+        self.city_path_list.clear()
 
         for file_path in file_path_list:
             try:
@@ -149,11 +142,10 @@ class DataImputationPage(ttk.Frame):
                 self.city_path_list.append([name, address])
             except (IOError, IndexError, ValueError) as e:
                 print(f"Erro ao processar o arquivo {file_path}: {e}")
-                continue # Pula para o próximo arquivo se houver erro
+                continue
 
         all_city_names.sort()
 
-        # MUDANÇA: Atualiza os valores dos comboboxes criados no __init__
         self.combo1['values'] = all_city_names
         self.combo2['values'] = all_city_names
         self.combo3['values'] = all_city_names
@@ -165,10 +157,8 @@ class DataImputationPage(ttk.Frame):
             all_city_names=len(all_city_names)
             )
 
-    # --- Lógica de Animação (Adaptada) ---
     def on_click(self):
-        # MUDANÇA: Agora opera no self.confirm_group_btn
-        self.confirm_group_btn.config(command=()) # Desabilita o botão temporariamente
+        self.confirm_group_btn.config(command=())
         self.loading = True
         self.loading_step = 0
         self.animate_loading()
@@ -177,26 +167,22 @@ class DataImputationPage(ttk.Frame):
     def animate_loading(self):
         if self.loading:
             dots = '.' * (self.loading_step % 4)
-            # MUDANÇA: Atualiza o texto do botão correto
             i18n = self.controller.i18n
-            loading_text = i18n.get('loading_text', default="Carregando") # Adicionar "loading_text" ao JSON
+            loading_text = i18n.get('loading_text', default="Carregando")
             self.confirm_group_btn.config(text=f"{loading_text}{dots}")
             self.loading_step += 1
             self.after(500, self.animate_loading)
 
     def run_process(self):
         self.process_selection()
-        # Garante que a atualização da UI ocorra na thread principal
         self.after(0, self.reset_button)
 
     def reset_button(self):
         self.loading = False
         i18n = self.controller.i18n
-        # MUDANÇA: Reseta o botão correto
         self.confirm_group_btn.config(text=i18n.get('confirm_group_btn'), command=self.on_click)
 
     def process_selection(self):
-        # MUDANÇA: Obtém os valores diretamente dos comboboxes existentes
         target_city_name = self.combo1.get()
         neighbor_a_name = self.combo2.get()
         neighbor_b_name = self.combo3.get()
@@ -210,7 +196,6 @@ class DataImputationPage(ttk.Frame):
             )
             return
 
-        # A lógica para encontrar os caminhos permanece a mesma
         paths = {}
         names_to_find = {
             "target": target_city_name, 
@@ -263,3 +248,12 @@ class DataImputationPage(ttk.Frame):
         self.label_combo2.config(text=i18n.get('neighbor1_label'))
         self.label_combo3.config(text=i18n.get('neighbor2_label'))
         self.label_combo4.config(text=i18n.get('neighbor3_label'))
+        self.combo1_hint.text = i18n.get('alvo_data_hint')
+        self.combo2_hint.text = i18n.get('viz1_data_hint')
+        self.combo3_hint.text = i18n.get('viz2_data_hint')
+        self.combo4_hint.text = i18n.get('viz3_data_hint')
+        self.select_data_hint.text = i18n.get('select_dir_data_hint')
+        self.confirm_group_hint.text = i18n.get('confirm_group_data_hint')
+        self.visualize_data_hint.text = i18n.get('visualize_data_hint')
+        self.imputation_tech_hint.text = i18n.get('imputation_data_hint')
+        self.show_location_hint.text = i18n.get('show_location_data_hint')

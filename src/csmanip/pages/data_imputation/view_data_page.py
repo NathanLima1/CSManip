@@ -12,33 +12,28 @@ class ViewDataPage(ttk.Frame):
         self.controller = controller
         i18n = self.controller.i18n
 
-        # --- Frame Superior (Título e Voltar) ---
         top_frame = ttk.Frame(self)
         top_frame.pack(fill=tk.X, padx=10, pady=10)
 
-        # O botão de voltar deve levar para a tela anterior (DataImputationPage)
         self.back_button = ttk.Button(top_frame, text="", command=self.go_to_data_imputation)
         self.back_button.pack(side=tk.LEFT)
 
         self.page_title = ttk.Label(top_frame, text="", font=("Verdana", 16, "bold"))
         self.page_title.pack(side=tk.LEFT, expand=True)
 
-        # --- Layout Principal de Duas Colunas ---
         main_container = ttk.Frame(self)
         main_container.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
-        main_container.grid_columnconfigure(0, weight=1, minsize=280) # Coluna da esquerda
-        main_container.grid_columnconfigure(1, weight=3) # Coluna da direita
+        main_container.grid_columnconfigure(0, weight=1, minsize=280)
+        main_container.grid_columnconfigure(1, weight=3)
         main_container.grid_rowconfigure(0, weight=1)
         
         # --- PAINEL DA ESQUERDA ---
         left_panel = ttk.Frame(main_container)
         left_panel.grid(row=0, column=0, sticky="nsew", padx=(0, 10))
         
-        # --- Seção 1: Visualizar Dados ---
         self.view_data_section = ttk.LabelFrame(left_panel, text="")
         self.view_data_section.pack(fill=tk.X, pady=(0, 20))
 
-        # Grid para os inputs de visualização
         view_inputs_grid = ttk.Frame(self.view_data_section)
         view_inputs_grid.pack(pady=10, padx=10)
 
@@ -51,8 +46,8 @@ class ViewDataPage(ttk.Frame):
         self.combo_view_data.grid(row=1, column=0, padx=(0, 5))
         self.lbl_view_param.grid(row=0, column=1, sticky="w")
         self.combo_view_param.grid(row=1, column=1, padx=(5, 0))
-        CreateToolTip(self.combo_view_data, text=i18n.get('combo_data_view_hint'))
-        CreateToolTip(self.combo_view_param, text=i18n.get('parameter_view_hint'))
+        self.data_view_hint = CreateToolTip(self.combo_view_data, text=i18n.get('combo_data_view_hint'))
+        self.view_param_hint = CreateToolTip(self.combo_view_param, text=i18n.get('parameter_view_hint'))
 
         self.lbl_time_period = ttk.Label(view_inputs_grid, text="")
         self.lbl_time_period.grid(row=2, column=0, columnspan=2, pady=(10, 0), sticky="w")
@@ -66,10 +61,10 @@ class ViewDataPage(ttk.Frame):
         self.combo_view_start.grid(row=4, column=0, padx=(0, 5))
         self.lbl_view_end.grid(row=3, column=1, sticky="w")
         self.combo_view_end.grid(row=4, column=1, padx=(5, 0))
-        CreateToolTip(self.combo_view_start, text=i18n.get('start_view_hint'))
-        CreateToolTip(self.combo_view_end, text=i18n.get('end_view_hint'))
+        self.view_start_hint = CreateToolTip(self.combo_view_start, text=i18n.get('start_view_hint'))
+        self.view_end_hint = CreateToolTip(self.combo_view_end, text=i18n.get('end_view_hint'))
 
-        # --- Seção 2: Gerar Gráfico ---
+        # --- Gerar Gráfico ---
         self.graph_section = ttk.LabelFrame(left_panel, text="")
         self.graph_section.pack(fill=tk.X)
 
@@ -87,21 +82,20 @@ class ViewDataPage(ttk.Frame):
         self.combo_graph_data.grid(row=1, column=0, padx=(0, 5))
         self.lbl_graph_param.grid(row=0, column=1, sticky="w")
         self.combo_graph_param.grid(row=1, column=1, padx=(5, 0))
-        CreateToolTip(self.combo_graph_data, text=i18n.get('graph_data_10_view_hint'))
-        CreateToolTip(self.combo_graph_param, text=i18n.get('graph_param_10_view_hint'))
+        self.graph_data_hint = CreateToolTip(self.combo_graph_data, text=i18n.get('graph_data_10_view_hint'))
+        self.graph_param_hint = CreateToolTip(self.combo_graph_param, text=i18n.get('graph_param_10_view_hint'))
         
         self.histogram_btn = ttk.Button(self.graph_section, text="", command=self.histogram)
         self.histogram_btn.pack(fill=tk.X, pady=5, padx=10)
         self.boxplot_btn = ttk.Button(self.graph_section, text="", command=self.boxplot_graph)
         self.boxplot_btn.pack(fill=tk.X, pady=(0,10), padx=10)
-        CreateToolTip(self.histogram_btn, text=i18n.get('histogram_view_hint'))
-        CreateToolTip(self.boxplot_btn, text=i18n.get('boxplot_view_hint'))
+        self.histogram_hint = CreateToolTip(self.histogram_btn, text=i18n.get('histogram_view_hint'))
+        self.boxplot_hint = CreateToolTip(self.boxplot_btn, text=i18n.get('boxplot_view_hint'))
 
 
         # --- PAINEL DA DIREITA ---
         self.right_panel = ttk.Frame(main_container, relief="solid", borderwidth=1)
         self.right_panel.grid(row=0, column=1, sticky="nsew")
-        # Este painel está pronto para receber os gráficos
         
         self.update_texts()
 
@@ -396,7 +390,6 @@ class ViewDataPage(ttk.Frame):
         self.back_button.config(text=i18n.get('back_btn'))
         self.page_title.config(text=i18n.get('view_data_page_title'))
 
-        # Seção 1
         self.view_data_section.config(text=i18n.get('view_data_title'))
         self.lbl_view_data.config(text=i18n.get('data_label'))
         self.lbl_view_param.config(text=i18n.get('parameter_label'))
@@ -404,9 +397,17 @@ class ViewDataPage(ttk.Frame):
         self.lbl_view_start.config(text=i18n.get('start_label'))
         self.lbl_view_end.config(text=i18n.get('end_label'))
 
-        # Seção 2
         self.graph_section.config(text=i18n.get('last_10_years_graph_title'))
         self.lbl_graph_data.config(text=i18n.get('data_label'))
         self.lbl_graph_param.config(text=i18n.get('parameter_label'))
         self.histogram_btn.config(text=i18n.get('histogram_btn'))
         self.boxplot_btn.config(text=i18n.get('boxplot_btn'))
+
+        self.data_view_hint.text = i18n.get('combo_data_view_hint')
+        self.view_param_hint.text = i18n.get('param_view_hint')
+        self.view_start_hint.text = i18n.get('start_view_hint')
+        self.view_end_hint.text = i18n.get('end_view_hint')
+        self.graph_data_hint.text = i18n.get('graph_data_10_view_hint')
+        self.graph_param_hint.text = i18n.get('graph_param_10_view_hint')
+        self.histogram_hint.text = i18n.get('histogram_view_hint')
+        self.boxplot_hint.text = i18n.get('boxplot_view_hint')

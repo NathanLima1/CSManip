@@ -29,6 +29,7 @@ class MachineLearningPage(ttk.Frame):
         self.split_var = tk.StringVar(value="70")
         self.tests_var = tk.StringVar(value="10")
         self.save_model_var = tk.BooleanVar(value=False)
+        self.optuna_trials_var = tk.StringVar(value="10")
         self.current_param_frame = None
 
         # --- Frame Superior ---
@@ -76,39 +77,39 @@ class MachineLearningPage(ttk.Frame):
 
         # --- Configurações Gerais ---
         general_frame = ttk.LabelFrame(self.scrollable_frame_left, text="")
-        general_frame.pack(fill=tk.X, pady=(0, 10), padx=5) # Adiciona padx
+        general_frame.pack(fill=tk.X, pady=(0, 10), padx=5)
         self.general_frame_label = general_frame
 
         self.data_label = ttk.Label(general_frame, text="")
         self.data_label.pack(anchor="w", padx=5)
         self.data_combo = ttk.Combobox(general_frame, state="readonly", values=["Target", "Neighbor A", "Neighbor B", "Neighbor C"])
         self.data_combo.pack(fill=tk.X, padx=5, pady=(0, 5))
-        CreateToolTip(self.data_combo, text=i18n.get('data_MaL_hint'))
+        self.data_combo_hint = CreateToolTip(self.data_combo, text=i18n.get('data_MaL_hint'))
 
         self.indicator_label = ttk.Label(general_frame, text="")
         self.indicator_label.pack(anchor="w", padx=5)
         self.indicator_combo = ttk.Combobox(general_frame, state="readonly", values=["Precipitation", "Maximum temperature", "Minimum temperature"])
         self.indicator_combo.pack(fill=tk.X, padx=5, pady=(0, 10))
-        CreateToolTip(self.indicator_combo, text=i18n.get('param_MaL_hint'))
+        self.indicator_combo_hint = CreateToolTip(self.indicator_combo, text=i18n.get('param_MaL_hint'))
 
         self.training_percentage_label = ttk.Label(general_frame, text="")
         self.training_percentage_label.pack(anchor="w", padx=5)
         self.split_entry = ttk.Entry(general_frame, textvariable=self.split_var)
         self.split_entry.pack(fill=tk.X, padx=5, pady=(0, 5))
-        CreateToolTip(self.split_entry, text=i18n.get('train_percent_MaL_hint'))
+        self.split_entry_hint = CreateToolTip(self.split_entry, text=i18n.get('train_percent_MaL_hint'))
 
         self.number_tests_label = ttk.Label(general_frame, text="")
         self.number_tests_label.pack(anchor="w", padx=5)
         self.tests_entry = ttk.Entry(general_frame, textvariable=self.tests_var)
         self.tests_entry.pack(fill=tk.X, padx=5, pady=(0, 10))
-        CreateToolTip(self.tests_entry, text=i18n.get('number_tests_MaL_hint'))
+        self.tests_entry_hint = CreateToolTip(self.tests_entry, text=i18n.get('number_tests_MaL_hint'))
 
-        self.save_model_check = ttk.Checkbutton(general_frame, text="", variable=self.save_model_var) # Atualizado em update_texts
+        self.save_model_check = ttk.Checkbutton(general_frame, text="", variable=self.save_model_var)
         self.save_model_check.pack(anchor="w", padx=5, pady=(0, 5))
 
         # --- Seleção do Modelo ---
         model_frame = ttk.LabelFrame(self.scrollable_frame_left, text="")
-        model_frame.pack(fill=tk.X, pady=(0, 10), padx=5) # Adiciona padx
+        model_frame.pack(fill=tk.X, pady=(0, 10), padx=5)
         self.model_frame_label = model_frame
 
         self.model_label = ttk.Label(model_frame, text="")
@@ -116,23 +117,30 @@ class MachineLearningPage(ttk.Frame):
         model_list = ['Decision Trees', 'Bagged Trees', 'Neural network', 'Nearest Neighbors', 'Support Vector', 'Gaussian Process']
         self.ml_combo = ttk.Combobox(model_frame, state="readonly", values=model_list)
         self.ml_combo.pack(fill=tk.X, padx=5, pady=(0, 5))
-        CreateToolTip(self.ml_combo, text=i18n.get('model_MaL_hint'))
+        self.ml_combo_hint = CreateToolTip(self.ml_combo, text=i18n.get('model_MaL_hint'))
         self.ml_combo.bind("<<ComboboxSelected>>", self.generate_param_ui)
 
         # --- Parâmetros do Modelo ---
         self.param_container = ttk.LabelFrame(self.scrollable_frame_left, text="")
         self.param_container.pack(fill=tk.X, pady=(0, 10), padx=5)
 
+        self.optuna_trials_label = ttk.Label(self.scrollable_frame_left, text="")
+        self.optuna_trials_label.pack(anchor="w", padx=5, pady=(10, 0))
+
+        self.optuna_trials_entry = ttk.Entry(self.scrollable_frame_left, textvariable=self.optuna_trials_var)
+        self.optuna_trials_entry.pack(fill=tk.X, padx=5, pady=(0, 5))
+        self.optuna_trials_hint = CreateToolTip(self.optuna_trials_entry, text=i18n.get("optuna_trials_MaL_hint"))
+
         self.optuna_btn = ttk.Button(self.scrollable_frame_left, 
                                      text="", 
                                      command=self.run_optuna_optimization)
         self.optuna_btn.pack(fill=tk.X, pady=(10, 0), padx=5)
-        CreateToolTip(self.optuna_btn, text=i18n.get('optuna_MaL_hint'))
+        self.optuna_btn_hint = CreateToolTip(self.optuna_btn, text=i18n.get('optuna_MaL_hint'))
 
         # --- Executar ---
         self.run_btn = ttk.Button(self.scrollable_frame_left, text="", command=self.run_model_preview)
         self.run_btn.pack(fill=tk.X, pady=10, padx=5)
-        CreateToolTip(self.run_btn  , text=i18n.get('generate_prev_MaL_hint'))
+        self.run_btn_hint = CreateToolTip(self.run_btn  , text=i18n.get('generate_prev_MaL_hint'))
 
         # --- PAINEL DIREITO ---
         self.right_panel = ttk.Frame(main_container, relief="solid", borderwidth=1)
@@ -174,6 +182,15 @@ class MachineLearningPage(ttk.Frame):
         self.number_tests_label.config(text=i18n.get('number_tests_label'))
         self.training_percentage_label.config(text=i18n.get('training_percentage_label'))
         self.optuna_btn.config(text=i18n.get('param_optimizer_btn'))
+        self.optuna_trials_label.config(text="Número de tentativas")
+        self.data_combo_hint.text = i18n.get('data_MaL_hint')
+        self.indicator_combo_hint.text = i18n.get('param_MaL_hint')
+        self.split_entry_hint.text = i18n.get('train_percent_MaL_hint')
+        self.tests_entry_hint.text = i18n.get('number_tests_MaL_hint')
+        self.ml_combo_hint.text = i18n.get('model_MaL_hint')
+        self.optuna_trials_hint.text = i18n.get('optuna_trials_MaL_hint')
+        self.optuna_btn_hint.text = i18n.get('optuna_MaL_hint')
+        self.optuna_btn_hint.text = i18n.get('generate_prev_MaL_hint')
 
     def run_optuna_optimization(self):
         """
@@ -187,6 +204,20 @@ class MachineLearningPage(ttk.Frame):
                  message_key='select_ml_model_msg'
              )
             return
+        
+        try:
+            n_trials = int(self.optuna_trials_var.get())
+            if n_trials < 1:
+                raise ValueError("O número de tentativas deve ser maior que 0.")
+        except ValueError:
+            self.controller.show_translated_message(
+                msg_type='error',
+                title_key='value_error_title',
+                message_key='value_error_msg',
+                value_str="Número de tentativas inválido"
+            )
+            return
+        
         common_params = self._get_common_params()
         if common_params is None:
             return
@@ -221,7 +252,7 @@ class MachineLearningPage(ttk.Frame):
             objective_func = functools.partial(base_objective, common_params=common_params)
 
             study = optuna.create_study(direction='maximize')
-            study.optimize(objective_func, n_trials=10)
+            study.optimize(objective_func, n_trials=n_trials)
 
             best_params = study.best_params
             best_value = study.best_value

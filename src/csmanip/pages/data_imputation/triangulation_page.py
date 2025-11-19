@@ -14,11 +14,9 @@ class TriangulationPage(ttk.Frame):
         self.graph_canvas = None
         self.toolbar = None
 
-        # --- Frame Superior (Título e Voltar) ---
         top_frame = ttk.Frame(self)
         top_frame.pack(fill=tk.X, padx=10, pady=10)
 
-        # O botão de voltar deve levar para a tela de seleção de técnicas
         self.back_button = ttk.Button(top_frame, text="", command=self.go_to_imputation_techniques)
         self.back_button.pack(side=tk.LEFT)
 
@@ -36,7 +34,6 @@ class TriangulationPage(ttk.Frame):
         left_panel = ttk.Frame(main_container)
         left_panel.grid(row=0, column=0, sticky="nsew", padx=(0, 10))
         
-        # Label e Combobox
         self.method_label = ttk.Label(left_panel, text="")
         self.method_label.pack(anchor="w", pady=(0, 2), padx=5)
         
@@ -44,27 +41,24 @@ class TriangulationPage(ttk.Frame):
                                          values=['Arithmetic Average', 'Inverse Distance Weighted', 
                                                  'Regional Weight', 'Optimized Normal Ratio'])
         self.method_combo.pack(fill=tk.X, pady=(0, 15), padx=5)
-        CreateToolTip(self.method_combo, text=i18n.get('method_triang_hint'))
+        self.method_hint = CreateToolTip(self.method_combo, text=i18n.get('method_triang_hint'))
 
-        # Label e Combobox para o Parâmetro Climático
         self.parameter_label = ttk.Label(left_panel, text="")
         self.parameter_label.pack(anchor="w", pady=(0, 2), padx=5)
 
         self.parameter_combo = ttk.Combobox(left_panel, state="readonly",
                                             values=["Precipitation", 'Maximum temperature', "Minimum temperature"])
         self.parameter_combo.pack(fill=tk.X, pady=(0, 15), padx=5)
-        CreateToolTip(self.parameter_combo, text=i18n.get('param_triang_hint'))
+        self.param_hint = CreateToolTip(self.parameter_combo, text=i18n.get('param_triang_hint'))
 
-        # Botão para executar a triangulação
         self.run_triangulation_btn = ttk.Button(left_panel, text="", command=self.run_triangulation_analysis)
         self.run_triangulation_btn.pack(pady=20, padx=5)
-        CreateToolTip(self.run_triangulation_btn, text=i18n.get('btn_triang_hint'))
+        self.run_btn_hint = CreateToolTip(self.run_triangulation_btn, text=i18n.get('btn_triang_hint'))
 
 
         # --- PAINEL DA DIREITA ---
         self.right_panel = ttk.Frame(main_container, relief="solid", borderwidth=1)
         self.right_panel.grid(row=0, column=1, sticky="nsew")
-        # Este painel fica pronto para mostrar os resultados da triangulação
         
         self.update_texts()
 
@@ -156,3 +150,6 @@ class TriangulationPage(ttk.Frame):
         self.method_label.config(text=i18n.get('triangulation_method_label'))
         self.parameter_label.config(text=i18n.get('climatic_parameter_label'))
         self.run_triangulation_btn.config(text=i18n.get('run_triangulation_btn'))
+        self.method_hint.text = i18n.get('method_triang_hint')
+        self.param_hint.text = i18n.get('param_triang_hint')
+        self.run_btn_hint.text = i18n.get('btn_triang_hint')

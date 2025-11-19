@@ -23,19 +23,19 @@ class StartPage(ttk.Frame):
 
         self.tutorial_btn = ttk.Button(button_frame, text="", command=self.go_to_tutorial)
         self.tutorial_btn.pack(pady=10, fill=tk.X)
-        CreateToolTip(self.tutorial_btn, text=i18n.get('tutorial_home_hint'))
+        self.tutorial_tooltip = CreateToolTip(self.tutorial_btn, text=i18n.get('tutorial_home_hint'))
 
         self.download_btn = ttk.Button(button_frame, text="", command=self.go_to_download)
         self.download_btn.pack(pady=10, fill=tk.X)
-        CreateToolTip(self.download_btn, text=i18n.get('download_home_hint'))
+        self.download_tooltip = CreateToolTip(self.download_btn, text=i18n.get('download_home_hint'))
 
         self.imputation_btn = ttk.Button(button_frame, text="", command=self.go_to_data_imputation)
         self.imputation_btn.pack(pady=10, fill=tk.X)
-        CreateToolTip(self.imputation_btn, text=i18n.get('imputation_home_hint'))
+        self.imputation_tooltip = CreateToolTip(self.imputation_btn, text=i18n.get('imputation_home_hint'))
 
         self.trends_btn = ttk.Button(button_frame, text="", command=self.go_to_trends)
         self.trends_btn.pack(pady=10, fill=tk.X)
-        CreateToolTip(self.trends_btn, text=i18n.get('trends_home_hint'))
+        self.trends_tooltip = CreateToolTip(self.trends_btn, text=i18n.get('trends_home_hint'))
 
         # --- Seletor de Idioma ---
         lang_frame = ttk.Frame(self)
@@ -80,6 +80,10 @@ class StartPage(ttk.Frame):
         self.imputation_btn.config(text=i18n.get('data_imputation_btn'))
         self.trends_btn.config(text=i18n.get('climatic_trends_btn'))
         self.lang_label.config(text=i18n.get('language_label'))
+        self.tutorial_tooltip.text = i18n.get('tutorial_home_hint')
+        self.download_tooltip.text = i18n.get('download_home_hint')
+        self.imputation_tooltip.text = i18n.get('imputation_home_hint')
+        self.trends_tooltip.text = i18n.get('trends_home_hint')
 
     def change_language(self, event=None):
         selected_display_name = self.lang_combobox.get()

@@ -17,6 +17,7 @@ from ...trends.processing import process_csv
 from ...trends.group_data import group_data
 from ...trends.identify_trends import analyze_trend
 from ...trends.climdex import Climdex
+from ..tooltip import CreateToolTip
 
 class ClimateTrendsPage(ttk.Frame):
     """Tela para análise de tendências climáticas."""
@@ -55,9 +56,11 @@ class ClimateTrendsPage(ttk.Frame):
 
         self.processed_file_entry = ttk.Entry(left_panel, state="readonly")
         self.processed_file_entry.pack(fill=tk.X, padx=5, pady=(0, 5))
+        self.processed_file_hint = CreateToolTip(self.processed_file_entry, text='')
 
         self.select_process_btn = ttk.Button(left_panel, text="", command=self.choose_and_process_file)
         self.select_process_btn.pack(fill=tk.X, padx=5, pady=5)
+        self.select_process_hint = CreateToolTip(self.select_process_btn, text='')
 
         self.extremes_frame = ttk.LabelFrame(left_panel, text="")
         self.extremes_frame.pack(fill=tk.X, padx=5, pady=(10, 5))
@@ -70,16 +73,19 @@ class ClimateTrendsPage(ttk.Frame):
 
         self.start_year_label = ttk.Label(date_frame, text="")
         self.start_year_label.grid(row=0, column=0, sticky="w")
-        self.start_year_combo = ttk.Combobox(date_frame, state="disabled") # Começa desabilitado
+        self.start_year_combo = ttk.Combobox(date_frame, state="disabled")
         self.start_year_combo.grid(row=1, column=0, sticky="ew", padx=(0, 5))
+        self.start_hint = CreateToolTip(self.start_year_combo, text='')
 
         self.end_year_label = ttk.Label(date_frame, text="")
         self.end_year_label.grid(row=0, column=1, sticky="w")
-        self.end_year_combo = ttk.Combobox(date_frame, state="disabled") # Começa desabilitado
+        self.end_year_combo = ttk.Combobox(date_frame, state="disabled")
         self.end_year_combo.grid(row=1, column=1, sticky="ew", padx=(5, 0))
+        self.end_hint = CreateToolTip(self.end_year_combo, text='')
 
         self.climatic_extremes_btn = ttk.Button(left_panel, text="", command=self.calculate_extreme_indicators)
-        self.climatic_extremes_btn.pack(fill=tk.X, padx=5, pady=5) # Mais espaço abaixo
+        self.climatic_extremes_btn.pack(fill=tk.X, padx=5, pady=5)
+        self.climatic_extremes_hint = CreateToolTip(self.climatic_extremes_btn, text='')
 
         self.analyze_trend_frame = ttk.LabelFrame(left_panel, text="")
         self.analyze_trend_frame.pack(fill=tk.X, padx=5, pady=(10, 5))
@@ -89,9 +95,11 @@ class ClimateTrendsPage(ttk.Frame):
         
         self.trend_param_combo = ttk.Combobox(self.analyze_trend_frame, state="readonly", values=["Maximum temperature", "Minimum temperature", "Precipitation"])
         self.trend_param_combo.pack(fill=tk.X, padx=5, pady=5)
-
+        self.analyze_trend_param_hint = CreateToolTip(self.trend_param_combo, text=''
+                                                )
         self.analyze_trend_btn = ttk.Button(self.analyze_trend_frame, text="", command=self.run_trend_analysis)
         self.analyze_trend_btn.pack(fill=tk.X, padx=5, pady=(5, 10))
+        self.analyze_trend_hint = CreateToolTip(self.analyze_trend_btn, text='')
 
         # Seção de Plotagem de Trends
         self.plot_trends_frame = ttk.LabelFrame(left_panel, text="")
@@ -102,6 +110,7 @@ class ClimateTrendsPage(ttk.Frame):
         
         self.plot_param_combo = ttk.Combobox(self.plot_trends_frame, state="readonly", values= ["Maximum temperature", "Minimum temperature", "Precipitation"])
         self.plot_param_combo.pack(fill=tk.X, padx=5, pady=5)
+        self.plot_param_hint = CreateToolTip(self.plot_param_combo, text='')
 
         self.monthly_btn = ttk.Button(self.plot_trends_frame, text="", command=self.plot_monthly)
         self.monthly_btn.pack(fill=tk.X, expand=True, pady=5, padx=5)
@@ -109,6 +118,9 @@ class ClimateTrendsPage(ttk.Frame):
         self.quarterly_btn.pack(fill=tk.X, expand=True, pady=5, padx=5)
         self.annual_btn = ttk.Button(self.plot_trends_frame, text="", command=self.plot_annual)
         self.annual_btn.pack(fill=tk.X, expand=True, pady=5, padx=5)
+        self.monthly_hint = CreateToolTip(self.monthly_btn, text='')
+        self.quarterly_hint = CreateToolTip(self.quarterly_btn, text='')
+        self.annual_hint = CreateToolTip(self.annual_btn, text='')
 
         # --- PAINEL DA DIREITA ---
         self.right_panel = ttk.Frame(main_container, relief="solid", borderwidth=1)
@@ -515,3 +527,15 @@ class ClimateTrendsPage(ttk.Frame):
         self.monthly_btn.config(text=i18n.get('monthly_btn'))
         self.quarterly_btn.config(text=i18n.get('quarterly_btn'))
         self.annual_btn.config(text=i18n.get('annual_btn'))
+
+        self.select_process_hint.text = i18n.get('select_process_trends_hint')
+        self.processed_file_hint.text = i18n.get('processed_file_trends_hint')
+        self.start_hint.text = i18n.get('start_trends_hint')
+        self.end_hint.text = i18n.get('end_trends_hint')
+        self.climatic_extremes_hint.text = i18n.get('climatic_trends_hint')
+        self.analyze_trend_param_hint.text = i18n.get('analyze_param_trends_hint')
+        self.analyze_trend_hint.text = i18n.get('analyze_trends_hint')
+        self.plot_param_hint.text = i18n.get('param_trends_hint')
+        self.monthly_hint.text = i18n.get('monthly_trends_hint')
+        self.quarterly_hint.text = i18n.get('quarterly_trends_hint')
+        self.annual_hint.text = i18n.get('monthly_trends_hint') 

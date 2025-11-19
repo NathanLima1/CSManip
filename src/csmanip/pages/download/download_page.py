@@ -84,7 +84,6 @@ class DownloadDataPage(ttk.Frame):
         self.controller = controller
         i18n = self.controller.i18n
 
-        # --- Frame Superior ---
         top_frame = ttk.Frame(self)
         top_frame.pack(fill=tk.X, padx=10, pady=10)
 
@@ -94,7 +93,6 @@ class DownloadDataPage(ttk.Frame):
         self.page_title = ttk.Label(top_frame, text="", font=("Verdana", 16, "bold"))
         self.page_title.pack(side=tk.LEFT, expand=True)
 
-        # --- Layout Principal de Duas Colunas ---
         main_container = ttk.Frame(self)
         main_container.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
         main_container.grid_columnconfigure(0, weight=1, minsize=280) # Painel esquerdo
@@ -105,22 +103,19 @@ class DownloadDataPage(ttk.Frame):
         left_panel = ttk.Frame(main_container)
         left_panel.grid(row=0, column=0, sticky="nsew", padx=(0, 10))
         
-        # --- Método de Download ---
         self.method_label = ttk.Label(left_panel, text="")
         self.method_label.pack(anchor="w", padx=5)
         self.method_combo = ttk.Combobox(left_panel, values=["NOAA", "ECMWF"], state="readonly")
         self.method_combo.pack(fill=tk.X, padx=5, pady=(0, 10))
-        CreateToolTip(self.method_combo, text=i18n.get('download_method_hint'))
+        self.method_hint = CreateToolTip(self.method_combo, text=i18n.get('download_method_hint'))
         self.method_combo.bind("<<ComboboxSelected>>", self._on_method_selected)
 
-        # --- Cidade ---
         self.city_label = ttk.Label(left_panel, text="")
         self.city_label.pack(anchor="w", padx=5)
         self.city_entry = ttk.Entry(left_panel)
         self.city_entry.pack(fill=tk.X, padx=5, pady=(0, 10))
-        CreateToolTip(self.city_entry, text=i18n.get('city_download_entry_hint'))
+        self.city_hint = CreateToolTip(self.city_entry, text=i18n.get('city_download_entry_hint'))
 
-        # --- Período de Tempo ---
         self.period_frame = ttk.LabelFrame(left_panel, text="")
         self.period_frame.pack(fill=tk.X, padx=5, pady=(0, 10))
         self.period_frame.grid_columnconfigure(0, weight=1)
@@ -130,13 +125,13 @@ class DownloadDataPage(ttk.Frame):
         self.start_label.grid(row=0, column=0, sticky="w", padx=5)
         self.start_entry = ttk.Entry(self.period_frame)
         self.start_entry.grid(row=1, column=0, sticky="ew", padx=5, pady=(0, 5))
-        CreateToolTip(self.start_entry, text=i18n.get('start_date_download_hint'))
+        self.start_hint = CreateToolTip(self.start_entry, text=i18n.get('start_date_download_hint'))
 
         self.end_label = ttk.Label(self.period_frame, text="")
         self.end_label.grid(row=0, column=1, sticky="w", padx=5)
         self.end_entry = ttk.Entry(self.period_frame)
         self.end_entry.grid(row=1, column=1, sticky="ew", padx=5, pady=(0, 5))
-        CreateToolTip(self.end_entry, text=i18n.get('end_date_download_hint'))
+        self.end_hint = CreateToolTip(self.end_entry, text=i18n.get('end_date_download_hint'))
 
         # --- Frame Condicional para o Radius ---
         self.radius_frame = ttk.Frame(left_panel)
@@ -145,9 +140,8 @@ class DownloadDataPage(ttk.Frame):
         self.radius_label.pack(anchor="w", padx=5)
         self.radius_entry = ttk.Entry(self.radius_frame)
         self.radius_entry.pack(fill=tk.X, padx=5, pady=(0, 10))
-        CreateToolTip(self.radius_entry, text=i18n.get('radius_download_hint'))
+        self.radius_hint = CreateToolTip(self.radius_entry, text=i18n.get('radius_download_hint'))
 
-        # --- Botão Iniciar Download ---
         self.download_btn = ttk.Button(left_panel, text="", command=self._on_start_download)
         self.download_btn.pack(fill=tk.X, padx=5, pady=20)
 
@@ -358,8 +352,6 @@ class DownloadDataPage(ttk.Frame):
         self.controller.title(i18n.get('app_main_title'))
         self.back_button.config(text=i18n.get('back_btn'))
         self.page_title.config(text=i18n.get('download_data_title'))
-        
-        # Atualiza os novos widgets
         self.method_label.config(text=i18n.get('download_method_label'))
         self.city_label.config(text=i18n.get('city_label'))
         self.period_frame.config(text=i18n.get('time_period_label'))
@@ -367,3 +359,8 @@ class DownloadDataPage(ttk.Frame):
         self.end_label.config(text=i18n.get('end_label'))
         self.radius_label.config(text=i18n.get('radius_label'))
         self.download_btn.config(text=i18n.get('start_download_btn'))
+        self.method_hint.text = i18n.get('download_method_hint')
+        self.city_hint.text = i18n.get('city_download_entry_hint')
+        self.start_hint.text = i18n.get('start_date_download_hint')
+        self.end_hint.text = i18n.get('end_date_download_hint')
+        self.radius_hint = i18n.get('radius_download_hint')
