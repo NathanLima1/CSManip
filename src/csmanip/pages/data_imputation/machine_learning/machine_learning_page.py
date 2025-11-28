@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import ttk, messagebox as msg
+from tkinter import ttk, messagebox as msg, filedialog
 from tkinter.scrolledtext import ScrolledText
 import typing
 import os
@@ -9,6 +9,7 @@ import functools
 import logging
 from ...tooltip import CreateToolTip
 import threading
+import json
 
 from ....training.training import Training
 from ....utils.indicator import get_indicator_code 
@@ -159,6 +160,19 @@ class MachineLearningPage(ttk.Frame):
         self.optuna_btn.pack(fill=tk.X, pady=(10, 0), padx=5)
         self.optuna_btn_hint = CreateToolTip(self.optuna_btn, text=i18n.get('optuna_MaL_hint'))
 
+        manage_frame = ttk.Frame(self.scrollable_frame_left)
+        manage_frame.pack(fill=tk.X, pady=5, padx=5)
+
+        self.btn_save_params = ttk.Button(manage_frame, text="Salvar Params", command=self.save_hyperparameters)
+        self.btn_save_params.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 2))
+        
+        self.btn_save_params.config(state="disabled") 
+
+        self.btn_load_params = ttk.Button(manage_frame, text="Carregar Params", command=self.load_hyperparameters)
+        self.btn_load_params.pack(side=tk.RIGHT, fill=tk.X, expand=True, padx=(2, 0))
+
+        self.last_best_params = None
+
         # --- Executar ---
         self.run_btn = ttk.Button(self.scrollable_frame_left, text="", command=self.run_model_preview)
         self.run_btn.pack(fill=tk.X, pady=10, padx=5)
@@ -261,21 +275,17 @@ class MachineLearningPage(ttk.Frame):
 
         base_objective = objective_mapping.get(model_name)
         if base_objective is None:
-            return # Tratar erro se necessário
+            return
 
-        # 1. Preparar a UI (Log View)
         log_widget = self._setup_log_view()
         
-        # 2. Configurar o Logger do Optuna para escrever no Widget
         optuna.logging.set_verbosity(optuna.logging.INFO)
         optuna_logger = optuna.logging.get_logger("optuna")
         
-        # Cria nosso handler customizado
         handler = TextHandler(log_widget)
         handler.setFormatter(logging.Formatter('%(message)s'))
         optuna_logger.addHandler(handler)
 
-        # 3. Definir a função que rodará na Thread
         def run_optimization_thread():
             try:
                 objective_func = functools.partial(base_objective, common_params=common_params)
@@ -286,33 +296,29 @@ class MachineLearningPage(ttk.Frame):
                 best_params = study.best_params
                 best_value = study.best_value
 
-                # Ações de UI devem ser agendadas para a thread principal
                 self.controller.after(0, lambda: self._on_optimization_finished(best_params, best_value, optuna_logger, handler))
 
             except Exception as e:
-                # Mostra erro na UI
                 self.controller.after(0, lambda: self.controller.show_translated_message(
                     msg_type='error', 
                     title_key='optimization_error_title', 
                     message_key='optimization_error_msg', 
                     error=str(e)
                 ))
-                # Limpa o handler mesmo com erro
                 self.controller.after(0, lambda: optuna_logger.removeHandler(handler))
 
-        # 4. Iniciar a Thread
         threading.Thread(target=run_optimization_thread, daemon=True).start()
 
     def _on_optimization_finished(self, best_params, best_value, logger, handler):
         """Chamado quando a thread termina com sucesso."""
         
-        # Remove o handler para não duplicar logs no futuro
         logger.removeHandler(handler)
+
+        self.last_best_params = best_params
+        self.btn_save_params.config(state="normal")
         
-        # Atualiza os campos
         self.update_ui_with_params(best_params)
 
-        # Mostra mensagem de sucesso
         self.controller.show_translated_message(
             msg_type='info',
             title_key='optimization_complete_title',
@@ -378,6 +384,75 @@ class MachineLearningPage(ttk.Frame):
                     widget_var.set(str(best_params[param_name]))
                 else:
                     print(f"Aviso: Parâmetro '{param_name}' encontrado, mas UI var '{widget_var_name}' não existe no frame atual.")
+
+    def save_hyperparameters(self):
+        """Salva os últimos parâmetros otimizados em um arquivo JSON."""
+        if not self.last_best_params:
+            return
+
+        model_name = self.ml_combo.get().replace(" ", "_")
+        
+        file_path = filedialog.asksaveasfilename(
+            defaultextension=".json",
+            filetypes=[("JSON files", "*.json"), ("All files", "*.*")],
+            initialfile=f"params_{model_name}.json",
+            title="Salvar Hiperparâmetros"
+        )
+
+        if file_path:
+            try:
+                data_to_save = {
+                    "model": self.ml_combo.get(),
+                    "params": self.last_best_params
+                }
+                
+                with open(file_path, 'w') as f:
+                    json.dump(data_to_save, f, indent=4)
+                
+                msg.showinfo("Sucesso", "Parâmetros salvos com sucesso!")
+            except Exception as e:
+                msg.showerror("Erro", f"Falha ao salvar arquivo: {str(e)}")
+
+    def load_hyperparameters(self):
+        """Carrega parâmetros de um arquivo JSON e preenche a UI."""
+        file_path = filedialog.askopenfilename(
+            filetypes=[("JSON files", "*.json"), ("All files", "*.*")],
+            title="Carregar Hiperparâmetros"
+        )
+
+        if file_path:
+            try:
+                with open(file_path, 'r') as f:
+                    data = json.load(f)
+
+                if "params" in data:
+                    params_to_load = data["params"]
+                    model_saved = data.get("model", "Desconhecido")
+                    
+                    current_model = self.ml_combo.get()
+                    if model_saved != "Desconhecido" and model_saved != current_model:
+                        confirm = msg.askyesno(
+                            "Modelo Diferente", 
+                            f"Estes parâmetros foram salvos para '{model_saved}', "
+                            f"mas o modelo atual é '{current_model}'.\n\nDeseja carregar mesmo assim?"
+                        )
+                        if not confirm:
+                            return
+
+                else:
+                    params_to_load = data
+
+                self.update_ui_with_params(params_to_load)
+                
+                self.last_best_params = params_to_load
+                self.btn_save_params.config(state="normal")
+
+                msg.showinfo("Sucesso", "Parâmetros carregados na interface!")
+
+            except json.JSONDecodeError:
+                msg.showerror("Erro", "O arquivo selecionado não é um JSON válido.")
+            except Exception as e:
+                msg.showerror("Erro", f"Falha ao ler arquivo: {str(e)}")
 
     def objective_dt(self, trial, common_params):
         """Função objetivo para Decision Trees (VERSÃO CORRIGIDA)."""

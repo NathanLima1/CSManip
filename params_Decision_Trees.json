@@ -1,0 +1,13 @@
+{
+    "model": "Decision Trees",
+    "params": {
+        "criterion": "absolute_error",
+        "splitter": "random",
+        "max_depth": 37,
+        "min_samples_split": 7,
+        "min_samples_leaf": 1,
+        "max_features": 0.683719529471807,
+        "min_impurity_decrease": 0.00479950291591485,
+        "ccp_alpha": 0.000986475444521035
+    }
+}
