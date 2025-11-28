@@ -58,10 +58,10 @@ class Training:
         return support_vector_regression(self, city, indicator_code, division, num_tests, kernel,
                 degree, gamma, coef0, tol, C, epsilon, shrinking, cache_size, verbose, max_iter, save_model)
     
-    def gaussian_process_regression(self, city, indicator_code, division, num_tests, kernel_type,
-                                     lenght_scale, nu, sigma_0, alpha_rq, alpha_gp, optimizer, normalize_y, save_model):
-        return gaussian_process_regression(self, city, indicator_code, division, num_tests, kernel_type, lenght_scale, nu, 
-                                           sigma_0, alpha_rq, alpha_gp, optimizer, normalize_y, save_model)
+    def gaussian_process_regression(self, city, indicator_code, division, kernel_type, 
+                                len_scale, nu, sigma_0, alpha_rq, alpha_noise, n_restart, normalize_y, save_model):
+        return gaussian_process_regression(city, indicator_code, division, kernel_type, 
+                                len_scale, nu, sigma_0, alpha_rq, alpha_noise, n_restart, normalize_y, save_model)
  
 
     def prepare_matrix(self, file_path, division, indicator, n_test):

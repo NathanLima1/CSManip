@@ -1,11 +1,14 @@
 import tkinter as tk
 from tkinter import ttk, messagebox as msg
+from tkinter.scrolledtext import ScrolledText
 import typing
 import os
 import sys
 import optuna
 import functools
+import logging
 from ...tooltip import CreateToolTip
+import threading
 
 from ....training.training import Training
 from ....utils.indicator import get_indicator_code 
@@ -18,6 +21,23 @@ if typing.TYPE_CHECKING:
     from ...start_page import StartPage 
     from .gui_helpers import DTParameterFrame, BaggingTParameterFrame, NNParameterFrame, NNeighParameterFrame, SVMParameterFrame, GPParameterFrame
 
+class TextHandler(logging.Handler):
+    """
+    Classe customizada para redirecionar logs para um widget ScrolledText do Tkinter.
+    """
+    def __init__(self, text_widget):
+        super().__init__()
+        self.text_widget = text_widget
+
+    def emit(self, record):
+        msg = self.format(record)
+        def append():
+            self.text_widget.configure(state='normal')
+            self.text_widget.insert(tk.END, msg + '\n')
+            self.text_widget.configure(state='disabled')
+            self.text_widget.see(tk.END)
+        
+        self.text_widget.after(0, append)
 
 class MachineLearningPage(ttk.Frame):
     """Tela para treinamento e visualização de modelos de Machine Learning."""
@@ -125,13 +145,14 @@ class MachineLearningPage(ttk.Frame):
         self.param_container = ttk.LabelFrame(self.scrollable_frame_left, text="")
         self.param_container.pack(fill=tk.X, pady=(0, 10), padx=5)
 
+        """
         self.optuna_trials_label = ttk.Label(self.scrollable_frame_left, text="")
         self.optuna_trials_label.pack(anchor="w", padx=5, pady=(10, 0))
 
         self.optuna_trials_entry = ttk.Entry(self.scrollable_frame_left, textvariable=self.optuna_trials_var)
         self.optuna_trials_entry.pack(fill=tk.X, padx=5, pady=(0, 5))
         self.optuna_trials_hint = CreateToolTip(self.optuna_trials_entry, text=i18n.get("optuna_trials_MaL_hint"))
-
+        """
         self.optuna_btn = ttk.Button(self.scrollable_frame_left, 
                                      text="", 
                                      command=self.run_optuna_optimization)
@@ -183,21 +204,34 @@ class MachineLearningPage(ttk.Frame):
         self.number_tests_label.config(text=i18n.get('number_tests_label'))
         self.training_percentage_label.config(text=i18n.get('training_percentage_label'))
         self.optuna_btn.config(text=i18n.get('param_optimizer_btn'))
-        self.optuna_trials_label.config(text="Número de tentativas")
+        #self.optuna_trials_label.config(text="Número de tentativas")
         self.data_combo_hint.text = i18n.get('data_MaL_hint')
         self.indicator_combo_hint.text = i18n.get('param_MaL_hint')
         self.split_entry_hint.text = i18n.get('train_percent_MaL_hint')
         self.tests_entry_hint.text = i18n.get('number_tests_MaL_hint')
         self.ml_combo_hint.text = i18n.get('model_MaL_hint')
-        self.optuna_trials_hint.text = i18n.get('optuna_trials_MaL_hint')
+        #self.optuna_trials_hint.text = i18n.get('optuna_trials_MaL_hint')
         self.optuna_btn_hint.text = i18n.get('optuna_MaL_hint')
         self.optuna_btn_hint.text = i18n.get('generate_prev_MaL_hint')
 
+    def _setup_log_view(self):
+        """Prepara o painel direito para exibir logs."""
+        self._clear_panel(self.right_panel)
+        
+        lbl = ttk.Label(self.right_panel, text="Progresso da Otimização (Optuna):", font=("Arial", 10, "bold"))
+        lbl.pack(anchor="w", padx=10, pady=(10, 5))
+        
+        log_text = ScrolledText(self.right_panel, state='disabled', height=20)
+        log_text.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+        
+        return log_text
+
     def run_optuna_optimization(self):
         """
-        Inicia otimização do optuna para o modelo selecionado
+        Passo 1: Verifica se pode rodar e abre o Popup.
         """
         model_name = self.ml_combo.get()
+        
         if not model_name:
             self.controller.show_translated_message(
                  msg_type='warning',
@@ -206,22 +240,15 @@ class MachineLearningPage(ttk.Frame):
              )
             return
         
-        try:
-            n_trials = int(self.optuna_trials_var.get())
-            if n_trials < 1:
-                raise ValueError("O número de tentativas deve ser maior que 0.")
-        except ValueError:
-            self.controller.show_translated_message(
-                msg_type='error',
-                title_key='value_error_title',
-                message_key='value_error_msg',
-                value_str="Número de tentativas inválido"
-            )
+        if self._get_common_params() is None:
             return
-        
+
+        OptunaPopup(self, self.controller, callback=self._execute_optuna_optimization)
+
+
+    def _execute_optuna_optimization(self, n_trials):
+        model_name = self.ml_combo.get()
         common_params = self._get_common_params()
-        if common_params is None:
-            return
         
         objective_mapping = {
             'Decision Trees': self.objective_dt,
@@ -234,48 +261,65 @@ class MachineLearningPage(ttk.Frame):
 
         base_objective = objective_mapping.get(model_name)
         if base_objective is None:
-            self.controller.show_translated_message(
-                msg_type='error',
-                title_key='error_title',
-                message_key='optuna_not_implemented_msg',
-                option=model_name
-            )
-            return
+            return # Tratar erro se necessário
+
+        # 1. Preparar a UI (Log View)
+        log_widget = self._setup_log_view()
         
-        msg.showinfo(
-            self.controller.i18n.get('optimization_started_title'),
-            self.controller.i18n.get('optimization_started_msg')
+        # 2. Configurar o Logger do Optuna para escrever no Widget
+        optuna.logging.set_verbosity(optuna.logging.INFO)
+        optuna_logger = optuna.logging.get_logger("optuna")
+        
+        # Cria nosso handler customizado
+        handler = TextHandler(log_widget)
+        handler.setFormatter(logging.Formatter('%(message)s'))
+        optuna_logger.addHandler(handler)
+
+        # 3. Definir a função que rodará na Thread
+        def run_optimization_thread():
+            try:
+                objective_func = functools.partial(base_objective, common_params=common_params)
+                
+                study = optuna.create_study(direction='maximize')
+                study.optimize(objective_func, n_trials=n_trials)
+
+                best_params = study.best_params
+                best_value = study.best_value
+
+                # Ações de UI devem ser agendadas para a thread principal
+                self.controller.after(0, lambda: self._on_optimization_finished(best_params, best_value, optuna_logger, handler))
+
+            except Exception as e:
+                # Mostra erro na UI
+                self.controller.after(0, lambda: self.controller.show_translated_message(
+                    msg_type='error', 
+                    title_key='optimization_error_title', 
+                    message_key='optimization_error_msg', 
+                    error=str(e)
+                ))
+                # Limpa o handler mesmo com erro
+                self.controller.after(0, lambda: optuna_logger.removeHandler(handler))
+
+        # 4. Iniciar a Thread
+        threading.Thread(target=run_optimization_thread, daemon=True).start()
+
+    def _on_optimization_finished(self, best_params, best_value, logger, handler):
+        """Chamado quando a thread termina com sucesso."""
+        
+        # Remove o handler para não duplicar logs no futuro
+        logger.removeHandler(handler)
+        
+        # Atualiza os campos
+        self.update_ui_with_params(best_params)
+
+        # Mostra mensagem de sucesso
+        self.controller.show_translated_message(
+            msg_type='info',
+            title_key='optimization_complete_title',
+            message_key='optimization_complete_msg',
+            best_score=f"{best_value:.4f}",
+            params=str(best_params)
         )
-
-        self.controller.update_idletasks()
-
-        try:
-            objective_func = functools.partial(base_objective, common_params=common_params)
-
-            study = optuna.create_study(direction='maximize')
-            study.optimize(objective_func, n_trials=n_trials)
-
-            best_params = study.best_params
-            best_value = study.best_value
-
-            self.update_ui_with_params(best_params)
-
-            self.controller.show_translated_message(
-                msg_type='info',
-                title_key='optimization_complete_title',
-                message_key='optimization_complete_msg',
-                best_score=f"{best_value:.4f}",
-                params=str(best_params)
-            )
-
-        except Exception as e:
-            self.controller.show_translated_message(
-                 msg_type='error',
-                 title_key='optimization_error_title',
-                 message_key='optimization_error_msg',
-                 error=str(e)
-             )
-            
     def update_ui_with_params(self, best_params):
         """
         Preenche os campos da UI (Entry, Combobox) com os 
@@ -323,6 +367,8 @@ class MachineLearningPage(ttk.Frame):
             'alpha_gp': 'alpha_gp',
             'length_scale': 'length_scale',
             'nu': 'nu',
+            'sigma_0': 'sigma_0',
+            'alpha_rq': 'alpha_rq',
         }
 
         for param_name, widget_var_name in param_map.items():
@@ -450,19 +496,39 @@ class MachineLearningPage(ttk.Frame):
         """Função objetivo para Gaussian Process."""
         city_path, indicator, split_percentage, n_tests, save_model_flag = common_params
         
+        # Pega o tipo de Kernel selecionado na UI
         kernel_type = self.current_param_frame.kernel_type.get() 
         
-        length_scale = trial.suggest_float('length_scale', 1e-2, 1e2, log=True)
-        nu = 1.5 
+        # Otimização de Hiperparâmetros baseada no Kernel
+        length_scale = 1.0
+        nu = 1.5
+        alpha_rq = 1.0
+        sigma_0 = 1.0
+
+        # RBF, Matern e RationalQuadratic usam length_scale
+        if kernel_type in ['RBF', 'Matern', 'RationalQuadratic']:
+            length_scale = trial.suggest_float('length_scale', 1e-2, 1e2, log=True)
+        
         if kernel_type == 'Matern':
             nu = trial.suggest_categorical('nu', [0.5, 1.5, 2.5])
+            
+        if kernel_type == 'RationalQuadratic':
+            alpha_rq = trial.suggest_float('alpha_rq', 1e-2, 1e2, log=True)
+            
+        if kernel_type == 'DotProduct':
+            sigma_0 = trial.suggest_float('sigma_0', 1e-2, 10.0, log=True)
         
-        alpha_gp = trial.suggest_float('alpha_gp', 1e-10, 1e-2, log=True)
+        # Alpha (Noise) global
+        alpha_gp = trial.suggest_float('alpha_gp', 1e-10, 1e-1, log=True)
 
         prev = Training()
+        
         score, *_ = prev.gaussian_process_regression(
-             city_path, indicator, split_percentage, n_tests, kernel_type, length_scale,
-             nu, sigma_0=1.0, alpha_rq=1.0,
+             city_path, indicator, split_percentage, n_tests, kernel_type, 
+             len_scale=length_scale,
+             nu=nu, 
+             sigma_0=sigma_0, 
+             alpha_rq=alpha_rq,
              alpha_gp=alpha_gp, 
              n_restarts_optimizer=int(self.current_param_frame.n_restarts_op.get()), 
              normalize_y_gp=self.current_param_frame.normalize_y_gp.get(), 
@@ -981,7 +1047,7 @@ class MachineLearningPage(ttk.Frame):
                 )
              return
         except Exception:
-            return # Error already shown by _read_param
+            return
 
         prev = Training()
         score, mean_abs_error, mean_rel_error, max_abs_error, exact_max, pred_max, min_abs_error, exact_min, pred_min, y_exact, y_pred, x_axis = prev.support_vector_regression(
@@ -996,25 +1062,61 @@ class MachineLearningPage(ttk.Frame):
         city_path, indicator, split_percentage, n_tests, save_model_flag = params
 
         try:
+            
             alpha_gp = self._read_param('alpha_gp', float)
+            n_restarts_optimizer = self._read_param('n_restarts_op', int)
+            normalize_y_gp = self._read_param('normalize_y_gp', bool)
             kernel_type = self._read_param('kernel_type', str)
-            normalize_y_gp = self._read_param('normalize_y_gp', bool) # BooleanVar?
+
             length_scale = self._read_param('length_scale', float)
-            nu = self._read_param('nu', float)
+            
+            nu = self._read_param('nu', float) 
+            
             sigma_0 = self._read_param('sigma_0', float)
             alpha_rq = self._read_param('alpha_rq', float)
-            n_restarts_optimizer = self._read_param('n_restarts_op', int)
+
         except Exception:
             return
 
         prev = Training()
-        print(f"Argumentos Gaussian Process: {city_path}, {indicator}, {split_percentage}, {n_tests}, {kernel_type}, {length_scale}, {nu}, {sigma_0}, {alpha_rq}, {alpha_gp}, {n_restarts_optimizer}, {normalize_y_gp}, {save_model_flag}")
-        score, mean_abs_error, mean_rel_error, max_abs_error, exact_max, pred_max, min_abs_error, exact_min, pred_min, y_exact, y_pred, x_axis = prev.gaussian_process_regression(
-             city_path, indicator, split_percentage, n_tests, kernel_type, length_scale,
-             nu, sigma_0, alpha_rq, alpha_gp, n_restarts_optimizer, normalize_y_gp, save_model_flag
-        )
-        self.data_preview(score, mean_abs_error, mean_rel_error, max_abs_error, exact_max, pred_max, min_abs_error, exact_min, pred_min, y_exact, y_pred, x_axis)
+        
+        # print(f"GP Call: Type={kernel_type}, Len={length_scale}, Alpha={alpha_gp}, Nu={nu}")
 
+        try:
+            score, mean_abs_error, mean_rel_error, max_abs_error, exact_max, pred_max, min_abs_error, exact_min, pred_min, y_exact, y_pred, x_axis = prev.gaussian_process_regression(
+                city=city_path, 
+                indicator_code=indicator, 
+                division=split_percentage, 
+                kernel_type=kernel_type, 
+                len_scale=length_scale,  
+                nu=nu, 
+                sigma_0=sigma_0, 
+                alpha_rq=alpha_rq, 
+                alpha_noise=alpha_gp,    
+                n_restart=n_restarts_optimizer, 
+                normalize_y=normalize_y_gp, 
+                save_model=save_model_flag
+            )
+            
+            self.data_preview(score, mean_abs_error, mean_rel_error, max_abs_error, exact_max, pred_max, min_abs_error, exact_min, pred_min, y_exact, y_pred, x_axis)
+        
+        except TypeError as e:
+            self.controller.show_translated_message(
+                 msg_type='error',
+                 title_key='execution_error_title',
+                 message_key='model_error_msg',
+                 option='Gaussian Process',
+                 error=f"Erro de assinatura na função: {str(e)}"
+             )
+        except Exception as e:
+            self.controller.show_translated_message(
+                 msg_type='error',
+                 title_key='execution_error_title',
+                 message_key='model_error_msg',
+                 option='Gaussian Process',
+                 error=str(e)
+             )
+            
     def generate_preview_kn(self):
         params = self._get_common_params()
         if params is None: return

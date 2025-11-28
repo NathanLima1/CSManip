@@ -108,60 +108,94 @@ class NNeighParameterFrame(ttk.Frame):
 class GPParameterFrame(ttk.Frame):
     """
     Frame com parâmetros para Gaussian Process.
-    Usa .grid() e herda de ttk.Frame.
+    Agora com lógica para habilitar/desabilitar campos baseados no Kernel.
     """
     def __init__(self, master):
         super().__init__(master)
         
-        # Configura as colunas da grade para expandirem igualmente
         self.grid_columnconfigure(0, weight=1, uniform="group1")
         self.grid_columnconfigure(1, weight=1, uniform="group1")
         
         self._create_widgets()
+        self._update_kernel_inputs()
 
     def _create_widgets(self):
-        # --- Linha 0 ---
-        ttk.Label(self, text='Alpha (float):').grid(row=0, column=0, sticky="w", padx=5)
-        ttk.Label(self, text='N_restart_optimizer (int):').grid(row=0, column=1, sticky="w", padx=5)
+        ttk.Label(self, text='Alpha (Noise Level):').grid(row=0, column=0, sticky="w", padx=5)
+        ttk.Label(self, text='N Restarts Optimizer:').grid(row=0, column=1, sticky="w", padx=5)
 
-        self.alpha_gp = StringVar(value='0.0000000001')
+        self.alpha_gp = StringVar(value='1e-10') 
         ttk.Entry(self, textvariable=self.alpha_gp, justify=tk.CENTER).grid(row=1, column=0, sticky="ew", padx=5, pady=(0, 10))
 
-        self.n_restarts_op = IntVar(value=0)
+        self.n_restarts_op = IntVar(value=1)
         ttk.Entry(self, textvariable=self.n_restarts_op, justify=tk.CENTER).grid(row=1, column=1, sticky="ew", padx=5, pady=(0, 10))
 
-        # --- Linha 2 ---
-        ttk.Label(self, text='Normalize_y (Bool 1/0):').grid(row=2, column=0, sticky="w", padx=5)
-        ttk.Label(self, text='Kernel type:').grid(row=2, column=1, sticky="w", padx=5)
+        ttk.Label(self, text='Normalize Y:').grid(row=2, column=0, sticky="w", padx=5)
+        ttk.Label(self, text='Kernel Type:').grid(row=2, column=1, sticky="w", padx=5)
 
-        self.normalize_y_gp = BooleanVar(value=0)
-        ttk.Entry(self, textvariable=self.normalize_y_gp, justify=tk.CENTER).grid(row=3, column=0, sticky="ew", padx=5, pady=(0, 10))
+        self.normalize_y_gp = BooleanVar(value=True) 
+        ttk.Checkbutton(self, text="Sim/Não", variable=self.normalize_y_gp).grid(row=3, column=0, sticky="w", padx=5, pady=(0, 10))
 
         self.kernel_type = StringVar(value='RBF')
-        ttk.Combobox(self, textvariable=self.kernel_type, values=["RBF", "Matern", "DotProduct", "RationalQuadratic"], state='readonly').grid(row=3, column=1, sticky="ew", padx=5, pady=(0, 10))
-
-        # --- Frame para Parâmetros de Kernel ---
-        kernel_frame = ttk.LabelFrame(self, text="Parâmetros de Kernel Específicos")
-        kernel_frame.grid(row=4, column=0, columnspan=2, sticky="ew", padx=5, pady=10)
-        kernel_frame.grid_columnconfigure(0, weight=1)
-        kernel_frame.grid_columnconfigure(1, weight=1)
-
-        ttk.Label(kernel_frame, text='length_scale (float):').grid(row=0, column=0, sticky="w", padx=5)
-        self.length_scale = StringVar(value='1.0')
-        ttk.Entry(kernel_frame, textvariable=self.length_scale, justify=tk.CENTER).grid(row=1, column=0, sticky="ew", padx=5, pady=(0, 5))
+        self.combo_kernel = ttk.Combobox(self, textvariable=self.kernel_type, 
+                                         values=["RBF", "Matern", "DotProduct", "RationalQuadratic"], 
+                                         state='readonly')
+        self.combo_kernel.grid(row=3, column=1, sticky="ew", padx=5, pady=(0, 10))
         
-        ttk.Label(kernel_frame, text='nu (Matern):').grid(row=0, column=1, sticky="w", padx=5)
+        self.combo_kernel.bind("<<ComboboxSelected>>", self._update_kernel_inputs)
+
+        self.kernel_frame = ttk.LabelFrame(self, text="Parâmetros Específicos do Kernel")
+        self.kernel_frame.grid(row=4, column=0, columnspan=2, sticky="ew", padx=5, pady=10)
+        self.kernel_frame.grid_columnconfigure(0, weight=1)
+        self.kernel_frame.grid_columnconfigure(1, weight=1)
+
+        self.lbl_len = ttk.Label(self.kernel_frame, text='Length Scale:')
+        self.lbl_len.grid(row=0, column=0, sticky="w", padx=5)
+        self.length_scale = StringVar(value='1.0')
+        self.ent_len = ttk.Entry(self.kernel_frame, textvariable=self.length_scale, justify=tk.CENTER)
+        self.ent_len.grid(row=1, column=0, sticky="ew", padx=5, pady=(0, 5))
+        
+        self.lbl_nu = ttk.Label(self.kernel_frame, text='Nu (Matern):')
+        self.lbl_nu.grid(row=0, column=1, sticky="w", padx=5)
         self.nu = StringVar(value='1.5')
-        ttk.Entry(kernel_frame, textvariable=self.nu, justify=tk.CENTER).grid(row=1, column=1, sticky="ew", padx=5, pady=(0, 5))
+        self.ent_nu = ttk.Combobox(self.kernel_frame, textvariable=self.nu, values=["0.5", "1.5", "2.5"], state="readonly")
+        self.ent_nu.grid(row=1, column=1, sticky="ew", padx=5, pady=(0, 5))
 
-        ttk.Label(kernel_frame, text='sigma_0 (DotProduct):').grid(row=2, column=0, sticky="w", padx=5)
+        self.lbl_sigma = ttk.Label(self.kernel_frame, text='Sigma 0 (DotProduct):')
+        self.lbl_sigma.grid(row=2, column=0, sticky="w", padx=5)
         self.sigma_0 = StringVar(value='1.0')
-        ttk.Entry(kernel_frame, textvariable=self.sigma_0, justify=tk.CENTER).grid(row=3, column=0, sticky="ew", padx=5, pady=(0, 5))
+        self.ent_sigma = ttk.Entry(self.kernel_frame, textvariable=self.sigma_0, justify=tk.CENTER)
+        self.ent_sigma.grid(row=3, column=0, sticky="ew", padx=5, pady=(0, 5))
 
-        ttk.Label(kernel_frame, text='alpha (RationalQuadratic):').grid(row=2, column=1, sticky="w", padx=5)
+        self.lbl_alpha_rq = ttk.Label(self.kernel_frame, text='Alpha (RationalQuadratic):')
+        self.lbl_alpha_rq.grid(row=2, column=1, sticky="w", padx=5)
         self.alpha_rq = StringVar(value='1.0')
-        ttk.Entry(kernel_frame, textvariable=self.alpha_rq, justify=tk.CENTER).grid(row=3, column=1, sticky="ew", padx=5, pady=(0, 5))
+        self.ent_rq = ttk.Entry(self.kernel_frame, textvariable=self.alpha_rq, justify=tk.CENTER)
+        self.ent_rq.grid(row=3, column=1, sticky="ew", padx=5, pady=(0, 5))
 
+    def _update_kernel_inputs(self, event=None):
+        """Habilita ou desabilita campos baseados na escolha do Kernel."""
+        k_type = self.kernel_type.get()
+
+        state_len = 'disabled'
+        state_nu = 'disabled'
+        state_sigma = 'disabled'
+        state_rq = 'disabled'
+
+        if k_type == 'RBF':
+            state_len = 'normal'
+        elif k_type == 'Matern':
+            state_len = 'normal'
+            state_nu = 'readonly'
+        elif k_type == 'RationalQuadratic':
+            state_len = 'normal'
+            state_rq = 'normal'
+        elif k_type == 'DotProduct':
+            state_sigma = 'normal'
+
+        self.ent_len.config(state=state_len)
+        self.ent_nu.config(state=state_nu)
+        self.ent_sigma.config(state=state_sigma)
+        self.ent_rq.config(state=state_rq)
 
 class BaggingTParameterFrame(ttk.Frame):
     """
