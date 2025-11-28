@@ -198,7 +198,7 @@ class DownloadDataPage(ttk.Frame):
                 self.controller.show_translated_message('warning', 'missing_fields_title', 'radius_required_msg')
                 return
             try:
-                radius = float(radius_str) # Converte para float
+                radius = float(radius_str)
             except ValueError:
                  self.controller.show_translated_message('error', 'value_error_title', 'invalid_radius_msg') # Crie esta chave JSON
                  return
@@ -209,7 +209,6 @@ class DownloadDataPage(ttk.Frame):
         self.log_text.config(state="disabled")
         self.download_btn.config(state="disabled", text=i18n.get('download_in_progress'))
         
-        # Inicia a thread
         threading.Thread(
             target=self._download_thread_target,
             args=(method, city, start, end, radius),

@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox as msg
 import threading
 
-class OptunaStartPopup(tk.Toplevel):
+class OptunaPopup(tk.Toplevel):
     """
     Janela popup para o usuário poder escolher o número de tentativas que
     o optuna realizará.
@@ -18,3 +18,10 @@ class OptunaStartPopup(tk.Toplevel):
         self.transient(parent)
 
         i18n = self.controller.i18n
+
+        tree_frame = ttk.Frame(self)
+        tree_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=(0, 10))
+
+        i18n_num_trials = controller.i18n.get('num_trials_optuna')
+        num_trials = tk.Label(tree_frame, "Teste")
+        

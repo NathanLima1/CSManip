@@ -9,6 +9,7 @@ from ...tooltip import CreateToolTip
 
 from ....training.training import Training
 from ....utils.indicator import get_indicator_code 
+from .optuna_popup import OptunaPopup
 
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
