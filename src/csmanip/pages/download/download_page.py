@@ -114,6 +114,7 @@ class DownloadDataPage(ttk.Frame):
         self.city_label.pack(anchor="w", padx=5)
         self.city_entry = ttk.Entry(left_panel)
         self.city_entry.pack(fill=tk.X, padx=5, pady=(0, 10))
+        self._add_placeholder(self.city_entry, "City, Country")
         self.city_hint = CreateToolTip(self.city_entry, text=i18n.get('city_download_entry_hint'))
 
         self.period_frame = ttk.LabelFrame(left_panel, text="")
@@ -125,12 +126,14 @@ class DownloadDataPage(ttk.Frame):
         self.start_label.grid(row=0, column=0, sticky="w", padx=5)
         self.start_entry = ttk.Entry(self.period_frame)
         self.start_entry.grid(row=1, column=0, sticky="ew", padx=5, pady=(0, 5))
+        self._add_placeholder(self.start_entry, "YYYY-MM-DD")
         self.start_hint = CreateToolTip(self.start_entry, text=i18n.get('start_date_download_hint'))
 
         self.end_label = ttk.Label(self.period_frame, text="")
         self.end_label.grid(row=0, column=1, sticky="w", padx=5)
         self.end_entry = ttk.Entry(self.period_frame)
         self.end_entry.grid(row=1, column=1, sticky="ew", padx=5, pady=(0, 5))
+        self._add_placeholder(self.end_entry, "YYYY-MM-DD")
         self.end_hint = CreateToolTip(self.end_entry, text=i18n.get('end_date_download_hint'))
 
         # --- Frame Condicional para o Radius ---
@@ -158,6 +161,25 @@ class DownloadDataPage(ttk.Frame):
         self.update_texts()
         self._on_method_selected(None)
 
+    def _add_placeholder(self, entry, placeholder_text, color='grey'):
+        default_fg = 'black'
+
+        def on_focus_in(event):
+            if entry.get() == placeholder_text and str(entry.cget('foreground')) == color:
+                entry.delete(0, tk.END)
+                entry.config(foreground=default_fg)
+
+        def on_focus_out(event):
+            if not entry.get():
+                entry.insert(0, placeholder_text)
+                entry.config(foreground=color)
+
+        entry.bind("<FocusIn>", on_focus_in)
+        entry.bind("<FocusOut>", on_focus_out)
+
+        entry.insert(0, placeholder_text)
+        entry.config(foreground=color)
+
     def _on_method_selected(self, event=None):
         """Chamado quando a combobox de método é alterada."""
         selected_method = self.method_combo.get()
@@ -178,9 +200,19 @@ class DownloadDataPage(ttk.Frame):
         """Função chamada pelo botão 'Iniciar download'."""
         #   Coleta os dados e chama sua lógica de download
         method = self.method_combo.get()
-        city = self.city_entry.get()
+        raw_city = self.city_entry.get()
         start = self.start_entry.get()
         end = self.end_entry.get()
+
+        if raw_city == "City, Country":
+            city = ""
+        else:
+            city = raw_city
+
+        if start == "YYYY-MM-DD":
+            start = ""
+        if end == "YYYY-MM-DD":
+            end = ""
 
         i18n = self.controller.i18n
         
