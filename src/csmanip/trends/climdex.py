@@ -40,15 +40,12 @@ class Climdex:
 
             df = pd.read_csv(file_path, header=None, names=col_names)
 
-            # --- LINHAS DE CORREÇÃO ---
-            # Renomeia as colunas para o padrão que a xclim espera.
             rename_dict = {
                 'prec': 'pr',
-                'tmax': 'tasmax', # Renomeia tmax para tasmax
-                'tmin': 'tasmin'  # Renomeia tmin para tasmin
+                'tmax': 'tasmax',
+                'tmin': 'tasmin'
             }
             df.rename(columns=rename_dict, inplace=True)
-            # --- FIM DA CORREÇÃO ---
             
             df['time'] = pd.to_datetime(df[['year', 'month', 'day']])
             df.set_index('time', inplace=True)
@@ -64,17 +61,6 @@ class Climdex:
     def calculate_indices(self, df: pd.DataFrame, base_period: tuple[str, str]):
         """
         Calcula uma lista de índices climáticos do ETCCDI usando xclim.
-
-        Args:
-            df (pd.DataFrame): DataFrame contendo os dados climáticos.
-                            Deve ter um DatetimeIndex e colunas como 'tasmax',
-                            'tasmin', e 'pr'.
-            base_period (tuple[str, str]): Tupla com data de início e fim
-                                        do período de referência.
-
-        Returns:
-            pd.DataFrame: Um DataFrame contendo os valores mensais de cada
-                        índice climático calculado.
         """
         # Converter o DataFrame do pandas para um Dataset do xarray
         if not isinstance(df.index, pd.DatetimeIndex):
@@ -172,9 +158,14 @@ class Climdex:
     def write_indices(self, indices_ds: xr.Dataset, name: str, output_dir: str = "indices_xclim"):
         output_path = Path(output_dir)
         output_path.mkdir(parents=True, exist_ok=True)
+        temp_indices_to_correct = ["TXx", "TNn"]
         for index_name in self.indices_base:
             monthly_da = indices_ds[index_name]
             annual_da = indices_ds[f"{index_name}_annual"]
+
+            if index_name in temp_indices_to_correct:
+                monthly_da = monthly_da - 273.15
+                annual_da = annual_da - 273.15
             df_monthly = monthly_da.to_dataframe()
             df_wide = df_monthly.pivot_table(values=index_name, index=df_monthly.index.year, columns=df_monthly.index.month).rename_axis('year', axis='index').rename_axis(None, axis='columns')
             month_names = [pd.to_datetime(f"2024-{i}-01").strftime('%b').lower() for i in range(1, 13)]
@@ -189,11 +180,16 @@ class Climdex:
     def plot_and_save_indices(self, indices_ds: xr.Dataset, name: str, output_dir: str = "graficos_indices"):
         output_path = Path(output_dir)
         output_path.mkdir(parents=True, exist_ok=True)
+
+        temp_indices_to_correct = ["TXx", "TNn"]
         
         for index_name in self.indices_base:
             print(f"Gerando gráfico para o índice: {index_name}")
             
-            monthly_da = indices_ds[index_name]
+            monthly_da = indices_ds[index_name].copy(deep=True)
+            if index_name in temp_indices_to_correct:
+                monthly_da = monthly_da - 273.15
+
             df_long = monthly_da.to_dataframe(name=index_name).reset_index()
             df_long['year'] = df_long['time'].dt.year
             df_long['month'] = df_long['time'].dt.month

@@ -93,7 +93,7 @@ class ClimateTrendsPage(ttk.Frame):
         self.trend_param_label = ttk.Label(self.analyze_trend_frame, text="")
         self.trend_param_label.pack(anchor="w", padx=5)
         
-        self.trend_param_combo = ttk.Combobox(self.analyze_trend_frame, state="readonly", values=["Maximum temperature", "Minimum temperature", "Precipitation"])
+        self.trend_param_combo = ttk.Combobox(self.analyze_trend_frame, state="readonly", values=["Maximum temperature", "Minimum temperature", "Precipitation", "Mean temperature"])
         self.trend_param_combo.pack(fill=tk.X, padx=5, pady=5)
         self.analyze_trend_param_hint = CreateToolTip(self.trend_param_combo, text=''
                                                 )
@@ -108,7 +108,7 @@ class ClimateTrendsPage(ttk.Frame):
         self.plot_param_label = ttk.Label(self.plot_trends_frame, text="")
         self.plot_param_label.pack(anchor="w", padx=5)
         
-        self.plot_param_combo = ttk.Combobox(self.plot_trends_frame, state="readonly", values= ["Maximum temperature", "Minimum temperature", "Precipitation"])
+        self.plot_param_combo = ttk.Combobox(self.plot_trends_frame, state="readonly", values= ["Maximum temperature", "Minimum temperature", "Precipitation", "Mean temperature"])
         self.plot_param_combo.pack(fill=tk.X, padx=5, pady=5)
         self.plot_param_hint = CreateToolTip(self.plot_param_combo, text='')
 
@@ -351,6 +351,8 @@ class ClimateTrendsPage(ttk.Frame):
             parameter = "tmax"
         elif temperature_parameter == "Minimum temperature":
             parameter = "tmin"
+        elif temperature_parameter == "Precipitation":
+            parameter = "prec"
         else:
             parameter = "tmean"
         return parameter
@@ -448,6 +450,15 @@ class ClimateTrendsPage(ttk.Frame):
             
             csv_file_path = f'{self.output_dir}/{self.city_name}dadosAnuais.csv' # Foco na tendência anual
             column_name = self.get_parameter(temperature_parameter) # ex: 'tmax', 'tmin', 'tmean'
+            
+            if column_name == "tmax":
+                column_name = "Tmax"
+            elif column_name == "tmin":
+                column_name = "Tmin"
+            elif column_name == "tmean":
+                column_name = "Tmean"
+            elif column_name == "Precipitation" or column_name == "prec":
+                column_name = "Chuva"
 
             if not os.path.exists(csv_file_path):
                  self.controller.show_translated_message('error', 'file_not_found_title', 'annual_data_not_found_msg', file_path=csv_file_path)
@@ -467,41 +478,55 @@ class ClimateTrendsPage(ttk.Frame):
         self._clear_panel(self.right_panel)
         i18n = self.controller.i18n
 
-        results_frame = ttk.LabelFrame(self.right_panel, text=i18n.get('trend_results_title', "Resultados da Análise de Tendência"))
+        results_frame = ttk.LabelFrame(self.right_panel, text=i18n.get('trend_results_title'))
         results_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
         
         grid_frame = ttk.Frame(results_frame)
         grid_frame.pack(padx=10, pady=10)
 
         mk_result = results.get("mann_kendall", {})
+        print("MK:", mk_result)
         slope = results.get("sens_slope")
 
         trend = mk_result.get('trend', 'no trend')
-        p_value = mk_result.get('p', 1.0)
+        p_value = mk_result.get('p-value', 1.0)
+        tau = mk_result.get('Tau', 0.0)
+        z_score = mk_result.get('Z-score', 0.0)
         
         if trend == 'increasing':
-            trend_text = i18n.get('trend_increasing', "Aumento significativo")
+            trend_text = i18n.get('trend_increasing')
         elif trend == 'decreasing':
-            trend_text = i18n.get('trend_decreasing', "Redução significativa")
+            trend_text = i18n.get('trend_decreasing')
         else: # no trend
-            trend_text = i18n.get('trend_no_trend', "Sem tendência significativa")
+            trend_text = i18n.get('trend_no_trend')
 
-        ttk.Label(grid_frame, text=f"{i18n.get('parameter_label', 'Parâmetro')}:", font=("Verdana", 10, "bold")).grid(row=0, column=0, sticky="w", pady=2)
+        row_num = 0
+
+        # Parâmetro
+        ttk.Label(grid_frame, text=f"{i18n.get('parameter_label')}:", font=("Verdana", 10, "bold")).grid(row=row_num, column=0, sticky="w", pady=2); row_num += 1
         ttk.Label(grid_frame, text=param_name).grid(row=0, column=1, sticky="w", pady=2, padx=5)
         
-        ttk.Label(grid_frame, text=f"{i18n.get('mann_kendall_test_label', 'Teste Mann-Kendall')}:", font=("Verdana", 10, "bold")).grid(row=1, column=0, sticky="w", pady=2)
-        ttk.Label(grid_frame, text=trend_text).grid(row=1, column=1, sticky="w", pady=2, padx=5)
+        # Teste Mann-Kendall (Tendência)
+        ttk.Label(grid_frame, text=f"{i18n.get('mann_kendall_test_label')}:", font=("Verdana", 10, "bold")).grid(row=row_num, column=0, sticky="w", pady=2); row_num += 1
+        ttk.Label(grid_frame, text=trend_text).grid(row=row_num-1, column=1, sticky="w", pady=2, padx=5)
 
-        ttk.Label(grid_frame, text=f"{i18n.get('p_value_label', 'Valor-p')}:", font=("Verdana", 10, "bold")).grid(row=2, column=0, sticky="w", pady=2)
-        ttk.Label(grid_frame, text=f"{p_value:.6f}").grid(row=2, column=1, sticky="w", pady=2, padx=5)
+        # p-value
+        ttk.Label(grid_frame, text=f"{i18n.get('p_value_label')}:", font=("Verdana", 10, "bold")).grid(row=row_num, column=0, sticky="w", pady=2); row_num += 1
+        ttk.Label(grid_frame, text=f"{p_value:.6f}").grid(row=row_num-1, column=1, sticky="w", pady=2, padx=5)
 
-        ttk.Label(grid_frame, text=f"{i18n.get('sens_slope_label', 'Inclinação de Sen')}:", font=("Verdana", 10, "bold")).grid(row=3, column=0, sticky="w", pady=2)
-        ttk.Label(grid_frame, text=f"{slope:.6f} (unidades/ano)").grid(row=3, column=1, sticky="w", pady=2, padx=5)
+        ttk.Label(grid_frame, text=f"{i18n.get('tau')}:", font=("Verdana", 10, "bold")).grid(row=row_num, column=0, sticky="w", pady=2); row_num += 1
+        ttk.Label(grid_frame, text=f"{tau:.6f}").grid(row=row_num-1, column=1, sticky="w", pady=2, padx=5)
+
+        ttk.Label(grid_frame, text=f"{i18n.get('Z-score')}:", font=("Verdana", 10, "bold")).grid(row=row_num, column=0, sticky="w", pady=2); row_num += 1
+        ttk.Label(grid_frame, text=f"{z_score:.6f}").grid(row=row_num-1, column=1, sticky="w", pady=2, padx=5)
         
-        ttk.Separator(grid_frame, orient='horizontal').grid(row=4, column=0, columnspan=2, sticky='ew', pady=10)
+        ttk.Label(grid_frame, text=f"{i18n.get('sens_slope_label')}:", font=("Verdana", 10, "bold")).grid(row=row_num, column=0, sticky="w", pady=2); row_num += 1
+        ttk.Label(grid_frame, text=f"{slope:.6f} (unidades/ano)").grid(row=row_num-1, column=1, sticky="w", pady=2, padx=5)
+        
+        ttk.Separator(grid_frame, orient='horizontal').grid(row=row_num, column=0, columnspan=2, sticky='ew', pady=10); row_num += 1
         explanation = i18n.get('trend_explanation')
-        ttk.Label(grid_frame, text=explanation, wraplength=450, justify=tk.LEFT).grid(row=5, column=0, columnspan=2, sticky="w")
-    
+        ttk.Label(grid_frame, text=explanation, wraplength=450, justify=tk.LEFT).grid(row=row_num, column=0, columnspan=2, sticky="w")
+
     def go_to_start_page(self):
         from ..start_page import StartPage
         self.controller.show_frame(StartPage)
