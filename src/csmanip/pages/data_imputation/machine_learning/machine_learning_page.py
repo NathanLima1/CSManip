@@ -241,9 +241,6 @@ class MachineLearningPage(ttk.Frame):
         return log_text
 
     def run_optuna_optimization(self):
-        """
-        Passo 1: Verifica se pode rodar e abre o Popup.
-        """
         model_name = self.ml_combo.get()
         
         if not model_name:
@@ -455,7 +452,7 @@ class MachineLearningPage(ttk.Frame):
                 msg.showerror("Erro", f"Falha ao ler arquivo: {str(e)}")
 
     def objective_dt(self, trial, common_params):
-        """Função objetivo para Decision Trees (VERSÃO CORRIGIDA)."""
+        """Função objetivo para Decision Trees"""
         city_path, indicator, split_percentage, n_tests, save_model_flag = common_params
         
         criterion = trial.suggest_categorical('criterion', ['squared_error', 'absolute_error'])
