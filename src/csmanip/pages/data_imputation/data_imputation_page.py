@@ -93,7 +93,15 @@ class DataImputationPage(ttk.Frame):
         right_panel = ttk.Frame(main_container, relief="solid", borderwidth=1)
         right_panel.grid(row=0, column=1, sticky="nsew", padx=(5, 0))
         
+        self.autofill_combos_from_coordinates()
         self.update_texts()
+
+    def reset_city_combos(self):
+        combos = [self.combo1, self.combo2, self.combo3, self.combo4]
+
+        for combo in combos:
+            combo.set('')        
+            combo['values'] = [] 
 
     def go_to_start_page(self):
         """Importa e navega para a página inicial."""
@@ -123,8 +131,45 @@ class DataImputationPage(ttk.Frame):
         longitude = float(raw_data[3][10:])
         altitude = float(raw_data[4][10:])
         return name, latitude, longitude, altitude, directory
+    
+    def load_cities_from_coordinates(self, filename="Coordinates.txt"):
+        if not os.path.exists(filename):
+            return []
+
+        cities = []
+
+        try:
+            with open(filename, "r", encoding="utf-8") as f:
+                lines = [line.strip() for line in f if line.strip()]
+
+            for i in range(0, len(lines), 4):
+                city_name = lines[i]
+                cities.append(city_name)
+
+        except Exception as e:
+            print(f"Erro ao ler {filename}: {e}")
+            return []
+
+        return cities
+    
+    def autofill_combos_from_coordinates(self):
+        cities = self.load_cities_from_coordinates()
+
+        if len(cities) < 4:
+            return 
+
+        self.combo1['values'] = cities
+        self.combo2['values'] = cities
+        self.combo3['values'] = cities
+        self.combo4['values'] = cities
+
+        self.combo1.set(cities[0])  
+        self.combo2.set(cities[1])  
+        self.combo3.set(cities[2]) 
+        self.combo4.set(cities[3]) 
 
     def list_cities(self):
+        self.reset_city_combos()
         db_location = dlg.askdirectory()
         if not db_location:
             return
