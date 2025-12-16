@@ -280,6 +280,8 @@
     "wich_ml_MeL_hint": "",
     "indicator_gt_MeL_hint": "",
     "num_tests_gt_MeL_hint": "",
-    "btn_gt_MeL_hint": ""
+    "btn_gt_MeL_hint": "",
+    "select_btn": "Selecionar",
+    "def_range_btn": "Def. Range"
 
   }

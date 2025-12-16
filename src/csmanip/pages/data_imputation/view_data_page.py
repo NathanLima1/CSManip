@@ -2,6 +2,7 @@ from ..utils import *
 import numpy as np
 import datetime as dt
 from ..tooltip import CreateToolTip
+import matplotlib.dates as mdates
 if typing.TYPE_CHECKING:
     from ..data_imputation.data_imputation_page import DataImputationPage
 
@@ -39,7 +40,15 @@ class ViewDataPage(ttk.Frame):
 
         self.lbl_view_data = ttk.Label(view_inputs_grid, text="")
         self.lbl_view_param = ttk.Label(view_inputs_grid, text="")
-        self.combo_view_data = ttk.Combobox(view_inputs_grid, state="readonly", values=["Target city", "Neighbor A", "Neighbor B", "Neighbor C"])
+        self.var_view_city = tk.StringVar()
+        
+        #self.var_view_city.trace("w", self.on_city_change)
+        self.combo_view_data = ttk.Combobox(
+            view_inputs_grid, 
+            state="readonly", 
+            values=["Target city", "Neighbor A", "Neighbor B", "Neighbor C", "Common data"],
+            textvariable=self.var_view_city
+        )
         self.combo_view_param = ttk.Combobox(view_inputs_grid, state="readonly", values=["Precipitation", 'Maximum temperature', "Minimum temperature"])
 
         self.lbl_view_data.grid(row=0, column=0, sticky="w")
@@ -54,8 +63,8 @@ class ViewDataPage(ttk.Frame):
 
         self.lbl_view_start = ttk.Label(view_inputs_grid, text="")
         self.lbl_view_end = ttk.Label(view_inputs_grid, text="")
-        self.combo_view_start = ttk.Combobox(view_inputs_grid, state=DISABLED)
-        self.combo_view_end = ttk.Combobox(view_inputs_grid, state=DISABLED)
+        self.combo_view_start = ttk.Combobox(view_inputs_grid, state="disabled")
+        self.combo_view_end = ttk.Combobox(view_inputs_grid, state="disabled")
 
         self.lbl_view_start.grid(row=3, column=0, sticky="w")
         self.combo_view_start.grid(row=4, column=0, padx=(0, 5))
@@ -63,6 +72,23 @@ class ViewDataPage(ttk.Frame):
         self.combo_view_end.grid(row=4, column=1, padx=(5, 0))
         self.view_start_hint = CreateToolTip(self.combo_view_start, text=i18n.get('start_view_hint'))
         self.view_end_hint = CreateToolTip(self.combo_view_end, text=i18n.get('end_view_hint'))
+
+        actions_frame = ttk.Frame(self.view_data_section)
+        actions_frame.pack(fill=tk.X, padx=10, pady=(5, 10))
+
+        self.btn_select = ttk.Button(
+            actions_frame,
+            text="",  # texto vem do i18n
+            command=self.common_graphs
+        )
+        self.btn_select.pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0, 5))
+
+        self.btn_def_range = ttk.Button(
+            actions_frame,
+            text="",  # texto vem do i18n
+            command=self.range_graphs
+        )
+        self.btn_def_range.pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(5, 0))
 
         # --- Gerar Gráfico ---
         self.graph_section = ttk.LabelFrame(left_panel, text="")
@@ -402,6 +428,8 @@ class ViewDataPage(ttk.Frame):
         self.lbl_graph_param.config(text=i18n.get('parameter_label'))
         self.histogram_btn.config(text=i18n.get('histogram_btn'))
         self.boxplot_btn.config(text=i18n.get('boxplot_btn'))
+        self.btn_select.config(text=i18n.get('select_btn'))
+        self.btn_def_range.config(text=i18n.get('def_range_btn'))
 
         self.data_view_hint.text = i18n.get('combo_data_view_hint')
         self.view_param_hint.text = i18n.get('param_view_hint')
@@ -411,3 +439,254 @@ class ViewDataPage(ttk.Frame):
         self.graph_param_hint.text = i18n.get('graph_param_10_view_hint')
         self.histogram_hint.text = i18n.get('histogram_view_hint')
         self.boxplot_hint.text = i18n.get('boxplot_view_hint')
+
+    def get_col(self):
+        print("Entrou Principal get_col")
+        if self.combo_view_param.get() == "Precipitation":
+            y_name = "Precipitation (mm)"
+            col = 3
+        elif self.combo_view_param.get() == "Maximum temperature":
+            col = 4
+            y_name = "Temperature (°C)"
+        elif self.combo_view_param.get() == "Minimum temperature":
+            y_name = "Temperature (°C)"
+            col = 5
+        else:
+            msg.showwarning(title="Parameter Missing!", message="You must select a parameter!")
+        return y_name, col
+
+    def common_graphs(self):
+        print("Entrou Principal common_graphs")
+        data_processor = DataProcessing()
+        type_data = self.combo_view_data.get()
+        if type_data == '':
+            msg.showwarning(title="City Missing!", message="You must select a city!")
+
+        analyzed_data = data_processor.load_data_file(type_data)
+
+        self.generate_range()
+
+        y_label, col_index = self.get_col()
+
+        city_names = data_processor.get_city_names()
+
+        x_axis = []
+        if self.combo_view_data.get() == 'Common data':
+            y_axis_1, y_axis_2, y_axis_3, y_axis_4 = [], [], [], []
+            common_count, target_count, va_count, vb_count, vc_count = data_processor.get_quantities()
+            bar_y_values = [common_count, target_count, va_count, vb_count, vc_count]
+            bar_x_labels = ['Common', city_names[0], city_names[1], city_names[2], city_names[3]]
+        else:
+            y_axis = []
+
+        data_table = []
+        for row in analyzed_data:
+            data_table.append(row)
+            year, month, day = str(row[0]), str(row[1]), str(row[2])
+            date_str = f"{month}/{day}/{year}"
+
+            try:
+                date_obj = dt.datetime.strptime(date_str, "%m/%d/%Y").date()
+            except ValueError:
+                continue
+
+            if self.combo_view_data.get() == 'Common data':
+                try:
+                    y_axis_1.append(float(row[col_index].replace(',', '.')))
+                    y_axis_2.append(float(row[col_index + 3].replace(',', '.')))
+                    y_axis_3.append(float(row[col_index + 6].replace(',', '.')))
+                    y_axis_4.append(float(row[col_index + 9].replace(',', '.')))
+                    x_axis.append(date_obj)
+                except ValueError:
+                    continue
+            else:
+                try:
+                    y_axis.append(float(row[col_index]))
+                    x_axis.append(date_obj)
+                except ValueError:
+                    continue
+
+        fig = Figure(figsize=(14.5, 9.5), dpi=100)
+        fig.subplots_adjust(left=0.05, bottom=0.08, right=0.98, top=0.93)
+
+        if self.combo_view_data.get() == 'Common data':
+            plot1 = fig.add_subplot(321)
+            plot2 = fig.add_subplot(322)
+            plot3 = fig.add_subplot(323)
+            plot4 = fig.add_subplot(324)
+            plot5 = fig.add_subplot(325)
+            plot6 = fig.add_subplot(326)
+
+            plot1.plot(x_axis, y_axis_1, label=city_names[0])
+            plot2.plot(x_axis, y_axis_2, label=city_names[1], color="red")
+            plot3.plot(x_axis, y_axis_3, label=city_names[2], color='green')
+            plot4.plot(x_axis, y_axis_4, label=city_names[3], color='orange')
+
+            plot5.scatter(x_axis, y_axis_1, s=2, alpha=1, color='blue')
+            plot5.scatter(x_axis, y_axis_2, s=2, alpha=1, color='red')
+            plot5.scatter(x_axis, y_axis_3, s=2, alpha=1, color='green')
+            plot5.scatter(x_axis, y_axis_4, s=2, alpha=1, color='orange')
+
+            plot6.bar(bar_x_labels, bar_y_values)
+
+            for plot in [plot1, plot2, plot3, plot4, plot5]:
+                plot.set_xticklabels(x_axis, rotation=15, ha='right')
+                plot.xaxis.set_major_formatter(mdates.DateFormatter("%m/%y"))
+                plot.grid(True)
+                plot.set_ylabel(y_label)
+                plot.legend()
+
+            plot6.set_ylabel('Data Count')
+        else:
+            plot1 = fig.add_subplot(111)
+            plot1.plot(x_axis, y_axis)
+            plot1.set_xticklabels(x_axis, rotation=15, ha='right')
+            plot1.xaxis.set_major_formatter(mdates.DateFormatter("%m/%y"))
+            plot1.grid(True)
+            plot1.set_ylabel(y_label)
+            plot1.set_title(self.combo_view_param.get())
+
+        for widget in self.right_panel.winfo_children():
+            widget.destroy()
+
+        canvas = FigureCanvasTkAgg(fig, master=self.right_panel)
+        canvas.draw()
+
+        toolbar = NavigationToolbar2Tk(canvas, self.right_panel)
+        toolbar.update()
+        toolbar.pack(side=tk.BOTTOM, fill=tk.X)
+
+        canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+
+    def range_graphs(self):
+        print("Entrou Principal range_graphs")
+        my_data = DataProcessing()
+        data_ana = my_data.load_data_file(self.combo_view_data.get())
+        
+        nome_y, col = self.get_col()
+
+        ano_inicio = int(self.var_ini.get())
+        ano_final = int(self.var_fim.get())
+        if ano_final < ano_inicio:
+            msg.showerror(title='Invalid', message='The entered range is invalid')
+            return
+        if self.combo_view_param.get() == 'Common data':
+            self.grafico_dc(ano_inicio,ano_final)
+            return
+        
+        eixo_x = list()
+        if self.combo_view_data.get() == 'Common data':
+            eixo_y1 = list()
+            eixo_y2 = list()
+            eixo_y3 = list()
+            eixo_y4 = list()
+            util, tar,t_va, t_vb, t_vc = my_data.get_quantities()
+            eixo_y_bar = [util, tar,t_va, t_vb, t_vc]
+            eixo_x_bar = ['Common', 'target','Total vA', 'Total vB', 'Total vC']
+        else:
+            eixo_y = list()
+
+        dados_lb = list()
+
+        for i in data_ana:
+            if int(i[0]) >= ano_inicio and int(i[0]) <= ano_final:
+                dados_lb.append(i)
+
+                ano = str(i[0])
+                
+                mes = str(i[1])
+                dia = str(i[2])
+                text_data = mes + '/' + dia + '/' + ano
+                eixo_x.append(dt.datetime.strptime(text_data,"%m/%d/%Y").date())
+
+                if self.combo_view_data.get() == 'Common data':
+                    eixo_y1.append(float(i[col]))
+                    eixo_y2.append(float(i[col+3]))
+                    eixo_y3.append(float(i[col+6]))
+                    eixo_y4.append(float(i[col+9]))
+                else:
+                    eixo_y.append(float(i[col]))
+        
+        
+        fig = Figure(figsize=(14.5,9.5), dpi=100)
+        fig.subplots_adjust(left=0.05, bottom=0.08, right=0.98, top=0.93)
+
+        if self.combo_view_data.get() == 'Common data':
+            plot1 = fig.add_subplot(321)
+            plot2 = fig.add_subplot(322)
+            plot3 = fig.add_subplot(323)
+            plot4 = fig.add_subplot(324)
+            plot5 = fig.add_subplot(325)
+            plot6 = fig.add_subplot(326)
+            plot1.plot(eixo_x, eixo_y1, label="target")
+            plot2.plot(eixo_x, eixo_y2, label="Neighbor_a", color="red")
+            plot3.plot(eixo_x, eixo_y3, label="Neighbor_b", color='green')
+            plot4.plot(eixo_x, eixo_y4, label="Neighbor_c", color='orange')
+            plot5.scatter(eixo_x, eixo_y1, s=2, alpha=1, color='blue')
+            plot5.scatter(eixo_x, eixo_y2, s=2, alpha=0.6, color='red')
+            plot5.scatter(eixo_x, eixo_y3, s=2, alpha=0.6, color='green')
+            plot5.scatter(eixo_x, eixo_y4, s=2, alpha=0.6, color='orange')
+            plot6.bar(eixo_x_bar, eixo_y_bar)
+            plot1.legend()
+            plot2.legend()
+            plot3.legend()
+            plot4.legend()
+            plot1.xaxis.set_major_formatter(mdates.DateFormatter("%m/%y")) 
+            plot2.xaxis.set_major_formatter(mdates.DateFormatter("%m/%y")) 
+            plot3.xaxis.set_major_formatter(mdates.DateFormatter("%m/%y")) 
+            plot4.xaxis.set_major_formatter(mdates.DateFormatter("%m/%y")) 
+            plot5.xaxis.set_major_formatter(mdates.DateFormatter("%m/%y")) 
+            plot1.grid(True)
+            plot2.grid(True)
+            plot3.grid(True)
+            plot4.grid(True)
+            plot5.grid(True)
+            plot1.set_ylabel(nome_y)
+            plot2.set_ylabel(nome_y)
+            plot3.set_ylabel(nome_y)
+            plot4.set_ylabel(nome_y)
+            plot5.set_ylabel(nome_y)
+            plot6.set_ylabel('Data quantity')
+            
+        else:
+            plot1 = fig.add_subplot(111)
+            plot1.plot(eixo_x, eixo_y)
+            plot1.set_xticklabels(eixo_x, rotation=15, ha='right')   
+            plot1.xaxis.set_major_formatter(mdates.DateFormatter("%m/%y"))   
+                
+            plot1.grid(True)
+            plot1.set_ylabel(nome_y)
+            plot1.set_title(self.combo_view_param.get())
+        
+        for widget in self.right_panel.winfo_children():
+            widget.destroy()
+
+        canvas = FigureCanvasTkAgg(fig, master=self.right_panel)
+        canvas.draw()
+
+        toolbar = NavigationToolbar2Tk(canvas, self.right_panel)
+        toolbar.update()
+        toolbar.pack(side=tk.BOTTOM, fill=tk.X)
+
+        canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+    
+    def generate_range(self):
+        print("Entrou generate_range")
+
+        data_proc = DataProcessing()
+        self.anos = data_proc.get_year_range(self.combo_view_data.get())
+
+        self.var_ini = tk.StringVar()
+        self.var_fim = tk.StringVar()
+
+        self.combo_view_start.config(
+            state="readonly",
+            values=self.anos,
+            textvariable=self.var_ini
+        )
+
+        self.combo_view_end.config(
+            state="readonly",
+            values=self.anos,
+            textvariable=self.var_fim
+        )
