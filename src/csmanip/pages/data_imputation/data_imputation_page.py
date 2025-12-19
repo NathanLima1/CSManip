@@ -119,7 +119,6 @@ class DataImputationPage(ttk.Frame):
         self.controller.show_frame(ViewDataPage)
 
     def get_info(self, directory):
-        # Esta função está ótima, não precisa de mudanças.
         raw_data = []
         with open(directory, 'r') as file:
             for line in file:

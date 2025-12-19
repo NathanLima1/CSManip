@@ -6,6 +6,8 @@ authors = [
     { name="Nathan M. Lima", email="nathan116lima@gmail.com" },
     { name="Pablo de 0. Passarini", email="pablo4passarini@gmail.com"},
     { name="Filipe J. S. Coelho", email="filipesantos.lf@gmail.com"},
+    { name="Vinícius Henrique Antunes Alves", email="viniciushaalves97@gmail.com"},
+    { name="Vinícius H. C. Lima", email="viniciushclv@gmail.com"},
     { name="Marconi A. Pereira", email="marconi@ufsj.edu.br"}
 ]
 readme = "README.md"

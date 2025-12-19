@@ -26,7 +26,7 @@ def group_data(city_files: list, input_dir: str, output_dir: str):
             cidade = df.values
         except FileNotFoundError:
             print(f"Erro: Arquivo de entrada não encontrado em '{input_path}'")
-            continue # Pula para a próxima cidade se o arquivo não for encontrado
+            continue
 
         # O restante da sua lógica para processar os dados permanece o mesmo...
         dadosMensais = []

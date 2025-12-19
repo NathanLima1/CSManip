@@ -548,7 +548,7 @@ class Headless():
                        verbose_v=False, warm_start_v=False, momentum_v='0.9', nesterovs_momentum_v=True,
                        early_stopping_v=False, validation_fraction_v='0.1', beta_1_v='0.9',
                        beta_2_v='0.999', n_iter_no_change_v='10', max_fun_v='15000', por_trei=70,
-                       num_tests=5, save_model=False):
+                       num_tests=5, save_model=False, load_params='None'):
         ml = Ml()
         ml.neural_network(activation_v, solver_v, alpha_v,
                        batch_size_v, learning_rate_v, learning_rate_init_v,
@@ -556,29 +556,30 @@ class Headless():
                        verbose_v, warm_start_v, momentum_v, nesterovs_momentum_v,
                        early_stopping_v, validation_fraction_v, beta_1_v,
                        beta_2_v, n_iter_no_change_v, max_fun_v, por_trei,
-                       num_tests, save_model)
+                       num_tests, save_model, load_params)
         
     def nearest_neighbors(self, n_neighbors_v=5, algorithm_v='auto', leaf_size_v=30,
-                          p_v=2, n_jobs_v='5', por_trei=70, num_teste=5, save_model=False):
+                          p_v=2, n_jobs_v='5', por_trei=70, num_teste=5, save_model=False,
+                          load_params='None'):
         ml = Ml()
         ml.nearest_neighbors(n_neighbors_v, algorithm_v, leaf_size_v, p_v, n_jobs_v,
-                             por_trei, num_teste, save_model)
+                             por_trei, num_teste, save_model, load_params)
         
     def support_vector_machine(self, kernel_v='rbf', degree_v=3, gamma_v='scale', coef0_v='0.0',
                        tol_v='0.001', c_v='1.0', epsilon_v='0.1', shrinking_v=True,
                        cache_size_v='200', verbose_v=False, maxiter_v=-1, por_trei=70,
-                       num_tests=5, save_model=False):
+                       num_tests=5, save_model=False, load_params='None'):
         ml = Ml()
         ml.support_vector(kernel_v, degree_v, gamma_v, coef0_v, tol_v, c_v, epsilon_v,
                           shrinking_v, cache_size_v, verbose_v, maxiter_v, por_trei,
-                          num_tests, save_model)
+                          num_tests, save_model, load_params)
         
     def gaussian_process(self, alpha_gp='0.0000000001', n_restarts_op=0,
                          normalize_y_gp=False, copy_X_train=False, rand_state_gp='None',
-                         por_trei=70, num_teste=5, save_model=False):
+                         por_trei=70, num_teste=5, save_model=False, load_params='None'):
         ml = Ml()
         ml.gaussian_process(alpha_gp, n_restarts_op, normalize_y_gp, copy_X_train,
-                            rand_state_gp, por_trei, num_teste, save_model)
+                            rand_state_gp, por_trei, num_teste, save_model, load_params)
 
     def generate_custom_test(self, base_model='Decision Trees', triangulation='Arithmetic Average',
                              meta_model='Decision Trees', indicator='Maximum temperature',
@@ -599,3 +600,7 @@ class Headless():
     def randomized_search_dt(self):
         hiper = Hiperparam()
         hiper.randomized_search_dt()
+
+    def optuna_optimization(self, n_trials, model_name, city, indicator, split, tests, 
+                            save_model=True, gp_kernel_type='RBF'):
+        Ml.optuna_optimization(n_trials, model_name, city, indicator, split, tests, save_model, gp_kernel_type)

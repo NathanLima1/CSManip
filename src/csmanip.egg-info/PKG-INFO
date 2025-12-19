@@ -2,7 +2,7 @@ Metadata-Version: 2.4
 Name: csmanip
 Version: 0.1.0
 Summary: A library for triangulation, machine learning, meta learning and trends of climatic series
-Author-email: "Nathan M. Lima" <nathan116lima@gmail.com>, "Pablo de 0. Passarini" <pablo4passarini@gmail.com>, "Filipe J. S. Coelho" <filipesantos.lf@gmail.com>, "Marconi A. Pereira" <marconi@ufsj.edu.br>
+Author-email: "Nathan M. Lima" <nathan116lima@gmail.com>, "Pablo de 0. Passarini" <pablo4passarini@gmail.com>, "Filipe J. S. Coelho" <filipesantos.lf@gmail.com>, Vinícius Henrique Antunes Alves <viniciushaalves97@gmail.com>, "Vinícius H. C. Lima" <viniciushclv@gmail.com>, "Marconi A. Pereira" <marconi@ufsj.edu.br>
 License: MIT
 Project-URL: Homepage, https://github.com/NathanLima1/Series
 Requires-Python: >=3.8
@@ -22,3 +22,4 @@ Requires-Dist: netcdf4
 Requires-Dist: statsmodels
 Requires-Dist: cdsapi
 Requires-Dist: geopy
+Requires-Dist: optuna

@@ -916,7 +916,7 @@ class MachineLearningPage(ttk.Frame):
                 return full_path
             else:
                  print(f"Aviso: Método get_end não encontrou o arquivo diretamente. {full_path}")
-                 # treatment = DataProcessing() # Talvez precise instanciar aqui?
+                 # treatment = DataProcessing()
                  raise FileNotFoundError(f"Arquivo não encontrado via get_end: {city_filename}")
         except Exception as e:
             self.controller.show_translated_message(

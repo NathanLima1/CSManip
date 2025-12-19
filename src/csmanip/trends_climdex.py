@@ -1,5 +1,5 @@
 from .trends.plot_warming_stripes import plot_annual_data, plot_monthly_data, plot_quarterly_data
-from .trends.identify_trends import analyze_trend
+from .trends.identify_trends import analyze_trend, analyze_indicator_trend
 from .trends.make_data_base import clean_missing_data, make_database, normalize_data
 from .trends.processing import process_csv
 from .trends.group_data import group_data
@@ -8,6 +8,9 @@ from .trends.climdex import Climdex
 class Trends():
     def analyze_trend(self, csv_file, column_name):
         return analyze_trend(csv_file, column_name)
+    
+    def analyze_indicator_trend(self, file_path):
+        return analyze_indicator_trend(file_path)
     
     def group_data(self, cities:list, input_dir: str, output_dir:str):
         group_data(cities, input_dir, output_dir)
