@@ -1,6 +1,7 @@
-from tkinter import Frame
-from tkinter import ttk
-from tkinter import Canvas, Label, StringVar, Button, CENTER, DISABLED
+"""
+Arquivo responsavel pela parte sem interface gráfica, para a imputação de dados e download
+"""
+
 import tkinter.filedialog as dlg
 import tkinter.messagebox as msg
 from matplotlib.figure import Figure
@@ -13,16 +14,14 @@ import numpy as np
 import threading
 import time
 import sys
-from .styles import colors
 from .data_processing.data_processing import DataProcessing
 from .triangulation.triangulation import Triangulation
-from .machine_learning.machine_learning import MachineLearning
 from .machine_learning.ml import Ml
 from .training.hiperparam import Hiperparam
-from .meta_learning.meta_learning import MetaLearning
 from .meta_learning.test_generat import TestsGenerator
 from .data_processing.era5_download import download_and_process_era_data
 from .data_processing.noaa_download import download_noaa_data
+from .datasets import download_all_datasets
 
 class Headless():
     def __init__(self):
@@ -49,6 +48,12 @@ class Headless():
 
         return name, latitude, longitude, altitude, address
     
+    def download_datasets(self):
+        """
+        Baixa todos os datasets de teste do github
+        """
+        return download_all_datasets()
+
     def set_cities(self, files):
         if(len(files) != 4): 
             raise TypeError("It must have 4 file paths")
@@ -465,7 +470,7 @@ class Headless():
 
         ultimo = len(saz) - 2
 
-        # Preparar os dados para os últimos 10 anos
+        # Preparar os dados últimos 10 anos
         ys = []
         titulos = []
         for i in range(10):
@@ -473,11 +478,10 @@ class Headless():
             ys.append(np.array(y))
             titulos.append(saz[ultimo - 9 + i][-1][0])
 
-        # Definir limites do eixo X baseados nos dados
+        # Definir limites do eixo X
         max_lim = max(max(y) for y in ys) + 0.5
         min_lim = min(min(y) for y in ys) - 0.5
 
-        # Criar figura e subplots
         fig, axs = plt.subplots(2, 5, figsize=(14.5, 9.5))
         fig.subplots_adjust(left=0.05, bottom=0.08, right=0.98, top=0.93)
 

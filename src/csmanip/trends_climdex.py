@@ -1,3 +1,7 @@
+"""
+Arquivo responsavel pela parte sem interface ggráfica para a análise de trends climáticas, plotagem e geração de indicadores extremos
+"""
+
 from .trends.plot_warming_stripes import plot_annual_data, plot_monthly_data, plot_quarterly_data
 from .trends.identify_trends import analyze_trend, analyze_indicator_trend
 from .trends.make_data_base import clean_missing_data, make_database, normalize_data

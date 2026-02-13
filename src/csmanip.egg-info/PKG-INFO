@@ -23,3 +23,6 @@ Requires-Dist: statsmodels
 Requires-Dist: cdsapi
 Requires-Dist: geopy
 Requires-Dist: optuna
+Requires-Dist: seaborn
+
+O seguinte projeto é uma biblioteca que visa facilitar a análise de tendências climáticas, imputação de dados faltantes e visualização dos dados.so

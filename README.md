@@ -1,1 +1,1 @@
-O seguinte projeto é uma biblioteca que visa facilitar a análise de tendências climáticas, imputação de dados faltantes e visualização dos dados.
+O seguinte projeto é uma biblioteca que visa facilitar a análise de tendências climáticas, imputação de dados faltantes e visualização dos dados.so

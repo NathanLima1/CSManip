@@ -14,3 +14,4 @@ statsmodels
 cdsapi
 geopy
 optuna
+seaborn
