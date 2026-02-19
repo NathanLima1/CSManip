@@ -13,6 +13,7 @@ src/csmanip/data_processing/__init__.py
 src/csmanip/data_processing/data_processing.py
 src/csmanip/data_processing/era5_download.py
 src/csmanip/data_processing/noaa_download.py
+src/csmanip/datasets/__init__.py
 src/csmanip/language/language_manager.py
 src/csmanip/machine_learning/__init__.py
 src/csmanip/machine_learning/bagging_trees.py
