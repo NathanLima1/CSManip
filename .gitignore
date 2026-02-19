@@ -1,0 +1,12 @@
+*
+
+!src/
+
+!src/**
+!README.md
+!pyproject.toml
+!.gitignore
+!teste.py
+
+src/**/__pycache__/
+src/**/*.egg-info/
