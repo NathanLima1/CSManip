@@ -1,9 +1,0 @@
-*
-
-!src/
-!README.md
-!pyproject.toml
-!teste.py
-
-src/csmanip/__pycache__/
-src/csmanip.egg-info/

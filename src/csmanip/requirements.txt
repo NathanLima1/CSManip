@@ -1,8 +1,0 @@
-matplotlib
-scipy
-folium
-haversine
-scikit-learn
-numpy
-tksheet
-pyscreenshot
